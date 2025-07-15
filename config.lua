@@ -1,7 +1,7 @@
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 -- Lấy tên người chơi
-local player = game.Players.LocalPlayer
-local username = player.Name
+local playerzz = game.Players.LocalPlayer
+local usernamezz = playerzz.Name
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 getgenv().Config = {
 	["Select Seed"] = {
@@ -284,7 +284,7 @@ setmetatable(getgenv().Config["Select UUID Pet"], {
 
 --  Tìm đến ScrollingFrame chứa các UUID
 local success, err = pcall(function()
-	local scrollingFrame = player:WaitForChild("PlayerGui"):WaitForChild("ActivePetUI")
+	local scrollingFrame = playerzz:WaitForChild("PlayerGui"):WaitForChild("ActivePetUI")
 		:WaitForChild("Frame"):WaitForChild("Main"):WaitForChild("ScrollingFrame")
 
 	--  Lấy các UUID trong ScrollingFrame
