@@ -251,6 +251,9 @@ getgenv().Config = {
 		["Watering Can"] = true,
 		["Reclaimer"] = true,
 		["Lightning Rod"] = true,
+		["Medium Toy"] = true,
+		["Medium Treat"] = true,
+		["Level Up Lollipop"] = true,
 		["Godly Sprinkler"] = true
 	},
 	["Auto Buy Gear"] = true,
