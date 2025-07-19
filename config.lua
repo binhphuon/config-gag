@@ -188,7 +188,7 @@ getgenv().Config = {
 	["Auto Buy Seed"] = true,
 	["Auto Delete Sprinkler"] = false,
 	["Auto Collect Egg"] = true,
-	["Select Gear Use"] = math.random(1, 2) == 1 and "Medium Toy" or "Medium Treat",
+	["Select Gear Use"] = "Medium Treat",
 	["Auto Use Gear"] = true,
 	["Auto Delete Plant"] = false,
 	["Auto Buy Shop Merchant"] = true,
