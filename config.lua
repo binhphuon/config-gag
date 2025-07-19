@@ -190,7 +190,7 @@ getgenv().Config = {
 	["Auto Collect Egg"] = true,
 	["Select Gear Use"] = math.random(1, 2) == 1 and "Medium Toy" or "Medium Treat",
 	["Auto Use Gear"] = true,
-	["Auto Delete Plant"] = true,
+	["Auto Delete Plant"] = false,
 	["Auto Buy Shop Merchant"] = true,
 	["Enable if you dont know how to set idle"] = true,
 	["Start Boost"] = false,
