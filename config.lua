@@ -261,7 +261,15 @@ getgenv().Config = {
 	},
 	["Auto Accept Gift"] = true,
 	["Select Egg Plant"] = {
-		["Common Summer Egg"] = true
+		["Common Summer Egg"] = true,
+		["Bug Egg"] = true,
+		["Oasis Egg"] = true,
+		["Dinosaur Egg"] = true,
+		["Paradise Egg"] = true,
+		["Anti Bee Egg"] = true,
+		["Night Egg"] = true,
+		["Rare Summer Egg"] = true,
+		["Primal Egg"] = true
 	},
 	["Auto Give Pet For Dinosaur"] = true
 }
