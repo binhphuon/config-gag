@@ -63,7 +63,6 @@ getgenv().Config = {
 		["Tomato"] = true
 	},
 	["Select Pet Dont Delete"] = {
-		["Triceratops"] = true,
 		["Brontosaurus"] = true,
 		["Blood Owl"] = true,
 		["Owl"] = true,
