@@ -65,7 +65,7 @@ getgenv().Config = {
 	["Select Pet Dont Delete"] = {
 		["Brontosaurus"] = true,
 		["Blood Owl"] = true,
-		["Owl"] = true,
+		["Kitsune"] = true,
 		["Capybara"] = true,
 		["Mimic Octopus"] = true,
 		["Spinosaurus"] = true,
@@ -269,7 +269,6 @@ getgenv().Config = {
 	["Auto Collect Tranquil if Have"] = true,
 	["Auto Buy Shop Zen"] = true,
 	["Select Item Shop Zen"] = {
-		["Zen Seed Pack"] = true,
 		["Zen Egg"] = true
 	},
 	["Auto Give Pet For Dinosaur"] = true
