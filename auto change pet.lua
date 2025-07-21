@@ -18,7 +18,7 @@ for name,_ in pairs(PetsService) do
 end
 
 -- Delay giữa mỗi lần equip
-local delayBetweenUses = 120.5
+local delayBetweenUses = 30.5
 
 -- Lấy tool Starfish [Age 1] đầu tiên trong Backpack
 local function getTool()
