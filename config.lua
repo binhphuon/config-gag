@@ -101,7 +101,6 @@ getgenv().Config = {
 	["Select Item Craft"] = {
 		["Primal Egg"] = true,
 		["Dinosaur Egg"] = true,
-		["Honeysuckle"] = true,
 		["Anti Bee Egg"] = true
 	},
 	["Auto Give Pollinated For Onett"] = true,
@@ -193,7 +192,7 @@ getgenv().Config = {
 	["Input Url Webhook"] = "https://discord.com/api/webhooks/1389864976491221064/lyhW_TJiq1-r_wJxqgGwJdipIKrA5e5s676YDzDpZps23MwX5FdSU-am3hVPJIzxF_nY",
 	["Auto Delete Fruit"] = false,
 	["Select Player Gift"] = "BP_Gamer03",
-	["Auto Craft"] = true,
+	["Auto Craft"] = false,
 	["Webhook Collect Egg"] = true,
 	["Auto Sell"] = true,
 	["Input Slot Sell"] = 199,
