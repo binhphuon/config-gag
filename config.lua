@@ -251,6 +251,7 @@ getgenv().Config = {
 	["Auto Accept Gift"] = true,
 	["Select Egg Plant"] = {
 		["Common Summer Egg"] = true,
+		["Mythical Egg"] = true,
 		["Bug Egg"] = true,
 		["Oasis Egg"] = true,
 		["Dinosaur Egg"] = true,
