@@ -20,11 +20,17 @@ end
 -- Delay giữa mỗi lần equip
 local delayBetweenUses = 60.5
 
--- Lấy tool Starfish [Age 1] đầu tiên trong Backpack
-local function getTool()
+-- Đặt giá trị AGE_THRESHOLD để lấy tool có tuổi nhỏ hơn giá trị này
+local AGE_THRESHOLD = 75  -- Thay đổi giá trị này theo nhu cầu
+
+-- Lấy tool Starfish với age < ageThreshold đầu tiên trong Backpack
+local function getTool(ageThreshold)
     for _, tool in ipairs(player.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name:match("^Starfish %[%d+%.?%d* KG%] %[Age 1%]$") then
-            return tool
+        if tool:IsA("Tool") and tool.Name:match("^Starfish %[%d+%.?%d* KG%] %[Age (%d+)%]$") then
+            local age = tonumber(tool.Name:match("^Starfish %[%d+%.?%d* KG%] %[Age (%d+)%]$"))
+            if age and age < ageThreshold then
+                return tool
+            end
         end
     end
     return nil
@@ -72,10 +78,8 @@ local function getPetCounts()
     return tonumber(cur) or 0, tonumber(mx) or 0
 end
 
--- Pickup tất cả pet có age >= 75
-local AGE_THRESHOLD = 75
-
-local function autoPickupOldPets()
+-- Pickup tất cả pet có age >= AGE_THRESHOLD
+local function autoPickupOldPets(ageThreshold)
     -- 1️⃣ Lấy đúng ScrollingFrame
     local activeUI = player.PlayerGui:WaitForChild("ActivePetUI", 5)
     if not activeUI then
@@ -102,7 +106,7 @@ local function autoPickupOldPets()
         end
 
         -- 4️⃣ Nếu đủ tuổi, gọi service với đúng key (có ngoặc)
-        if age >= AGE_THRESHOLD then
+        if age >= ageThreshold then
             print(("[autoPickup] Pickup pet %s (age=%d)"):format(petFrame.Name, age))
             local ok, err = pcall(function()
                 PetsService:UnequipPet(petFrame.Name)
@@ -120,20 +124,20 @@ end
 while true do
     task.wait(delayBetweenUses)
 
-    autoPickupOldPets()
+    -- Gọi autoPickupOldPets với AGE_THRESHOLD
+    autoPickupOldPets(AGE_THRESHOLD)
 
     -- 2) Kiểm tra số slot pet
     local cur, mx = getPetCounts()
     if cur >= mx then
         print(("🛑 Slot pet đầy (%d/%d), gọi pickup"):format(cur, mx))
-        
         continue
     end
 
-    -- 1) Lấy tool
-    local tool = getTool()
+    -- 1) Lấy tool với age < AGE_THRESHOLD
+    local tool = getTool(AGE_THRESHOLD)
     if not tool then
-        warn("❌ Không tìm thấy tool Starfish [Age 1]")
+        warn("❌ Không tìm thấy tool Starfish [Age < " .. AGE_THRESHOLD .. "]")
         continue
     end
 
