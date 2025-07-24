@@ -262,7 +262,7 @@ getgenv().Config = {
 		["Primal Egg"] = true
 	},
 	["Auto Give Tranquil For Zen Channeller"] = true,
-	["Auto Give Tranquil For Panda"] = true,
+	["Auto Give Tranquil For Panda"] = false,
 	["Auto Collect Tranquil if Have"] = true,
 	["Auto Buy Shop Zen"] = true,
 	["Select Item Shop Zen"] = {
