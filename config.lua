@@ -64,6 +64,7 @@ getgenv().Config = {
 	},
 	["Select Pet Dont Delete"] = {
 		["Brontosaurus"] = true,
+		["Corrupted Kitsune"] = true,
 		["Blood Owl"] = true,
 		["Kitsune"] = true,
 		["Capybara"] = true,
@@ -195,6 +196,7 @@ getgenv().Config = {
 	["Auto Sell"] = true,
 	["Input Slot Sell"] = 199,
 	["Auto Set Idle Pet"] = true,
+	["Auto Set Pet Middle Farm Xp With Capybara"] = true,
 	["Select Seed Plant"] = {
 		["Boneboo"] = true,
 		["Burning Bud"] = true,
@@ -264,9 +266,12 @@ getgenv().Config = {
 	["Auto Give Tranquil For Zen Channeller"] = true,
 	["Auto Give Tranquil For Panda"] = false,
 	["Auto Collect Tranquil if Have"] = true,
+	["Auto Give Fruit Kitsune"] = true,
+	["Auto Corrupt Channeller"] = true,
 	["Auto Buy Shop Zen"] = true,
 	["Select Item Shop Zen"] = {
-		["Zen Egg"] = true
+		["Zen Egg"] = true,
+		["Zen Seed Pack"] = true
 	},
 	["Auto Give Pet For Dinosaur"] = true
 }
