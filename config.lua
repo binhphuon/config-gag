@@ -64,6 +64,7 @@ getgenv().Config = {
 	},
 	["Select Pet Dont Delete"] = {
 		["Brontosaurus"] = true,
+		["Raiju"] = true,
 		["Corrupted Kitsune"] = true,
 		["Blood Owl"] = true,
 		["Kitsune"] = true,
@@ -199,6 +200,8 @@ getgenv().Config = {
 	["Auto Set Pet Middle Farm Xp With Capybara"] = true,
 	["Select Seed Plant"] = {
 		["Boneboo"] = true,
+		["Hinomai"] = true,
+		["Maple Apple"] = true,
 		["Burning Bud"] = true,
 		["Paradise Petal"] = true,
 		["Sugar Apple"] = true,
@@ -271,6 +274,7 @@ getgenv().Config = {
 	["Auto Buy Shop Zen"] = true,
 	["Select Item Shop Zen"] = {
 		["Zen Egg"] = true,
+		["Raiju"] = true,
 		["Zen Seed Pack"] = true
 	},
 	["Auto Give Pet For Dinosaur"] = true
