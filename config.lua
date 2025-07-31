@@ -68,6 +68,9 @@ getgenv().Config = {
 	},
 	["Select Pet Dont Delete"] = {
 		["Brontosaurus"] = true,
+		["Dog"] = true,
+		["Golden Lab"] = true,
+		["Bunny"] = true,
 		["Raiju"] = true,
 		["Corrupted Kitsune"] = true,
 		["Blood Owl"] = true,
@@ -92,7 +95,7 @@ getgenv().Config = {
 		["Honey Bee"] = true
 	},
 	["Auto Harvest Fruit Summer"] = true,
-	["Webhook Profile"] = true,
+	["Webhook Profile"] = false,
 	["Input Collect Summit Delay"] = 5,
 	["Auto Quest Prehistoric"] = false,
 	["ESP Farm Player Other"] = false,
