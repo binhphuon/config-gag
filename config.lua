@@ -240,6 +240,7 @@ getgenv().Config = {
 	},
 	["Select Gear"] = {
 		["Advanced Sprinkler"] = true,
+		["Trading Ticket"] = true,
 		["Tanning Mirror"] = true,
 		["Master Sprinkler"] = true,
 		["Trowel"] = true,
@@ -267,7 +268,7 @@ getgenv().Config = {
 	["Select Egg Plant"] = {
 		["Common Summer Egg"] = true,
 		["Bug Egg"] = true,
-		["Oasis Egg"] = true,
+		["Gourmet Egg"] = true,
 		["Dinosaur Egg"] = true,
 		["Paradise Egg"] = true,
 		["Anti Bee Egg"] = true,
@@ -283,7 +284,6 @@ getgenv().Config = {
 	["Auto Buy Shop Zen"] = true,
 	["Select Item Shop Zen"] = {
 		["Zen Egg"] = true,
-		["Raiju"] = true,
 		["Zen Seed Pack"] = true
 	},
 	["Auto Give Pet For Dinosaur"] = true
