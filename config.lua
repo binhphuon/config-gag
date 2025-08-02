@@ -307,6 +307,47 @@ local success, err = pcall(function()
 	end
 end)
 
+
+
+
+
+local v1 = game:GetService("ReplicatedStorage")
+local Itemobf = {}
+for v3, v4 in require(v1.Data.EnumRegistry.ItemTypeEnums) do
+    Itemobf[v3] = v4
+end
+local invobf = {}
+for v3, v4 in require(game:GetService("ReplicatedStorage").Data.EnumRegistry.InventoryServiceEnums) do
+    invobf[v3] = v4
+end
+for i, v in game.Players.LocalPlayer.Backpack:GetChildren() do
+    if v:GetAttribute(invobf["ITEM_TYPE"]) == Itemobf["Holdable"] then
+        v.Parent = game.Players.LocalPlayer.Character
+        task.wait(0.5)
+        local args = {"SubmitHeldPlant"}
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("CookingPotService_RE"):FireServer(
+            unpack(args))
+        task.wait(0.5)
+
+        local args = {"CookBest"}
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("CookingPotService_RE"):FireServer(
+            unpack(args))
+        local v_u_1 = game:GetService("ReplicatedStorage")
+
+        local v_u_6 = require(v_u_1.Modules.DataService)
+        local data = {}
+        local v39 = v_u_6:GetData()
+        -- v39.CookingPot.FinishedFoodRawData.ItemData
+        v39.CookingPot.CookingEndTime = workspace:GetServerTimeNow()
+        v39.CookingPot.IsCooking = false
+        local args = {"GetFoodFromPot"}
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("CookingPotService_RE"):FireServer(
+            unpack(args))
+
+    end
+end
+
+
 if not success then
 	warn("Không lấy được UUID từ giao diện:", err)
 end
