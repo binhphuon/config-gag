@@ -192,7 +192,6 @@ getgenv().Config = {
 		["Pitcher Plant Seed"] = true,
 		["Watermelon Seed"] = true,
 		["Paradise Petal Seed"] = true,
-		["Boneboo Seed"] = true,
 		["Kiwi Seed"] = true,
 		["Maple Apple Seed"] = true,
 		["Bell Pepper Seed"] = true,
