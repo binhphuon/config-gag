@@ -68,6 +68,7 @@ getgenv().Config = {
 	},
 	["Select Pet Dont Delete"] = {
 		["Brontosaurus"] = true,
+		["French Fry Ferret"] = true,
 		["Dog"] = true,
 		["Golden Lab"] = true,
 		["Bunny"] = true,
