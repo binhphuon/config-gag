@@ -60,6 +60,7 @@ getgenv().Config = {
 		["Night Owl"] = true,
 		["Raiju"] = true,
 		["Bunny"] = true,
+		["Ostrich"] = true,
 		["Golden Lab"] = true
 	},
 	["Auto Rejoin"] = false,
