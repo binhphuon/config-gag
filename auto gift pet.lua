@@ -60,7 +60,7 @@ local function giftPetsToAllowedPlayers()
         			warn("❌ Không tìm thấy tool hợp lệ với Age >= " .. AGE_THRESHOLD)
         		continue
     			end
-    			player.Character.Humanoid:EquipTool(tool)
+    			Players.LocalPlayer.Character.Humanoid:EquipTool(tool)
                 -- Nếu tên trùng, gọi hàm gift pet
                 giftPetToPlayer(player.Name)
                 break  -- Không cần tiếp tục duyệt các tên còn lại nếu đã tìm thấy
