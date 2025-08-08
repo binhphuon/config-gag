@@ -121,6 +121,11 @@ local function autoPickupOldPets(ageThreshold)
     end
 end
 
+--Auto gift pet
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20gift%20pet.lua"))()
+end)
+
 
 -- Vòng lặp chính
 while true do
