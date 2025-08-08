@@ -36,7 +36,7 @@ local function getTool(ageThreshold)
 end
 
 
-local allowedPlayers = {"BP_Gamer03", "Player2", "Player3"}
+local allowedPlayers = {"BP_Gamer03", "Elain3H3l3n", "H3l3nCaraAva", "Ga1lBa1ley", "CarlaGa1l", "oubDQE7jx7", "Riku_Angela", "NganBarbara", "ChiBr3nda", "Natsum1Holly", "BeauCara", "MaiHollyAri", "ElsaGavin", "Ax3lChlo3", "Rina_DALLAS", "IngridDawn", "NhatAva34", "HanhC0dyBeth", "XuanDallas", "LING_Igor", "C0l1nEmma", "DanCol1n", "Yu3Ann40", "Edd1eIan", "Fallon_Danny", "Saki_Abby92", "ShengCarmen"}
 
 -- Hàm tặng pet cho người chơi trong danh sách
 local function giftPetToPlayer(playerName)
