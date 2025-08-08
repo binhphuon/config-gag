@@ -35,25 +35,42 @@ local function getTool(ageThreshold)
     return nil
 end
 
--- Hàm bán pet (sử dụng GameEvents)
-local function giftPet()
+
+local allowedPlayers = {"BP_Gamer03", "Player2", "Player3"}
+
+-- Hàm tặng pet cho người chơi trong danh sách
+local function giftPetToPlayer(playerName)
     local args = {
-	    "GivePet",
-	    game:GetService("Players"):WaitForChild("BP_Gamer03")
+        "GivePet",
+        game:GetService("Players"):WaitForChild(playerName)
     }
     game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("PetGiftingService"):FireServer(unpack(args))
+    print("🛍️ Tặng pet cho", playerName)
+end
+
+-- Hàm kiểm tra và tặng pet cho những người chơi trong danh sách
+local function giftPetsToAllowedPlayers()
+    -- Duyệt qua tất cả người chơi trong game
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        -- Kiểm tra xem tên người chơi có trong danh sách không
+        for _, allowedName in ipairs(allowedPlayers) do
+            if player.Name == allowedName then
+				local tool = getTool(AGE_THRESHOLD)
+    			if not tool then
+        			warn("❌ Không tìm thấy tool hợp lệ với Age >= " .. AGE_THRESHOLD)
+        		continue
+    			end
+    			player.Character.Humanoid:EquipTool(tool)
+                -- Nếu tên trùng, gọi hàm gift pet
+                giftPetToPlayer(player.Name)
+                break  -- Không cần tiếp tục duyệt các tên còn lại nếu đã tìm thấy
+            end
+        end
+    end
 end
 
 -- Vòng lặp chính
 while true do
     task.wait(5) -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
-
-    -- Lấy tool với age < AGE_THRESHOLD
-    local tool = getTool(AGE_THRESHOLD)
-    if not tool then
-        warn("❌ Không tìm thấy tool hợp lệ với Age >= " .. AGE_THRESHOLD)
-        continue
-    end
-    player.Character.Humanoid:EquipTool(tool)
-    giftPet()
+	giftPetsToAllowedPlayers()
 end
