@@ -56,4 +56,5 @@ while true do
     end
     tool.Parent = player.Character
     giftPet()
+	tool.Parent = nil
 end
