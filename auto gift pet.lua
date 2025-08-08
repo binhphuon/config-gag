@@ -56,5 +56,4 @@ while true do
     end
     player.Character.Humanoid:EquipTool(tool)
     giftPet()
-	player.Character.Humanoid:UnequipTools(tool)
 end
