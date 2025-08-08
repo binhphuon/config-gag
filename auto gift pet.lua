@@ -54,7 +54,7 @@ while true do
         warn("❌ Không tìm thấy tool hợp lệ với Age >= " .. AGE_THRESHOLD)
         continue
     end
-    tool.Parent = player.Character
+    player.Character.Humanoid:EquipTool(tool)
     giftPet()
-	tool.Parent = player.Backpack
+	player.Character.Humanoid:UnequipTool(tool)
 end
