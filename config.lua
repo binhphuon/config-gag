@@ -5,33 +5,7 @@ local usernamezz = playerzz.Name
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
 getgenv().Config = {
 	["Select Pet Gift"] = {
-		["Brontosaurus"] = true,
-		["Night Owl"] = true,
-		["Pterodactyl"] = true,
-		["Owl"] = true,
-		["Triceratops"] = true,
-		["Blood Owl"] = true,
-		["Stegosaurus"] = true,
-		["Dilophosaurus"] = true,
-		["Red Fox"] = true,
-		["Capybara"] = true,
-		["Hamster"] = true,
-		["Mimic Octopus"] = true,
-		["Echo Frog"] = true,
-		["Hyacinth Macaw"] = true,
-		["Spinosaurus"] = true,
-		["Disco Bee"] = true,
-		["Queen Bee"] = true,
-		["Dragonfly"] = true,
-		["Seal"] = true,
-		["Raccoon"] = true,
-		["Moon Cat"] = true,
-		["Chicken Zombie"] = true,
-		["Butterfly"] = true,
-		["Scarlet Macaw"] = true,
-		["Praying Mantis"] = true,
-		["Fennec Fox"] = true,
-		["T-rex"] = true
+
 	},
 	["Select Pet Dont Delete"] = {
 		["Brontosaurus"] = true,
@@ -60,7 +34,6 @@ getgenv().Config = {
 		["Night Owl"] = true,
 		["Raiju"] = true,
 		["Bunny"] = true,
-		["Ostrich"] = true,
 		["Golden Lab"] = true
 	},
 	["Auto Rejoin"] = false,
