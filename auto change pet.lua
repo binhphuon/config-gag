@@ -20,7 +20,7 @@ for name,_ in pairs(PetsService) do
 end
 
 -- Delay giữa mỗi lần equip
-local delayBetweenUses = 5
+local delayBetweenUses = 60
 
 -- Đặt giá trị AGE_THRESHOLD để lấy tool có tuổi nhỏ hơn giá trị này
 local AGE_THRESHOLD = 75  -- Thay đổi giá trị này theo nhu cầu
