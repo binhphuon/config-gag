@@ -20,7 +20,7 @@ for name,_ in pairs(PetsService) do
 end
 
 -- Delay giữa mỗi lần equip
-local delayBetweenUses = 60.5
+local delayBetweenUses = 5
 
 -- Đặt giá trị AGE_THRESHOLD để lấy tool có tuổi nhỏ hơn giá trị này
 local AGE_THRESHOLD = 75  -- Thay đổi giá trị này theo nhu cầu
@@ -69,7 +69,8 @@ end
 local function getPetCounts()
     local titleLabel = player.PlayerGui
         :FindFirstChild("ActivePetUI", true)
-        :FindFirstChild("TITLE", true)
+        :FindFirstChild("Frame", true)
+        :FindFirstChild("Title", true)
 
     if not titleLabel or not titleLabel:IsA("TextLabel") then
         warn("❌ Không tìm thấy TITLE TextLabel trong UI")
@@ -91,6 +92,7 @@ local function autoPickupOldPets(ageThreshold)
     local scrolling = activeUI
         :WaitForChild("Frame")
         :WaitForChild("Main")
+        :WaitForChild("PetDisplay")
         :WaitForChild("ScrollingFrame")
 
     -- 2️⃣ Duyệt từng Frame tên "{uuid}"
