@@ -1,8 +1,4 @@
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
--- Lấy tên người chơi
-local playerzz = game.Players.LocalPlayer
-local usernamezz = playerzz.Name
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+
 getgenv().Config = {
 	["Select Pet Gift"] = {
 
@@ -287,30 +283,4 @@ getgenv().Config = {
 		["Tomato Seed"] = true
 	}
 }
-setmetatable(getgenv().Config["Select UUID Pet"], {
-	__newindex = function(tbl, key, value)
-		rawset(tbl, key, true)
-	end
-})
 
---  Tìm đến ScrollingFrame chứa các UUID
-local success, err = pcall(function()
-	local scrollingFrame = playerzz:WaitForChild("PlayerGui"):WaitForChild("ActivePetUI")
-		:WaitForChild("Frame"):WaitForChild("Main"):WaitForChild("ScrollingFrame")
-
-	--  Lấy các UUID trong ScrollingFrame
-	for _, child in ipairs(scrollingFrame:GetChildren()) do
-		if child:IsA("Frame") and string.match(child.Name, "^%b{}$") then
-			getgenv().Config["Select UUID Pet"][child.Name] = true
-		end
-	end
-end)
-
-
-
-
-
-
-if not success then
-	warn("Không lấy được UUID từ giao diện:", err)
-end
