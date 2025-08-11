@@ -103,14 +103,16 @@ local function autoPickupOldPets(ageThreshold)
 
         -- 3️⃣ Lấy và parse tuổi
         local ageLabel = petFrame:FindFirstChild("PET_AGE", true)
+        local nameLabel = petFrame:FindFirstChild("PET_TYPE", true)
         local age = ageLabel and tonumber(ageLabel.Text:match("(%d+)"))
+        local name = nameLabel.Text
         if not age then
             warn(("[autoPickup] [%s] không đọc được tuổi"):format(petFrame.Name))
             continue
         end
 
         -- 4️⃣ Nếu đủ tuổi, gọi service với đúng key (có ngoặc)
-        if age >= ageThreshold then
+        if age >= ageThreshold and name == "Starfish" then
             print(("[autoPickup] Pickup pet %s (age=%d)"):format(petFrame.Name, age))
             local ok, err = pcall(function()
                 PetsService:UnequipPet(petFrame.Name)
