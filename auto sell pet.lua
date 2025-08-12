@@ -15,7 +15,7 @@ local PetsService  = require(ReplicatedStore.Modules.PetServices.PetsService)
 local AGE_THRESHOLD = 20  -- Thay đổi giá trị này theo nhu cầu
 
 -- Danh sách các tên tool hợp lệ
-local validToolNames = {"Dog", "Golden Lab", "Bunny"}
+local validToolNames = {"Dog", "Golden Lab", "Bunny", "Seagull", "Crab"}
 
 -- Lấy tool với tên trong danh sách validToolNames và age < AGE_THRESHOLD đầu tiên trong Backpack
 local function getTool(ageThreshold)
