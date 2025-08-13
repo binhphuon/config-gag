@@ -181,11 +181,9 @@ getgenv().Config = {
 		["Feijoa Seed"] = true,
 		["Elder Strawberry Seed"] = true,
 		["Pepper Seed"] = true,
-		["Bamboo Seed"] = true,
 		["Burning Bud Seed"] = true,
 		["Pumpkin Seed"] = true,
 		["Loquat Seed"] = true,
-		["Mushroom Seed"] = true,
 		["Hinomai Seed"] = true,
 		["Sugar Apple Seed"] = true
 	},
