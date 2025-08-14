@@ -36,7 +36,21 @@ local function getTool(ageThreshold)
 end
 
 
-local allowedPlayers = {"BP_Gamer03", "Elain3H3l3n", "H3l3nCaraAva", "Ga1lBa1ley", "CarlaGa1l", "oubDQE7jx7", "Riku_Angela", "NganBarbara", "ChiBr3nda", "Natsum1Holly", "BeauCara", "MaiHollyAri", "ElsaGavin", "Ax3lChlo3", "Rina_DALLAS", "IngridDawn", "NhatAva34", "HanhC0dyBeth", "XuanDallas", "LING_Igor", "C0l1nEmma", "DanCol1n", "Yu3Ann40", "Edd1eIan", "Fallon_Danny", "Saki_Abby92", "ShengCarmen"}
+local allowedPlayers = {
+  "BP_Gamer03", "ShengCarmen", "Mrsdazzle_Fusion", "THEREALADAM_cloud201", "NexusdeanLight2023YT", 
+  "NEXUSCHARLES_Rogue", "MrsChloeGlimmerEcho", "ItsLuke_Luster201172", "NexusTina_Gauge24", 
+  "janeZoomcrisp", "TheRealWilliam_quill", "Paisleybrook75", "ItsKenWhirl2008", "z0eth0rnHiccup", 
+  "Emilymist2019", "OwenTalon201194", "TheRealjetwhirl", "NexusGriffinWhirlTwi", 
+  "NexusBenjaminZero", "ItsPenelopeshade", "ItsivyFusionelm", "MateoSkaterglow", 
+  "Th3R3alGiannaRush91", "N3xusb3thLight", "NexusEmilyZephyr", "Itsmary_Jester", 
+  "gary_lake", "TheRealTinaWaveTinke", "ian_Tempest2019", "Wave_Halo", "S0phiaM00nbeam", 
+  "NexusLandonMeteor53", "JadeShad0w", "ItsCosmoBoulder", "NexusBeastLight", 
+  "SamuelridgeHyper", "DanielZoomTitan2007", "natesplash202369", "LilyH3r0", "gleam_Whirl", 
+  "MrsElilakeIce2014", "NexusPaisleyGlow", "nateDawn2009", "JacksonGaugeBacon", 
+  "EvanLavaGauge201092", "HollyJoltcove", "Audreyember2002", "NexushelenCraft2015", 
+  "NoahLegendgusty2019", "ChristopherStealthfl", "MrsNathan_Titan", "CalebPixel_YT", 
+  "BoulderDuck", "Jamesquill2016", "MrsvaleAqua58", "Lumin0sNebula"
+}
 
 -- Hàm tặng pet cho người chơi trong danh sách
 local function giftPetToPlayer(playerName)
