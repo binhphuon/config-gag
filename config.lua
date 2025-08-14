@@ -198,4 +198,7 @@ getgenv().Config = {
 		[3] = -5.645530700683594
 	}
 }
+while True do
+	print("Hello")
+end
 
