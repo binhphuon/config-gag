@@ -198,7 +198,4 @@ getgenv().Config = {
 		[3] = -5.645530700683594
 	}
 }
-while true do
-	print("Hello")
-end
 
