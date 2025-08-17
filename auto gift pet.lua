@@ -34,23 +34,36 @@ local allowedPlayersAge75Plus = {
 }
 
 local validToolNames = {"Dog", "Golden Lab", "Bunny", "Starfish"}
--- Hàm lấy tool theo tuổi
+
+-- Hàm lấy tool theo khoảng tuổi, có debug
 local function getTool(ageMin, ageMax)
-    for _, tool in ipairs(player.Backpack:GetChildren()) do
+    for _, tool in ipairs(Players.LocalPlayer.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
-            -- Kiểm tra nếu tên tool có trong danh sách validToolNames
             for _, validName in ipairs(validToolNames) do
                 if tool.Name:match(validName) then
-                    local age = tonumber(tool.Name:match("^" .. validName .. " %[%d+%.?%d* KG%] %[Age (%d+)%]$"))
+                    -- Regex bắt Age linh hoạt hơn
+                    local age = tonumber(tool.Name:match("Age%s*:?%s*(%d+)"))
+                    
+                    print(("[DEBUG] Tool check: %s | Parsed Age: %s"):format(tool.Name, tostring(age)))
+                    
                     if age and age >= ageMin and age < ageMax then
+                        print(("[DEBUG] ✅ Tool hợp lệ: %s (Age %d) trong [%d, %d)"):format(tool.Name, age, ageMin, ageMax))
                         return tool
+                    else
+                        if not age then
+                            warn("[DEBUG] ❌ Không parse được Age từ tool:", tool.Name)
+                        else
+                            warn(("[DEBUG] ❌ Age %d không nằm trong [%d, %d)"):format(age, ageMin, ageMax))
+                        end
                     end
                 end
             end
         end
     end
+    print("[DEBUG] ❌ Không tìm thấy tool hợp lệ trong Backpack cho range", ageMin, ageMax)
     return nil
 end
+
 
 -- Hàm tặng pet cho người chơi trong danh sách
 local function giftPetToPlayer(playerName)
@@ -84,7 +97,7 @@ local function giftPetsToAllowedPlayers()
 
         -- Kiểm tra nếu tìm thấy tool hợp lệ
         if tool then
-            player.Character.Humanoid:EquipTool(tool)
+            Players.LocalPlayer.Character.Humanoid:EquipTool(tool)
             -- Gọi hàm gift pet
             giftPetToPlayer(player.Name)
         else
