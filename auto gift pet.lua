@@ -79,7 +79,7 @@ local function giftPetsToAllowedPlayers()
         elseif table.find(allowedPlayersAge60to75, player.Name) then
             tool = getTool(60, 75)
         elseif table.find(allowedPlayersAge75Plus, player.Name) then
-            tool = getTool(75, math.huge)  -- Age >= 75
+            tool = getTool(75, 101)  -- Age >= 75
         end
 
         -- Kiểm tra nếu tìm thấy tool hợp lệ
