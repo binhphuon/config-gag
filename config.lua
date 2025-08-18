@@ -28,7 +28,9 @@ getgenv().Config = {
 		["Echo Frog"] = true,
 		["Starfish"] = true,
 		["Night Owl"] = true,
-		["Raiju"] = true,
+		["Ostrich"] = true,
+		["Peacock"] = true,
+		["Scarlet Macaw"] = true,
 		["Bunny"] = true,
 		["Golden Lab"] = true
 	},
