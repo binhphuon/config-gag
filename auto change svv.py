@@ -108,7 +108,7 @@ def main():
         start_index = next_start_index
 
         # Chờ 5 phút
-        time.sleep(5 * 60)
+        time.sleep(5 * 3600)
 
 if __name__ == "__main__":
     main()
