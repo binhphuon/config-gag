@@ -1,3 +1,6 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20sell%20pet.lua"))()
+
+
 -- Đợi game và Player load xong
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 
