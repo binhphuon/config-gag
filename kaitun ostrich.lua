@@ -1,3 +1,4 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/kaitun%20ostrich.lua"))()
 
 getgenv().Config = {
 
