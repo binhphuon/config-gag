@@ -18,19 +18,16 @@ local allowedPlayersAge30to45 = { "Player3", "Player4" }
 local allowedPlayersAge45to60 = { "Player5", "Player6" }
 local allowedPlayersAge60to75 = { "Player7", "Player8" }
 local allowedPlayersAge75Plus = {
-  "BP_Gamer03", "ShengCarmen", "Mrsdazzle_Fusion", "THEREALADAM_cloud201", "NexusdeanLight2023YT", 
-  "NEXUSCHARLES_Rogue", "MrsChloeGlimmerEcho", "ItsLuke_Luster201172", "NexusTina_Gauge24", 
-  "janeZoomcrisp", "TheRealWilliam_quill", "Paisleybrook75", "ItsKenWhirl2008", "z0eth0rnHiccup", 
-  "Emilymist2019", "OwenTalon201194", "TheRealjetwhirl", "NexusGriffinWhirlTwi", 
-  "NexusBenjaminZero", "ItsPenelopeshade", "ItsivyFusionelm", "MateoSkaterglow", 
-  "Th3R3alGiannaRush91", "N3xusb3thLight", "NexusEmilyZephyr", "Itsmary_Jester", 
-  "gary_lake", "TheRealTinaWaveTinke", "ian_Tempest2019", "Wave_Halo", "S0phiaM00nbeam", 
-  "NexusLandonMeteor53", "JadeShad0w", "ItsCosmoBoulder", "NexusBeastLight", 
-  "SamuelridgeHyper", "DanielZoomTitan2007", "natesplash202369", "LilyH3r0", "gleam_Whirl", 
-  "MrsElilakeIce2014", "NexusPaisleyGlow", "nateDawn2009", "JacksonGaugeBacon", 
-  "EvanLavaGauge201092", "HollyJoltcove", "Audreyember2002", "NexushelenCraft2015", 
-  "NoahLegendgusty2019", "ChristopherStealthfl", "MrsNathan_Titan", "CalebPixel_YT", 
-  "BoulderDuck", "Jamesquill2016", "MrsvaleAqua58", "Lumin0sNebula"
+  "BP_Gamer03", "TheRealAmayaLavaMagi", "flickCinderFalcon", "HawkUmber92", "JosephVoid2006", "NexusSlimeMystic45",
+    "EvanCind3rEmb3r", "ItsQuest_Craft", "quillCatalysttwist", "BethMeadowMystic2019", "ItsNathanIce",
+    "TheRealEvanbrook", "TheRealOliviaRumble5", "ZaydenLavaTurbo37", "TheRealandyFrostchim", "ian_Loom2013",
+    "MrsIsabellaRift", "NexusCarl_TITAN2023", "Sorc3r3rClawYT", "ItsAndrewPixelZephyr", "ItsDave_Master73",
+    "DavidThunderb0lt", "NexusEmeraldPhantom2", "taraFrost202185", "B3njaminBlaz3Z3st", "helenP0wer74",
+    "EliseglintStar", "ItsCookieFizzyYT", "ConnorsandVoid2006", "janesnack64", "MRSCHLOE_sprout23",
+    "MrsNancyfizzleDrift", "NexusruthFlickwhirl2", "ItsPaladinGriffin200", "ItsAmelia_Dynamo63", "ItshelenIcegleam12",
+    "ThomasWobble2022", "Blade_Wave2024", "Wyatt_ridg349", "EllaNebulaBlade", "TheRealEli_Rift2022",
+    "Th3R3alCal3bL3g3nd_Y", "TheRealNickStreamSte", "sunny_Quasar2006", "ItsDylan_isl3", "MrsninaPrismOnyx",
+    "ItsHero_quill"
 }
 
 local validToolNames = {"Dog", "Golden Lab", "Bunny", "Starfish"}
