@@ -1,3 +1,4 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20accept%20gift"))()
 
 getgenv().Config = {
 	["Auto Accept Gift"] = true
