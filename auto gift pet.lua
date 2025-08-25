@@ -104,6 +104,6 @@ end
 
 -- Vòng lặp chính
 while true do
-    task.wait(0.05) -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
+    task.wait(0.5) -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
     giftPetsToAllowedPlayers()
 end
