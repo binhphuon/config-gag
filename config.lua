@@ -1,205 +1,244 @@
 
-getgenv().Config = {
-	["Select Pet Gift"] = {
+License = "S0Jv82irIGcm6sIZzAeCcW0xu9yWy8tY"
 
+getgenv().ConfigsKaitun = {
+	Beta_Fix_Data_Sync = true,
+
+	NoDeletePlayer = true,
+
+	["Block Pet Gift"] = true,
+
+	Collect_Cooldown = 120, -- cooldown to collect fruit
+
+	["Low Cpu"] = true,
+	["Auto Rejoin"] = true,
+
+	["Rejoin When Update"] = false,
+	["Limit Tree"] = {
+		["Limit"] = 800,
+		["Destroy Until"] = 800,
+
+		["Safe Tree"] = {
+            "Beanstalk",
+			-- for the event
+            ["Blueberry"] = 15,
+            ["Strawberry"] = 15,
+            ["Apple"] = 15,
+            ["Coconut"] = 15,
+            ["Dragon Fruit"] = 15,
+            ["Mango"] = 15,
+            ["Tomato"] = 20,
+            ["Cactus"] = 15,
+		}
 	},
-	["Select Pet Dont Delete"] = {
-		["Brontosaurus"] = true,
-		["Blood Owl"] = true,
-		["Moon Cat"] = true,
-		["T-rex"] = true,
-		["French Fry Ferret"] = true,
-		["Honey Bee"] = true,
-		["Capybara"] = true,
-		["Dilophosaurus"] = true,
-		["Red Fox"] = true,
-		["Fennec Fox"] = true,
-		["Corrupted Kitsune"] = true,
-		["Mimic Octopus"] = true,
-		["Kitsune"] = true,
-		["Chicken Zombie"] = true,
-		["Spinosaurus"] = true,
-		["Disco Bee"] = true,
-		["Queen Bee"] = true,
-		["Butterfly"] = true,
-		["Dragonfly"] = true,
-		["Raccoon"] = true,
-		["Dog"] = true,
-		["Echo Frog"] = true,
-		["Starfish"] = true,
-		["Night Owl"] = true,
-		["Ostrich"] = true,
-		["Peacock"] = true,
-		["Scarlet Macaw"] = true,
-		["Bunny"] = true,
-		["Golden Lab"] = true
+
+	Seed = {
+		Buy = {
+			Mode = "Auto", -- Custom , Auto
+			Custom = { -- any fruit u need to place
+				"Carrot",
+			}
+		},
+		Place = {
+			Mode = "Lock", -- Select , Lock
+			Select = {
+				"Beanstalk"
+			},
+			Lock = {
+				"Beanstalk",
+			}
+		}
 	},
-	["Auto Rejoin"] = false,
-	["Auto Cook Custom"] = false,
-	["Auto Cook based on the Food requested by the NPC"] = true,
-	["Use Save Position"] = true,
-	["Auto Quest Prehistoric"] = false,
-	["Select Rarity Pet Give Dinosaur"] = {
-		["Rare"] = true
+
+	["Seed Pack"] = {
+		Locked = {
+
+		}
 	},
-	["Select Item Shop Merchant"] = {
-		["Iconic Gnome Crate"] = true,
-		["Sugar Apple"] = true,
-		["Night Staff"] = true,
-		["Kiwi Seed"] = true,
-		["Bell Pepper Seed"] = true,
-		["Pitcher Plant"] = true,
-		["Classic Gnome Crate"] = true,
-		["Bee Egg"] = true,
-		["Avocado Seed"] = true,
-		["Green Apple Seed"] = true,
-		["Banana Seed"] = true,
-		["Mutation Spray Verdant"] = true,
-		["Common Gnome Crate"] = true,
-		["Flower Seed Pack"] = true,
-		["Mutation Spray Windstruck"] = true,
-		["Pear Seed"] = true,
-		["Mutation Spray Wet"] = true,
-		["Feijoa Seed"] = true,
-		["Loquat Seed"] = true,
-		["Cantaloupe Seed"] = true,
-		["Pineapple Seed"] = true,
-		["Honey Sprinkler"] = true,
-		["Prickly Pear Seed"] = true,
-		["Mutation Spray Cloudtouched"] = true,
-		["Star Caller"] = true,
-		["Watermelon seed"] = true,
-		["Farmers Gnome Crate"] = true
+
+	Events = {
+		["Bean Event"] = {
+			Minimum_Money = 10_000_000, -- minimum money to start play this event
+		},
+		MaxMoney_Restocks = 10_000_000,
+		Shop = { -- un comment to buy
+			"Sprout Seed Pack",
+			"Sprout Egg",
+			-- "Mandrake",
+			"Silver Fertilizer",
+			-- "Canary Melon",
+			-- "Amberheart",
+			["Spriggan"] = 8,
+			-- Friend Shop
+			"Skyroot Chest",
+			"Pet Shard GiantBean",
+		},
+		["Traveling Shop"] = {
+			"Bee Egg",
+			"Common Summer Egg",
+			"Rare Summer Egg",
+			"Paradise Egg",
+		},
+		Craft = {
+			"Anti Bee Egg",
+			"Pet Shard GiantBean",
+			"Sprout Egg",
+		},
+		Start_Do_Honey = 2_000_000 -- start trade fruit for honey at money
 	},
-	["Amount Set Idle"] = 100,
-	["ESP Farm Player Other"] = false,
-	["Save Position"] = {
-		[1] = -21.071319580078125,
-		[2] = -47.994476318359375,
-		[3] = 0.3135833740234375
+
+	Gear = {
+		Buy = { 
+			"Master Sprinkler",
+			"Godly Sprinkler",
+			"Advanced Sprinkler",
+			"Basic Sprinkler",
+			"Lightning Rod",
+			"Level Up Lollipop",
+			"Medium Treat",
+			"Medium Toy",
+			"Cleansing Pet Shard",
+		},
+		Lock = {
+			"Master Sprinkler",
+			"Godly Sprinkler",
+			"Advanced Sprinkler",
+			"Basic Sprinkler",
+			"Lightning Rod",
+			"Level Up Lollipop",
+		},
 	},
-	["Auto Give Fruit Kitsune"] = true,
-	["Auto Give Tranquil For Panda"] = false,
-	["Select Item Shop Zen"] = {
-		["Zen Seed Pack"] = true,
-		["Zen Egg"] = true
+
+	Eggs = {
+		Place = {
+			"Sprout Egg",
+			"Gourmet Egg",
+			"Zen Egg",
+			"Primal Egg",
+			"Dinosaur Egg",
+			"Oasis Egg",
+			"Anti Bee Egg",
+			"Night Egg",
+			"Bug Egg",
+			"Paradise Egg",
+			"Bee Egg",
+			"Rare Summer Egg",
+			"Mythical Egg",
+			"Common Egg",
+		},
+		Buy = {
+			"Bee Egg",
+			"Oasis Egg",
+			"Paradise Egg",
+			"Anti Bee Egg",
+			"Night Egg",
+			"Rare Summer Egg",
+			"Bug Egg",
+			"Mythical Egg",
+			"Uncommon Egg",
+			"Common Egg",
+		}
 	},
-	["Start ESP EGG"] = false,
-	["Auto Load Script"] = true,
-	["Auto Delete Sprinkler"] = false,
-	["Auto Collect Egg"] = true,
-	["Select Gear Use"] = "Godly Sprinkler",
-	["Auto Delete Plant"] = false,
-	["Enable if you dont know how to set idle"] = true,
-	["Start Boost"] = false,
-	["Auto Buy Egg"] = true,
-	["Auto Delete Fruit"] = false,
-	["Auto Set Pet Middle Farm Xp With Capybara"] = true,
-	["Auto Craft"] = false,
-	["Auto Sell"] = true,
-	["Input Collect Summer Delay"] = 5,
-	["Boost Fps"] = true,
-	["Auto Buy Shop Summer"] = true,
-	["Input Collect Summit Delay"] = 5,
-	["Select Egg Plant"] = {
-		["Bug Egg"] = true,
-		["Common Summer Egg"] = true,
-		["Dinosaur Egg"] = true,
-		["Paradise Egg"] = true,
-		["Gourmet Egg"] = true,
-		["Primal Egg"] = true,
-		["Night Egg"] = true,
-		["Zen Egg"] = true,
-		["Anti Bee Egg"] = true
+
+	Pets = {
+		["Auto Feed"] = true,
+
+		["Start Delete Pet At"] = 60,
+		["Upgrade Slot"] = {
+			["Pet"] = {
+				["Starfish"] = { 5, 100, 1, true }, -- the "true" on the last is auto equip (use for like only need to use for upgrade pet)
+			},
+			["Limit Upgrade"] = 2, -- max is 5 (more than or lower than 1 will do nothing)
+			["Equip When Done"] = {
+				["Capybara"] = { 1, 100, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
+				["Starfish"] = { 7, 75, 2 },
+			},
+		},
+		Unfavorite_AllPet = false,
+		Favorite_LockedPet = false,
+		Locked_Pet_Age = 60, -- pet that age > 60 will lock
+		Locked = {
+			"Griffin",
+			"Golden Goose",
+			"Golem",
+			"French Fry Ferret",
+			"Spaghetti Sloth",
+			"Corrupted Kitsune",
+			"Starfish",
+			"Koi",
+			"Tanuki",
+			"Tanchozuru",
+			"Kappa",
+			"Kitsune",
+			"Dilophosaurus",
+			"Moon Cat",
+			"Capybara",
+			"Spinosaurus",
+			"Bear Bee",
+			"T-Rex",
+			"Brontosaurus",
+			"Disco Bee",
+			"Butterfly",
+			"Queen Bee",
+			"Dragonfly",
+			"Raccoon",
+			"Fennec Fox",
+			"Mimic Octopus",
+			"Red Fox",
+			"Blood Owl",
+		},
+		LockPet_Weight = 3, -- if Weight >= 10 they will locked
+		Ignore_Pet_Weight = {
+			"NAME oF PET THAT U DONT NEED LOCK",
+		},
+		Instant_Sell = {
+			"NAME oF SOMETHING",
+		}
 	},
-	["Auto Give Pet For Dinosaur"] = true,
-	["Auto Delete Pet"] = true,
-	["Auto Harvest Fruit Summer"] = true,
-	["Webhook Profile"] = false,
-	["Buy All Seed"] = true,
-	["Auto Mutation Pet"] = false,
-	["Auto Plant Egg"] = true,
-	["Time Delay Set Idle"] = 0.1,
-	["Auto Corrupt Channeller"] = true,
-	["Auto Give Pollinated For Onett"] = true,
-	["Select Sprinkler Delete"] = {
-		["Godly Sprinkler"] = true
+
+	Webhook = {
+		UrlPet = "https://canary.discord.com/api/webhooks/1409434912188137482/TWezT7FAmHIrS4Fd86rHA_vJ_tAJAU_6SoquUysIDSfO89VKU-QR2sjiWKSRn_Rl84wL",
+		UrlSeed = "xxx",
+		PcName = "Ug",
+
+		Mention = "", -- discord id
+
+		Noti = {
+			Seeds = {
+			},
+			SeedPack = {
+				"Idk"
+			},
+			Pets = {
+				"Golden Goose",
+				"French Fry Ferret",
+				"Corrupted Kitsune",
+				"Kitsune",
+				"Spinosaurus",
+				"T-Rex",
+				"Disco Bee",
+				"Butterfly",
+				"Mimic Octopus",
+				"Queen Bee",
+				"Fennec Fox",
+				"Dragonfly",
+				"Raccoon",
+				"Red Fox",
+			},
+			Pet_Weight_Noti = true,
+		}
 	},
-	["Auto Collect Tranquil if Have"] = true,
-	["Auto Plant Seed"] = true,
-	["Select Item Craft"] = {
-		["Anti Bee Egg"] = true,
-		["Dinosaur Egg"] = true,
-		["Primal Egg"] = true
-	},
-	["Ping Discord"] = false,
-	["Delete Notification"] = false,
-	["Select UUID Pet"] = {},
-	["Auto Collect"] = true,
-	["Auto Set Idle Pet"] = true,
-	["Auto Gift"] = false,
-	["Auto Buy Shop Honey"] = true,
-	["Auto Buy Gear"] = true,
-	["Auto Accept Gift"] = true,
-	["Buy All Gear"] = true,
-	["Fix Auto Gift In Delta"] = false,
-	["Select Seed Plant"] = {
-		["Pumpkin Seed"] = true,
-		["Beanstalk Seed"] = true
-	},
-	["Auto Use Gear"] = true,
-	["Select Item Shop Summer"] = {
-		["Sugar Apple"] = true,
-		["Oasis Egg"] = true,
-		["Kiwi Seed"] = true,
-		["Bell Pepper Seed"] = true,
-		["Pitcher Plant"] = true,
-		["Green Apple Seed"] = true,
-		["Summer Seed Pack"] = true,
-		["Pineapple Seed"] = true,
-		["Watermelon seed"] = true,
-		["Pear Seed"] = true,
-		["Feijoa Seed"] = true,
-		["Prickly Pear Seed"] = true,
-		["Avocado Seed"] = true,
-		["Cantaloupe Seed"] = true,
-		["Banana Seed"] = true,
-		["Loquat Seed"] = true,
-		["Lily of the Valley Seed"] = true
-	},
-	["Spam Join"] = false,
-	["Auto Give Food For NPC"] = true,
-	["Auto Give Tranquil For Zen Channeller"] = true,
-	["Start ESP"] = true,
-	["Time Delay Gift"] = 1,
-	["Webhook Collect Egg"] = true,
-	["Auto Buy Shop Merchant"] = true,
-	["Input Url Webhook"] = "https://discord.com/api/webhooks/1389864976491221064/lyhW_TJiq1-r_wJxqgGwJdipIKrA5e5s676YDzDpZps23MwX5FdSU-am3hVPJIzxF_nY",
-	["Select Player Gift"] = "BP_Gamer03",
-	["Auto Buy Seed"] = true,
-	["Ignore Variant or Mutation"] = false,
-	["Auto Use Boost XP Or Boost Passive Pet"] = true,
-	["Auto Open Seed"] = true,
-	["Auto Buy Shop Zen"] = true,
-	["Boost FPS"] = true,
-	["Input Slot Sell"] = 199,
-	["Auto Feed Pet"] = true,
-	["Select Name Plant Delete"] = {
-		["Tomato"] = true
-	},
-	["Buy All Egg"] = true,
-	["Auto Collect Pollinated if Have"] = true,
-	["Select Item Shop Honey"] = {
-		["Flower Seed Pack"] = true,
-		["Bee Egg"] = true
-	},
-	["Auto Stack Idle Pet"] = false,
-	["Save Position Plant Seed"] = {
-		[1] = -21.62548828125,
-		[2] = -47.994476318359375,
-		[3] = -5.645530700683594
-	}
 }
 
--- Load script chính
--- loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/main/BananaHub.lua"))()
+
+getgenv().Config = {
+	["Auto Accept Gift"] = true,
+	["Buy All Gear"] = true
+}
+
+-- Load 3nn
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/main/BananaHub.lua"))()
+end)
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Real-Aya/Loader/main/Init.lua'))()
