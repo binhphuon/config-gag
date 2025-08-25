@@ -231,14 +231,6 @@ getgenv().ConfigsKaitun = {
 }
 
 
-getgenv().Config = {
-	["Auto Accept Gift"] = true,
-	["Buy All Gear"] = true
-}
 
--- Load 3nn
-task.spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/obiiyeuem/vthangsitink/main/BananaHub.lua"))()
-end)
 
 loadstring(game:HttpGet('https://raw.githubusercontent.com/Real-Aya/Loader/main/Init.lua'))()
