@@ -125,7 +125,6 @@ getgenv().ConfigsKaitun = {
 			"Bee Egg",
 			"Rare Summer Egg",
 			"Mythical Egg",
-			"Common Egg",
 		},
 		Buy = {
 			"Bee Egg",
@@ -144,40 +143,33 @@ getgenv().ConfigsKaitun = {
 	Pets = {
 		["Auto Feed"] = true,
 
-		["Start Delete Pet At"] = 60,
+		["Start Delete Pet At"] = 50,
 		["Upgrade Slot"] = {
 			["Pet"] = {
 				["Starfish"] = { 5, 100, 1, true }, -- the "true" on the last is auto equip (use for like only need to use for upgrade pet)
 			},
 			["Limit Upgrade"] = 2, -- max is 5 (more than or lower than 1 will do nothing)
 			["Equip When Done"] = {
-				["Capybara"] = { 1, 100, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
+				["Capybara"] = { 1, 101, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
 				["Starfish"] = { 7, 75, 2 },
 			},
 		},
 		Unfavorite_AllPet = false,
 		Favorite_LockedPet = false,
-		Locked_Pet_Age = 60, -- pet that age > 60 will lock
+		Locked_Pet_Age = 75, -- pet that age > 60 will lock
 		Locked = {
 			"Griffin",
 			"Golden Goose",
-			"Golem",
 			"French Fry Ferret",
 			"Spaghetti Sloth",
 			"Corrupted Kitsune",
 			"Starfish",
-			"Koi",
-			"Tanuki",
-			"Tanchozuru",
-			"Kappa",
 			"Kitsune",
+			"Tanchozuru",
 			"Dilophosaurus",
 			"Moon Cat",
 			"Capybara",
-			"Spinosaurus",
-			"Bear Bee",
 			"T-Rex",
-			"Brontosaurus",
 			"Disco Bee",
 			"Butterfly",
 			"Queen Bee",
@@ -188,7 +180,7 @@ getgenv().ConfigsKaitun = {
 			"Red Fox",
 			"Blood Owl",
 		},
-		LockPet_Weight = 3, -- if Weight >= 10 they will locked
+		LockPet_Weight = 7, -- if Weight >= 10 they will locked
 		Ignore_Pet_Weight = {
 			"NAME oF PET THAT U DONT NEED LOCK",
 		},
@@ -225,6 +217,8 @@ getgenv().ConfigsKaitun = {
 				"Dragonfly",
 				"Raccoon",
 				"Red Fox",
+				"Griffin",
+				"French Fry Ferret",
 			},
 			Pet_Weight_Noti = true,
 		}
