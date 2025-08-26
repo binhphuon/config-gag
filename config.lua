@@ -123,7 +123,6 @@ getgenv().ConfigsKaitun = {
 			"Bug Egg",
 			"Paradise Egg",
 			"Bee Egg",
-			"Rare Summer Egg",
 			"Mythical Egg",
 		},
 		Buy = {
@@ -179,6 +178,7 @@ getgenv().ConfigsKaitun = {
 			"Mimic Octopus",
 			"Red Fox",
 			"Blood Owl",
+			"Ostrich",
 		},
 		LockPet_Weight = 7, -- if Weight >= 10 they will locked
 		Ignore_Pet_Weight = {
