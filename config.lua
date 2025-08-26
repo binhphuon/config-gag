@@ -34,13 +34,13 @@ getgenv().ConfigsKaitun = {
 
 	Seed = {
 		Buy = {
-			Mode = "Auto", -- Custom , Auto
+			Mode = "Custom", -- Custom , Auto
 			Custom = { -- any fruit u need to place
-				"Carrot",
+				"Beanstalk",
 			}
 		},
 		Place = {
-			Mode = "Lock", -- Select , Lock
+			Mode = "Select", -- Select , Lock
 			Select = {
 				"Beanstalk"
 			},
@@ -97,7 +97,7 @@ getgenv().ConfigsKaitun = {
 			"Level Up Lollipop",
 			"Medium Treat",
 			"Medium Toy",
-			"Cleansing Pet Shard",
+			"Cleaning Pet Shard",
 		},
 		Lock = {
 			"Master Sprinkler",
@@ -106,6 +106,7 @@ getgenv().ConfigsKaitun = {
 			"Basic Sprinkler",
 			"Lightning Rod",
 			"Level Up Lollipop",
+			"Pet Shard GiantBean",
 		},
 	},
 
