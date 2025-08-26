@@ -16,7 +16,7 @@ getgenv().ConfigsKaitun = {
 	["Rejoin When Update"] = false,
 	["Limit Tree"] = {
 		["Limit"] = 800,
-		["Destroy Until"] = 800,
+		["Destroy Until"] = 400,
 
 		["Safe Tree"] = {
             "Beanstalk",
