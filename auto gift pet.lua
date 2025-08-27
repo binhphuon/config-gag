@@ -89,6 +89,9 @@ local function giftPetsToAllowedPlayers()
             tool = getTool(60, 75)
         elseif table.find(allowedPlayersAge75Plus, player.Name) then
             tool = getTool(75, 101)  -- Age >= 75
+        else
+            -- Nếu không thỏa điều kiện nào thì continue vòng lặp
+            continue
         end
 
         -- Kiểm tra nếu tìm thấy tool hợp lệ
@@ -104,6 +107,6 @@ end
 
 -- Vòng lặp chính
 while true do
-    task.wait(0.5) -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
+    task.wait(2) -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
     giftPetsToAllowedPlayers()
 end
