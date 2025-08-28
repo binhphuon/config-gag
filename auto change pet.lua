@@ -133,8 +133,6 @@ end)
 
 -- Vòng lặp chính
 while true do
-    task.wait(delayBetweenUses)
-
     -- Gọi autoPickupOldPets với AGE_THRESHOLD
     autoPickupOldPets(AGE_THRESHOLD)
 
@@ -144,7 +142,9 @@ while true do
         print(("🛑 Slot pet đầy (%d/%d), gọi pickup"):format(cur, mx))
         continue
     end
-
+    
+    task.wait(delayBetweenUses)
+    
     -- 1) Lấy tool với age < AGE_THRESHOLD
     local tool = getTool(AGE_THRESHOLD)
     if not tool then
