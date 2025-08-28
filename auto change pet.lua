@@ -133,6 +133,7 @@ end)
 
 -- Vòng lặp chính
 while true do
+    task.wait(1)
     -- Gọi autoPickupOldPets với AGE_THRESHOLD
     autoPickupOldPets(AGE_THRESHOLD)
 
