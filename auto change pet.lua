@@ -95,36 +95,61 @@ local function autoPickupOldPets(ageThreshold)
         :WaitForChild("PetDisplay")
         :WaitForChild("ScrollingFrame")
 
-    -- 2️⃣ Duyệt từng Frame tên "{uuid}"
+    -- 2️⃣ Kiểm tra có Capybara không
+    local hasCapybara = false
+    for _, petFrame in ipairs(scrolling:GetChildren()) do
+        if petFrame:IsA("Frame") and petFrame.Name:match("^%b{}$") then
+            local nameLabel = petFrame:FindFirstChild("PET_TYPE", true)
+            if nameLabel and nameLabel.Text == "Capybara" then
+                hasCapybara = true
+                break
+            end
+        end
+    end
+
+    -- 3️⃣ Duyệt từng Frame
     for _, petFrame in ipairs(scrolling:GetChildren()) do
         if not (petFrame:IsA("Frame") and petFrame.Name:match("^%b{}$")) then
             continue
         end
 
-        -- 3️⃣ Lấy và parse tuổi
         local ageLabel = petFrame:FindFirstChild("PET_AGE", true)
         local nameLabel = petFrame:FindFirstChild("PET_TYPE", true)
         local age = ageLabel and tonumber(ageLabel.Text:match("(%d+)"))
-        local name = nameLabel.Text
-        if not age then
-            warn(("[autoPickup] [%s] không đọc được tuổi"):format(petFrame.Name))
+        local name = nameLabel and nameLabel.Text
+
+        if not age or not name then
+            warn(("[autoPickup] [%s] thiếu dữ liệu age/name"):format(petFrame.Name))
             continue
         end
 
-        -- 4️⃣ Nếu đủ tuổi, gọi service với đúng key (có ngoặc)
-        if age >= ageThreshold and name == "Starfish" then
-            print(("[autoPickup] Pickup pet %s (age=%d)"):format(petFrame.Name, age))
+        local shouldPickup = false
+
+        -- 🔹 Starfish đủ tuổi → luôn pickup
+        if name == "Starfish" and age >= ageThreshold then
+            shouldPickup = true
+        end
+
+        -- 🔹 Nếu có Capybara → pickup tất cả pet khác
+        -- trừ Capybara và Starfish (nếu chưa đủ tuổi)
+        if hasCapybara and name ~= "Capybara" then
+            if name ~= "Starfish" or (name == "Starfish" and age >= ageThreshold) then
+                shouldPickup = true
+            end
+        end
+
+        -- Thực hiện pickup nếu cần
+        if shouldPickup then
+            print(("[autoPickup] Pickup %s [%s] (age=%d)"):format(petFrame.Name, name, age))
             local ok, err = pcall(function()
                 PetsService:UnequipPet(petFrame.Name)
             end)
             if not ok then
-                warn(("[autoPickup] UnequipPet(%s) lỗi: %s")
-                      :format(petFrame.Name, err))
+                warn(("[autoPickup] UnequipPet(%s) lỗi: %s"):format(petFrame.Name, err))
             end
         end
     end
 end
-
 --Auto gift pet
 task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20gift%20pet.lua"))()
