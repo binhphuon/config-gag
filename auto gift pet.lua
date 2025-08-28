@@ -29,8 +29,8 @@ local allowedPlayersAge75Plus = {
     "Th3R3alCal3bL3g3nd_Y", "TheRealNickStreamSte", "sunny_Quasar2006", "ItsDylan_isl3", "MrsninaPrismOnyx",
     "ItsHero_quill", "a2SlcVQK6x", "HX19QidGdd", "spnBJW9jmt", "kP27wT6OB7", "6qHI60mmcc", "6CTz6FN0vi", "unfxYgm1oG", "8s2jsq74m3", "DfM3J62CiR", "WxKhtBML9R", "b1lEiwQSmH", "Bfs99ELYIE", "7n7RGZcT9c", "TD3zoBHkLB", "OvcoFruivB", "kLqDj7Xy2r", "uidfGnixij", "4rWnPotx1K", "byVDwxDRBp", "9IATaNwfEX", "0tFS5qqfRF", "10VvBufOsv", "uE2lNabOE1", "Fwk6MVDdKO", "0tXiUn7h49", "c99izqn6k0", "gM6i8ksEoa", "zXZTwVEp71", "poU0yRg3aE", "U3WPFpHk15", "IZHiaE3Qxj", "3aiE7TnGan", "Yi9lfv5w2G", "N8Db2xgT74", "iuT76kvI1C", "HpbKbozrME"}
 
-local validToolNames = {"Dog", "Golden Lab", "Bunny", "Starfish"}
-
+local validToolNames = { "Ostrich"}
+-- "Dog", "Golden Lab", "Bunny", "Starfish",
 -- Hàm lấy tool theo khoảng tuổi, có debug
 local function getTool(ageMin, ageMax)
     for _, tool in ipairs(Players.LocalPlayer.Backpack:GetChildren()) do
@@ -78,7 +78,7 @@ local function giftPetsToAllowedPlayers()
         local tool = nil
         -- Kiểm tra xem tên người chơi có trong các danh sách không
         if table.find(allowedPlayersStarfishs, player.Name) then
-            tool = getTool(1, 3)
+            tool = getTool(1, 100)
         elseif table.find(allowedPlayersAge20to30, player.Name) then
             tool = getTool(20, 30)
         elseif table.find(allowedPlayersAge30to45, player.Name) then
