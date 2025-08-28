@@ -153,8 +153,8 @@ getgenv().ConfigsKaitun = {
 			["Limit Upgrade"] = 5, -- max is 5 (more than or lower than 1 will do nothing)
 			["Equip When Done"] = {
 				["Capybara"] = { 1, 101, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
-				["Starfish"] = { 7, 75, 2 },
-				["Ostrich"] = { 7, 101, 3 },
+				--["Starfish"] = { 7, 75, 2 },
+				--["Ostrich"] = { 7, 101, 3 },
 			},
 		},
 		Unfavorite_AllPet = false,
