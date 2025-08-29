@@ -148,12 +148,11 @@ getgenv().ConfigsKaitun = {
 				["Dog"] = { 5, 100, 4, true }, -- the "true" on the last is auto equip (use for like only need to use for upgrade pet)
 				["Golden Lab"] = { 5, 100, 3, true },
 				["Bunny"] = { 5, 100, 2, true },
-				["Dairy Cow"] = { 5, 100, 1, true },
 			},
 			["Limit Upgrade"] = 5, -- max is 5 (more than or lower than 1 will do nothing)
 			["Equip When Done"] = {
 				["Capybara"] = { 1, 101, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
-				--["Starfish"] = { 7, 75, 2 },
+				["Starfish"] = { 7, 10, 2 },
 				--["Ostrich"] = { 7, 101, 3 },
 			},
 		},
