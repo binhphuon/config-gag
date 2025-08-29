@@ -7,6 +7,7 @@ repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 local Players         = game:GetService("Players")
 local ReplicatedStore = game:GetService("ReplicatedStorage")
 local player          = Players.LocalPlayer
+local character       = player.Character
 
 -- Load các module
 local GetFarm      = require(ReplicatedStore.Modules.GetFarm)
@@ -158,7 +159,7 @@ end)
 
 -- Vòng lặp chính
 while true do
-    task.wait(1)
+    task.wait(6)
     -- Gọi autoPickupOldPets với AGE_THRESHOLD
     autoPickupOldPets(AGE_THRESHOLD)
 
@@ -167,6 +168,11 @@ while true do
     if cur >= mx then
         print(("🛑 Slot pet đầy (%d/%d), gọi pickup"):format(cur, mx))
         continue
+    end
+
+    if character and character:FindFirstChildOfClass("Humanoid") then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        humanoid.Jump = true -- Nhảy 1 cái
     end
     
     task.wait(delayBetweenUses)
