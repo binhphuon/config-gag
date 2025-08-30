@@ -29,19 +29,58 @@ local allowedPlayersAge75Plus = {
     "Th3R3alCal3bL3g3nd_Y", "TheRealNickStreamSte", "sunny_Quasar2006", "ItsDylan_isl3", "MrsninaPrismOnyx",
     "ItsHero_quill", "a2SlcVQK6x", "HX19QidGdd", "spnBJW9jmt", "kP27wT6OB7", "6qHI60mmcc", "6CTz6FN0vi", "unfxYgm1oG", "8s2jsq74m3", "DfM3J62CiR", "WxKhtBML9R", "b1lEiwQSmH", "Bfs99ELYIE", "7n7RGZcT9c", "TD3zoBHkLB", "OvcoFruivB", "kLqDj7Xy2r", "uidfGnixij", "4rWnPotx1K", "byVDwxDRBp", "9IATaNwfEX", "0tFS5qqfRF", "10VvBufOsv", "uE2lNabOE1", "Fwk6MVDdKO", "0tXiUn7h49", "c99izqn6k0", "gM6i8ksEoa", "zXZTwVEp71", "poU0yRg3aE", "U3WPFpHk15", "IZHiaE3Qxj", "3aiE7TnGan", "Yi9lfv5w2G", "N8Db2xgT74", "iuT76kvI1C", "HpbKbozrME"}
 
-local validToolNames = { "Ostrich"}
--- "Dog", "Golden Lab", "Bunny", "Starfish",
--- Hàm lấy tool theo khoảng tuổi, có debug
+-- Danh sách pet không được chọn
+local unvalidToolNames = {"Capybara", "Ostrich"}  -- ví dụ
+
+-- Helper: kiểm tra substring trong petName (case-insensitive, plain find)
+local function isUnvalidPet(petName)
+    if not petName then return false end
+    local lname = petName:lower()
+    for _, bad in ipairs(unvalidToolNames) do
+        if bad and bad ~= "" and lname:find(bad:lower(), 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
+-- Helper: parse tên tool theo định dạng {Name} [{kg} KG] [Age {age}]
+-- Trả về: petName (string), kg (number), age (number) hoặc nil nếu không đúng format
+local function parsePetFromName(name)
+    if not name then return nil end
+    local lname = name:lower()
+
+    -- linh hoạt: cho phép số thập phân cho KG, match 'kg' không phân biệt hoa/thường
+    local kgStr  = lname:match("%[(%d+%.?%d*)%s*kg%]")   -- ex: "[5 KG]" hoặc "[5.5 kg]"
+    local ageStr = lname:match("age%s*:?%s*(%d+)")       -- ex: "Age 12" hoặc "Age:12"
+
+    if not (kgStr and ageStr) then
+        return nil
+    end
+
+    -- petName = phần trước dấu '[' đầu tiên, trim khoảng trắng
+    local petName = name:match("^(.-)%s*%[") or name
+    petName = petName:gsub("^%s*(.-)%s*$", "%1")
+
+    return petName, tonumber(kgStr), tonumber(ageStr)
+end
+
+-- Hàm chính: lấy tool đầu tiên hợp lệ trong range [ageMin, ageMax)
 local function getTool(ageMin, ageMax)
     for _, tool in ipairs(Players.LocalPlayer.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
-            for _, validName in ipairs(validToolNames) do
-                if tool.Name:match(validName) then
-                    -- Regex bắt Age linh hoạt hơn
-                    local age = tonumber(tool.Name:match("Age%s*:?%s*(%d+)"))
-                    
-                    print(("[DEBUG] Tool check: %s | Parsed Age: %s"):format(tool.Name, tostring(age)))
-                    
+            local petName, kg, age = parsePetFromName(tool.Name)
+
+            print(("[DEBUG] Tool check: %s | Parsed petName: %s | KG: %s | Age: %s")
+                  :format(tool.Name, tostring(petName), tostring(kg), tostring(age)))
+
+            if not petName then
+                warn("[DEBUG] ❌ Không phải định dạng pet (bỏ qua):", tool.Name)
+            else
+                -- bỏ qua nếu nằm trong blacklist
+                if isUnvalidPet(petName) then
+                    warn(("[DEBUG] ❌ Pet '%s' nằm trong blacklist -> bỏ qua"):format(petName))
+                else
                     if age and age >= ageMin and age < ageMax then
                         print(("[DEBUG] ✅ Tool hợp lệ: %s (Age %d) trong [%d, %d)"):format(tool.Name, age, ageMin, ageMax))
                         return tool
@@ -56,9 +95,11 @@ local function getTool(ageMin, ageMax)
             end
         end
     end
+
     print("[DEBUG] ❌ Không tìm thấy tool hợp lệ trong Backpack cho range", ageMin, ageMax)
     return nil
 end
+
 
 
 -- Hàm tặng pet cho người chơi trong danh sách
