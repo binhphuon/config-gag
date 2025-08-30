@@ -7,7 +7,7 @@ repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 local Players         = game:GetService("Players")
 local ReplicatedStore = game:GetService("ReplicatedStorage")
 local player          = Players.LocalPlayer
-local character       = player.Character
+
 
 -- Load các module
 local GetFarm      = require(ReplicatedStore.Modules.GetFarm)
@@ -19,6 +19,14 @@ print("🔧 PetsService methods:")
 for name,_ in pairs(PetsService) do
     print("   •", name)
 end
+
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+wait(1)
+vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
+
 
 -- Delay giữa mỗi lần equip
 local delayBetweenUses = 60
@@ -170,11 +178,7 @@ while true do
         continue
     end
 
-    if character and character:FindFirstChildOfClass("Humanoid") then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        humanoid.Jump = true -- Nhảy 1 cái
-    end
-    
+
     task.wait(delayBetweenUses)
     
     -- 1) Lấy tool với age < AGE_THRESHOLD
