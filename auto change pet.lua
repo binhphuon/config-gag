@@ -14,12 +14,23 @@ local GetFarm      = require(ReplicatedStore.Modules.GetFarm)
 local Manhattan2D  = require(ReplicatedStore.Code.Manhattan2D)
 local PetsService  = require(ReplicatedStore.Modules.PetServices.PetsService)
 
--- In ra các method của PetsService để xem có hàm pickup không
-print("🔧 PetsService methods:")
-for name,_ in pairs(PetsService) do
-    print("   •", name)
+local function getHumanoid()
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hum = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoid", 5)
+    return hum
 end
 
+local function forceJump(humanoid)
+    if not humanoid then return end
+    -- 1) Thử ép state (nếu hợp lệ)
+    pcall(function()
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end)
+    -- 2) Toggle Jump (an toàn hơn)
+    humanoid.Jump = false
+    task.wait()     -- 1 frame
+    humanoid.Jump = true
+end
 
 
 -- Delay giữa mỗi lần equip
@@ -158,13 +169,27 @@ task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20gift%20pet.lua"))()
 end)
 
+task.spawn(function()
+    local humanoid = getHumanoid()
+    while true do
+        task.wait(600) -- thay đổi interval nếu cần
+        if humanoid and humanoid.Parent then
+            forceJump(humanoid)
+        else
+            -- nếu dead/respawn thì cố lấy lại humanoid
+            humanoid = getHumanoid()
+        end
+
+    end
+end)
+
 
 -- Vòng lặp chính
 while true do
     task.wait(6)
     -- Gọi autoPickupOldPets với AGE_THRESHOLD
     autoPickupOldPets(AGE_THRESHOLD)
-    game.Players.LocalPlayer.Character.Humanoid.Jump = true
+    
     -- 2) Kiểm tra số slot pet
     local cur, mx = getPetCounts()
     if cur >= mx then
