@@ -18,19 +18,48 @@ local PetsService  = require(ReplicatedStore.Modules.PetServices.PetsService)
 local AGE_THRESHOLD = 75  -- Thay đổi giá trị này theo nhu cầu
 
 -- Danh sách các tên tool hợp lệ
-local validToolNames = {"Dog", "Golden Lab", "Bunny", "Seagull", "Flamingo", "Toucan", "Sea Turtle", "Orangutan", "Seal", "Crab", "Starfish"}
+local unvalidToolNames = {"Capybara", "Ostrich"} -- sửa theo nhu cầu
 
--- Lấy tool với tên trong danh sách validToolNames và age < AGE_THRESHOLD đầu tiên trong Backpack
+-- Helper: kiểm tra pet có nằm trong blacklist không
+local function isUnvalidPet(petName)
+    if not petName then return false end
+    local lname = petName:lower()
+    for _, bad in ipairs(unvalidToolNames) do
+        if bad and bad ~= "" and lname:find(bad:lower(), 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
+-- Helper: parse tên pet theo định dạng {TênPet} [{kg} KG] [Age {age}]
+local function parsePetFromName(name)
+    if not name then return nil end
+    local lname = name:lower()
+
+    local kgStr  = lname:match("%[(%d+%.?%d*)%s*kg%]")
+    local ageStr = lname:match("age%s*:?%s*(%d+)")
+
+    if not (kgStr and ageStr) then
+        return nil
+    end
+
+    -- petName = phần trước '[' đầu tiên
+    local petName = name:match("^(.-)%s*%[") or name
+    petName = petName:gsub("^%s*(.-)%s*$", "%1")
+
+    return petName, tonumber(kgStr), tonumber(ageStr)
+end
+
+-- Hàm lấy tool đầu tiên hợp lệ (age < threshold, không trong blacklist)
 local function getTool(ageThreshold)
     for _, tool in ipairs(player.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
-            -- Kiểm tra nếu tên tool có trong danh sách validToolNames
-            for _, validName in ipairs(validToolNames) do
-                if tool.Name:match(validName) then
-                    local age = tonumber(tool.Name:match("^" .. validName .. " %[%d+%.?%d* KG%] %[Age (%d+)%]$"))
-                    if age and age < ageThreshold then
-                        return tool
-                    end
+            local petName, kg, age = parsePetFromName(tool.Name)
+
+            if petName and age then
+                if not isUnvalidPet(petName) and age < ageThreshold then
+                    return tool
                 end
             end
         end
