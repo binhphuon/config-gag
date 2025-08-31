@@ -172,13 +172,14 @@ end)
 task.spawn(function()
     local humanoid = getHumanoid()
     while true do
-        task.wait(600) -- thay đổi interval nếu cần
+         -- thay đổi interval nếu cần
         if humanoid and humanoid.Parent then
             forceJump(humanoid)
         else
             -- nếu dead/respawn thì cố lấy lại humanoid
             humanoid = getHumanoid()
         end
+        task.wait(540)
 
     end
 end)
