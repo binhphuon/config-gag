@@ -1,3 +1,4 @@
+--loadstring(game:HttpGet('https://raw.githubusercontent.com/binhphuon/config-gag/main/config.lua'))()
 
 License = "S0Jv82irIGcm6sIZzAeCcW0xu9yWy8tY"
 
