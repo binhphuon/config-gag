@@ -190,9 +190,10 @@ getgenv().ConfigsKaitun = {
 		["Start Delete Pet At"] = 50,
 		["Upgrade Slot"] = {
 			["Pet"] = {
-				["Dog"] = { 5, 100, 4, true }, -- the "true" on the last is auto equip (use for like only need to use for upgrade pet)
-				["Golden Lab"] = { 5, 100, 3, true },
-				["Bunny"] = { 5, 100, 2, true },
+				["Dog"] = { 5, 75, 4, true }, -- the "true" on the last is auto equip (use for like only need to use for upgrade pet)
+				["Golden Lab"] = { 5, 75, 3, true },
+				["Bunny"] = { 5, 75, 2, true },
+				["Starfish"] = { 7, 75, 1, true },
 			},
 			["Limit Upgrade"] = 5, -- max is 5 (more than or lower than 1 will do nothing)
 			["Equip When Done"] = {
