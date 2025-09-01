@@ -189,7 +189,7 @@ getgenv().Config = {
 	["Auto Buy Shop Zen"] = true,
 	["Boost FPS"] = true,
 	["Input Slot Sell"] = 199,
-	["Auto Feed Pet"] = false,
+	["Auto Feed Pet"] = true,
 	["Select Name Plant Delete"] = {
 		["Tomato"] = true
 	},
