@@ -18,7 +18,7 @@ local PetsService  = require(ReplicatedStore.Modules.PetServices.PetsService)
 local AGE_THRESHOLD = 75  -- Thay đổi giá trị này theo nhu cầu
 
 -- Danh sách các tên tool hợp lệ
-local unvalidToolNames = {"Capybara", "Ostrich", "Starfish"} -- sửa theo nhu cầu
+local unvalidToolNames = {"Capybara", "Ostrich", "Starfish", "Griffin", "Golden Goose", "Dragonfly", "Mimic Octopus", "Red Fox", "French Fry Ferret"} -- sửa theo nhu cầu
 
 -- Helper: kiểm tra pet có nằm trong blacklist không
 local function isUnvalidPet(petName)
