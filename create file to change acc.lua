@@ -47,5 +47,5 @@ end
 -- Cập nhật "total_pet" mỗi 10 giây
 while true do
     updateTotalPet()
-    task.wait(10)  -- Chờ 10 giây trước khi cập nhật lại
+    task.wait(1)  -- Chờ 10 giây trước khi cập nhật lại
 end
