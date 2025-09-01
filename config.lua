@@ -156,6 +156,7 @@ getgenv().ConfigsKaitun = {
 
 	Eggs = {
 		Place = {
+			"Enchanted Egg",
 			"Sprout Egg",
 			"Gourmet Egg",
 			"Zen Egg",
@@ -204,6 +205,7 @@ getgenv().ConfigsKaitun = {
 		Favorite_LockedPet = false,
 		Locked_Pet_Age = 75, -- pet that age > 60 will lock
 		Locked = {
+			"Cockatrice",
 			"Griffin",
 			"Golden Goose",
 			"French Fry Ferret",
@@ -251,6 +253,7 @@ getgenv().ConfigsKaitun = {
 				"Idk"
 			},
 			Pets = {
+				"Cockatrice",
 				"Golden Goose",
 				"French Fry Ferret",
 				"Corrupted Kitsune",
