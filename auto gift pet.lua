@@ -42,6 +42,20 @@ local allowedPlayersAge75Plus = {
 -- Danh sách pet không được chọn
 local unvalidToolNames = {"Capybara", "Ostrich"}  -- ví dụ
 
+local RarePets = {"Dragonfly", "Mimic"}
+
+-- Kiểm tra pet có thuộc RarePets không
+local function isRarePet(petName)
+    if not petName then return false end
+    local lname = petName:lower()
+    for _, rare in ipairs(RarePets) do
+        if rare and rare ~= "" and lname:find(rare:lower(), 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
 -- Helper: kiểm tra substring trong petName (case-insensitive, plain find)
 local function isUnvalidPet(petName)
     if not petName then return false end
@@ -76,7 +90,7 @@ local function parsePetFromName(name)
 end
 
 -- Hàm chính: lấy tool đầu tiên hợp lệ trong range [ageMin, ageMax)
-local function getTool(ageMin, ageMax)
+local function getTool(ageMin, ageMax, onlyRare)
     for _, tool in ipairs(Players.LocalPlayer.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
             local petName, kg, age = parsePetFromName(tool.Name)
@@ -87,18 +101,26 @@ local function getTool(ageMin, ageMax)
             if not petName then
                 warn("[DEBUG] ❌ Không phải định dạng pet (bỏ qua):", tool.Name)
             else
-                -- bỏ qua nếu nằm trong blacklist
-                if isUnvalidPet(petName) then
-                    warn(("[DEBUG] ❌ Pet '%s' nằm trong blacklist -> bỏ qua"):format(petName))
-                else
-                    if age and age >= ageMin and age < ageMax then
-                        print(("[DEBUG] ✅ Tool hợp lệ: %s (Age %d) trong [%d, %d)"):format(tool.Name, age, ageMin, ageMax))
+                if onlyRare then
+                    -- chỉ nhận rare pets
+                    if isRarePet(petName) and age and age >= ageMin and age < ageMax then
+                        print(("[DEBUG] ✅ Tool rare hợp lệ: %s (Age %d) trong [%d, %d)"):format(tool.Name, age, ageMin, ageMax))
                         return tool
+                    end
+                else
+                    -- logic cũ: bỏ blacklist
+                    if isUnvalidPet(petName) then
+                        warn(("[DEBUG] ❌ Pet '%s' nằm trong blacklist -> bỏ qua"):format(petName))
                     else
-                        if not age then
-                            warn("[DEBUG] ❌ Không parse được Age từ tool:", tool.Name)
+                        if age and age >= ageMin and age < ageMax then
+                            print(("[DEBUG] ✅ Tool hợp lệ: %s (Age %d) trong [%d, %d)"):format(tool.Name, age, ageMin, ageMax))
+                            return tool
                         else
-                            warn(("[DEBUG] ❌ Age %d không nằm trong [%d, %d)"):format(age, ageMin, ageMax))
+                            if not age then
+                                warn("[DEBUG] ❌ Không parse được Age từ tool:", tool.Name)
+                            else
+                                warn(("[DEBUG] ❌ Age %d không nằm trong [%d, %d)"):format(age, ageMin, ageMax))
+                            end
                         end
                     end
                 end
@@ -106,7 +128,7 @@ local function getTool(ageMin, ageMax)
         end
     end
 
-    print("[DEBUG] ❌ Không tìm thấy tool hợp lệ trong Backpack cho range", ageMin, ageMax)
+    print("[DEBUG] ❌ Không tìm thấy tool hợp lệ trong Backpack cho range", ageMin, ageMax, " onlyRare:", onlyRare)
     return nil
 end
 
