@@ -10,7 +10,7 @@ local player          = Players.LocalPlayer
 local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 
 -- Blacklist pet
-local unvalidToolNames = {"Capybara", "Ostrich", "Starfish", "Griffin", "Golden Goose", "Dragonfly", "Mimic Octopus", "Red Fox", "French Fry Ferret", "Cockatrice"}
+local unvalidToolNames = {"Capybara", "Ostrich", "Griffin", "Golden Goose", "Dragonfly", "Mimic Octopus", "Red Fox", "French Fry Ferret", "Cockatrice"}
 
 -- Config lấy tool
 local DataGetTool = {
