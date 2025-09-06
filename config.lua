@@ -81,8 +81,8 @@ getgenv().ConfigsKaitun = {
 		["Fairy Event"] = {
 			Minimum_Money = 10_000_000, -- minimum money to start play this event
 			Rewards_Item = { -- top mean select first
-				"Enchanted Egg",
 				"Pet Shard Glimmering",
+				"Enchanted Egg",
 				"Mutation Spray Glimmering",
 				"FairyPoints",
 				"Fairy Targeter",
@@ -98,14 +98,20 @@ getgenv().ConfigsKaitun = {
 				},
 				Limit = {
 					["Glimmer Multiplier"] = 5, -- max 10
-					["Loose Fairy Spawn Amount"] = 4, -- max 4
-					["Fairy Event Duration"] = 5, -- max 10
+					["Loose Fairy Spawn Amount"] = 10, -- max 10
+					["Fairy Event Duration"] = 10, -- max 10
 					["Fairy Spawn Amount"] = 9, -- max 9
 				}
 			}
 		},
 		MaxMoney_Restocks = 10_000_000,
 		Shop = { -- un comment to buy
+			"Enchanted Chest",
+			"Pet Shard Glimmering",
+			"Enchanted Egg",
+			"Enchanted Seed Pack",
+			-- "Drake",
+
 			"Sprout Seed Pack",
 			"Sprout Egg",
 			-- "Mandrake",
@@ -119,11 +125,15 @@ getgenv().ConfigsKaitun = {
 		},
 		["Traveling Shop"] = {
 			"Bee Egg",
-			"Common Summer Egg",
-			"Rare Summer Egg",
-			"Paradise Egg",
+			"Paradise Egg", 
+			"Rare Summer Egg", 
+			"Common Summer Egg"
 		},
 		Craft = {
+			"Enchanted Chest",
+			"Fairy Net",
+			"Enchanted Egg",
+			"Enchanted Seed Pack",
 			"Anti Bee Egg",
 			"Pet Shard GiantBean",
 			"Sprout Egg",
