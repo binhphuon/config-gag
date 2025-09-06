@@ -78,6 +78,7 @@ end
 
 -- Vòng lặp chính
 while true do
+    task.wait(45)
     -- Lấy tool với age < AGE_THRESHOLD
     local tool = getTool(AGE_THRESHOLD)
     if not tool then
@@ -86,5 +87,5 @@ while true do
     end
     tool.Parent = player.Character
     sellPet()
-    task.wait(45) -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
+     -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
 end
