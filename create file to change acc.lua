@@ -1,12 +1,36 @@
-local player = game.Players.LocalPlayer
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/create%20file%20to%20change%20acc.lua"))()
+
+local player   = game.Players.LocalPlayer
 local username = player.Name
-local userId = player.UserId
+local userId   = player.UserId
+
+local HttpService = game:GetService("HttpService")
+
+-- Tên file chính cần giữ lại
+local userInfoFile = userId .. "-info.json"
+local gagFile      = username .. "_gag.json"
+
+-- 🧹 Xoá tất cả file .json trừ 2 file cần giữ
+-- 🧹 Xoá tất cả file .json trừ 2 file cần giữ
+local function cleanupJsonFiles()
+    local files = listfiles("") -- lấy toàn bộ file trong thư mục hiện tại
+    for _, file in ipairs(files) do
+        if file:match("%.json$") then
+            local baseName = file:match("[^/\\]+$") -- chỉ lấy tên file
+            if baseName ~= userInfoFile and baseName ~= gagFile then
+                delfile(baseName) -- xoá file thừa
+                print("Đã xoá file:", baseName)
+            end
+        end
+    end
+end
+
 
 -- Hàm để đọc file JSON và trả về dữ liệu đã được giải mã
 local function readJsonFile(fileName)
     if isfile(fileName) then
         local jsonData = readfile(fileName)
-        return game:GetService("HttpService"):JSONDecode(jsonData)
+        return HttpService:JSONDecode(jsonData)
     else
         return nil
     end
@@ -14,38 +38,33 @@ end
 
 -- Hàm để ghi dữ liệu JSON vào file
 local function writeJsonFile(fileName, data)
-    local jsonData = game:GetService("HttpService"):JSONEncode(data)
+    local jsonData = HttpService:JSONEncode(data)
     writefile(fileName, jsonData)
 end
 
 -- Hàm cập nhật file {UserId}-info.json với giá trị từ {username}_gag.json
 local function updateTotalPet()
-    -- Kiểm tra nếu file {username}_gag.json tồn tại
-    local userGagData = readJsonFile(username .. "_gag.json")
+    local userGagData = readJsonFile(gagFile)
     if not userGagData then
-        -- Nếu file không tồn tại, bỏ qua vòng lặp này và tiếp tục vòng lặp sau
-        print(username .. "_gag.json không tồn tại, bỏ qua vòng lặp.")
-        return  -- Dừng hàm và quay lại vòng lặp chính
+        print(gagFile .. " không tồn tại, bỏ qua vòng lặp.")
+        return
     end
 
-    -- Kiểm tra xem key "total_pet" có tồn tại trong file không
     if userGagData.total_pet then
-        -- Đọc file {UserId}-info.json (hoặc tạo mới nếu chưa có)
-        local userInfo = readJsonFile(userId .. "-info.json") or {}
-
-        -- Cập nhật giá trị của key "total_pet"
+        local userInfo = readJsonFile(userInfoFile) or {}
         userInfo.total_pet = userGagData.total_pet
-
-        -- Ghi lại vào file {UserId}-info.json
-        writeJsonFile(userId .. "-info.json", userInfo)
-        print("Cập nhật total_pet trong " .. userId .. "-info.json: " .. userGagData.total_pet)
+        writeJsonFile(userInfoFile, userInfo)
+        print("Cập nhật total_pet trong " .. userInfoFile .. ": " .. userGagData.total_pet)
     else
-        print("Không tìm thấy key 'total_pet' trong " .. username .. "_gag.json")
+        print("Không tìm thấy key 'total_pet' trong " .. gagFile)
     end
 end
 
--- Cập nhật "total_pet" mỗi 10 giây
+-- 🧹 Gọi cleanup ngay khi script bắt đầu
+cleanupJsonFiles()
+
+-- Lặp cập nhật mỗi 10 giây
 while true do
     updateTotalPet()
-    task.wait(1)  -- Chờ 10 giây trước khi cập nhật lại
+    task.wait(2)  -- Chờ 10 giây trước khi cập nhật lại 
 end
