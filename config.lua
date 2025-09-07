@@ -239,7 +239,7 @@ getgenv().ConfigsKaitun = {
 			"Red Fox",
 			"Blood Owl",
 			"Ostrich",
-			["Dairy Cow"] = 3,
+			"Phoenix",
 		},
 		LockPet_Weight = 7, -- if Weight >= 10 they will locked
 		Ignore_Pet_Weight = {
@@ -281,6 +281,7 @@ getgenv().ConfigsKaitun = {
 				"Red Fox",
 				"Griffin",
 				"French Fry Ferret",
+				"Phoenix",
 			},
 			Pet_Weight_Noti = true,
 		}
