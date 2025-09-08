@@ -78,7 +78,7 @@ end
 
 -- Vòng lặp chính
 while true do
-    task.wait(45)
+    task.wait(25)
     -- Lấy tool với age < AGE_THRESHOLD
     local tool = getTool(AGE_THRESHOLD)
     if not tool then
