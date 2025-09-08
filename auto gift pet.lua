@@ -106,7 +106,7 @@ local DataGetTool = {
     "BeckyBarryGreg21","LiangAxel2023","FrankEsme2021","FengCasey44","B3auFr3ya","Imog3n_Aid3n","H3l3nIsab3lGid3on200","GenevieveHenry2012","Long_Amber85","GaryBriannaIsaac",
     "Colin_Ch3ls3a","ChadErnest2019","GregEliseIm0gen","HongCarol2011","KiyomiBlakeIan","H0peDallas","Aar0nEliasD332020","ErinCarlosEdwin","Edward_Catherine","JieEliseHerbert",
     "MasahiroBrian80","Asuka_Holly202385","EdithAlan2019","Dalton_Cassandra2009","Fumiko_Angelica2018","D0minicAudreyGide0n","B3ckyDouglas","Ji3Ch3rylH3ath3r","M3iDal3","IrisC3cilia",
-    "BrandonAnthony2024","HaileyEdithBrett","Hugh_H0WARD","ElliotDianaFiona","BrandonGertrude2005","Carm3n_Aaron","Dee_Ebony2013","GaryChris2017","Chika_Darius39","B0nnie_Chad"
+    "BrandonAnthony2024","HaileyEdithBrett","Hugh_H0WARD","ElliotDianaFiona","BrandonGertrude2005","Carm3n_Aaron","Dee_Ebony2013","GaryChris2017","Chika_Darius39","B0nnie_Chad","Kiy0mi_Carmen","HaroldGavin26","HarryEl3anorAmanda","Ang3lica_Dalton","NoboruD3irdr32007","HongGloria2007","GrahamCarolChristoph","Cam3ronGailErin","D0uglasAdamCecilia20","ZhuAva2006","Dee_HEIDI","Arthur_Dam0n"
 }
     }
 
