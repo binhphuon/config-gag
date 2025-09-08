@@ -166,7 +166,7 @@ end
 
 -- Vòng lặp chính
 while true do
-    task.wait(30)
+    task.wait(1)
     for _, cfg in ipairs(DataGetTool) do
         for _, p in ipairs(Players:GetPlayers()) do
             if table.find(cfg.playerlist, p.Name) then
