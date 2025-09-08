@@ -85,7 +85,7 @@ while true do
         warn("❌ Không tìm thấy tool hợp lệ (Dog, Golden Lab, Bunny) với Age < " .. AGE_THRESHOLD)
         continue
     end
-    tool.Parent = player.Character
+    player.Character.Humanoid:EquipTool(tool)
     sellPet()
      -- Delay giữa mỗi lần kiểm tra (có thể điều chỉnh)
 end
