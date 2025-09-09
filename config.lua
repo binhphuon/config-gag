@@ -73,7 +73,7 @@ getgenv().ConfigsKaitun = {
 
 	["Seed Pack"] = {
 		Locked = {
-
+			["Enchanted Seed Packs"] = 10,
 		}
 	},
 
@@ -81,12 +81,12 @@ getgenv().ConfigsKaitun = {
 		["Fairy Event"] = {
 			Minimum_Money = 10_000_000, -- minimum money to start play this event
 			Rewards_Item = { -- top mean select first
+				"Enchanted Seed Pack",
 				"Pet Shard Glimmering",
 				"Enchanted Egg",
 				"Mutation Spray Glimmering",
 				"FairyPoints",
 				"Fairy Targeter",
-				"Enchanted Seed Pack",
 			},
 			Upgrade = {
 				Mode = "Order", -- Order (mean will up on order), Chepest, Highest
@@ -97,7 +97,7 @@ getgenv().ConfigsKaitun = {
 					"Fairy Event Duration",
 				},
 				Limit = {
-					["Glimmer Multiplier"] = 5, -- max 10
+					["Glimmer Multiplier"] = 10, -- max 10
 					["Loose Fairy Spawn Amount"] = 10, -- max 10
 					["Fairy Event Duration"] = 10, -- max 10
 					["Fairy Spawn Amount"] = 9, -- max 9
@@ -111,6 +111,11 @@ getgenv().ConfigsKaitun = {
 			"Enchanted Egg",
 			"Enchanted Seed Pack",
 			-- "Drake",
+			"Pixie Faern",
+			"Untold Bell",
+			"Luminous Sprite",
+			"Mutation Spray Luminous",
+			"Luminous Wand",
 
 			"Sprout Seed Pack",
 			"Sprout Egg",
@@ -210,6 +215,7 @@ getgenv().ConfigsKaitun = {
 				["Capybara"] = { 1, 101, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
 				["Starfish"] = { 7, 75, 3 },
 				["Ostrich"] = { 7, 50, 2 },
+				["Glimmering Sprite"] = { 7, 101, 4 },
 			},
 		},
 		Unfavorite_AllPet = false,
