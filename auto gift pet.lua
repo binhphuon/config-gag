@@ -30,7 +30,7 @@ local DataGetTool = {
         name_pet   = "Cockatrice",
         min_age    = 1,
         max_age    = 100,
-        playerlist = {"9fMFPdcoHY","UJeQhJZsAL","maW7iwRVPP"}
+        playerlist = {"9fMFPdcoHY","UJeQhJZsAL","maW7iwRVPP","7nn8GTpcoL","VmHEFQI1zk","FWKFFdXHtm"}
     },
     {
         name_pet   = "Golden Goose",
@@ -42,7 +42,7 @@ local DataGetTool = {
         name_pet   = "Griffin",
         min_age    = 1,
         max_age    = 100,
-        playerlist = {"GoWR7t32Mw","v3ABnWz2m9","OPVhlC5cLa"}
+        playerlist = {"GoWR7t32Mw","v3ABnWz2m9","OPVhlC5cLa","ypbuGS33vd"}
     },
     {
         name_pet   = "Red Fox",
