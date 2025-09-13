@@ -23,14 +23,14 @@ getgenv().ConfigsKaitun = {
             "Beanstalk",
 			-- for the event
 			Bamboo = 4,
-			Coconut = 4,
+			Coconut = 15,
 			Mushroom = 4,
 			Glowthorn = 4,
-			Tomato = 4,
+			Tomato = 15,
 			Pumpkin = 4,
 			Pepper = 4,
-			Cacao = 4,
-			Apple = 4,
+			Cacao = 15,
+			Apple = 15,
 			Romanesco = 4,
 			["Elder Strawberry"] = 4,
 			["Burning Bud"] = 4,
@@ -38,14 +38,14 @@ getgenv().ConfigsKaitun = {
 			Corn = 4,
 			["Sugar Apple"] = 4,
 			["Ember Lily"] = 4,
-			["Dragon Fruit"] = 4,
-			Sunbulb = 4,
+			["Dragon Fruit"] = 15,
+			Sunbulb = 8,
 			["Orange Tulip"] = 4,
-			Blueberry = 4,
+			Blueberry = 15,
 			Watermelon = 4,
-			Mango = 4,
+			Mango = 15,
 			Cactus = 4,
-			Strawberry = 4,
+			Strawberry = 15,
 			Beanstalk = 4,
 			Lightshoot = 4,
 			Grape = 4,
@@ -55,13 +55,13 @@ getgenv().ConfigsKaitun = {
 
 	Seed = {
 		Buy = {
-			Mode = "Custom", -- Custom , Auto
+			Mode = "Auto", -- Custom , Auto
 			Custom = { -- any fruit u need to place
 				"Beanstalk",
 			}
 		},
 		Place = {
-			Mode = "Select", -- Select , Lock
+			Mode = "Lock", -- Select , Lock
 			Select = {
 				"Beanstalk"
 			},
@@ -78,14 +78,17 @@ getgenv().ConfigsKaitun = {
 	},
 
 	Events = {
+		["Fall Event"] = {
+			Minimum_Money = 10_000_000, -- minimum money to start play this event
+		},
 		["Fairy Event"] = {
 			Minimum_Money = 10_000_000, -- minimum money to start play this event
 			Rewards_Item = { -- top mean select first
-				"Enchanted Seed Pack",
-				"Pet Shard Glimmering",
 				"Enchanted Egg",
-				"Mutation Spray Glimmering",
+				"Pet Shard Glimmering",
 				"FairyPoints",
+				"Enchanted Seed Pack",
+				"Mutation Spray Glimmering",
 				"Fairy Targeter",
 			},
 			Upgrade = {
@@ -102,10 +105,16 @@ getgenv().ConfigsKaitun = {
 					["Fairy Event Duration"] = 10, -- max 10
 					["Fairy Spawn Amount"] = 9, -- max 9
 				}
-			}
+			},
+			
+			Minimum_Fairy_Point_Restock = 10000, -- if fairy point more then this will restock
+			Catch_Fairy_Before_Restock = 51, -- fr it 50 but to be sure i put 51
 		},
 		MaxMoney_Restocks = 10_000_000,
+		
 		Shop = { -- un comment to buy
+			"Fall Egg",
+
 			"Enchanted Chest",
 			"Pet Shard Glimmering",
 			"Enchanted Egg",
@@ -171,6 +180,7 @@ getgenv().ConfigsKaitun = {
 
 	Eggs = {
 		Place = {
+			"Fall Egg",
 			"Enchanted Egg",
 			"Sprout Egg",
 			"Gourmet Egg",
@@ -212,7 +222,7 @@ getgenv().ConfigsKaitun = {
 			},
 			["Limit Upgrade"] = 5, -- max is 5 (more than or lower than 1 will do nothing)
 			["Equip When Done"] = {
-				["Capybara"] = { 1, 101, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
+				["Capybara"] = { 2, 101, 1 }, -- 5 on the first mean equip only 5 | pet , 100 mean equip only level pet lower than 100 | the one on the last is priority it will ues first if possible 
 				["Starfish"] = { 7, 75, 3 },
 				["Ostrich"] = { 7, 50, 2 },
 				["Glimmering Sprite"] = { 7, 101, 4 },
@@ -222,6 +232,7 @@ getgenv().ConfigsKaitun = {
 		Favorite_LockedPet = false,
 		Locked_Pet_Age = 75, -- pet that age > 60 will lock
 		Locked = {
+			"Swan",
 			"Cockatrice",
 			"Griffin",
 			"Golden Goose",
@@ -271,6 +282,7 @@ getgenv().ConfigsKaitun = {
 				"Idk"
 			},
 			Pets = {
+				"Swan",
 				"Cockatrice",
 				"Golden Goose",
 				"French Fry Ferret",
