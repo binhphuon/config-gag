@@ -21,10 +21,10 @@ local DataGetTool = {
         playerlist = {"DzHDV6hbZk","jbVQQmEb0P"}
     },
     {
-        name_pet   = "Mimic Octopus",
+        name_pet   = "Swan",
         min_age    = 1,
         max_age    = 100,
-        playerlist = {"hcpZ3p6SbS"}
+        playerlist = {"KxhDm2IHSY","oZtVWVRx1G","ea5c8p6Z6e","V9zP9wzkMp"}
     },
     {
         name_pet   = "Cockatrice",
@@ -97,7 +97,7 @@ local DataGetTool = {
     "Eyrxz4u17C", "h2oKsFUfYB", "fJioQJz3fD", "RpG1Oj1ENZ", "oOkeJN9s6L", "oNMq8XpCJx", "6DEhjhYoR2", "hhAeXQHzdA", "kLAZCYlXRZ", "s44geJGVco", "rKfKXMXyhW", "VSs3BOKW0M", "eEYjgkNYJf", "v4RrPhrXy4", "AluiFqmdoJ", "boNEAvjCns", "447sAUZjWf", "CIl4vwVVgp", "U28CWCq7nP", "AHMTsSwB1j", "5Zc62HVl6c", "Yif7mxwNjs", "tuXbojE58Z", "oCpogGFnwE", "0l5O2Hp8pu", "sKjCFYQIAz", "I04khE8tmy", "bfcHYyaujW", "23PKs7SRJ7", "5WczFAfzrA", "2MeGahYErL", "80Cp6zIADs", "JdE0VxpBX7", "VTV624wc4h", "dgMH8C3gac", "JzH8IhN24k", "p4QVKsgr2t", "vnqDQdPP6G", "tvuY4pqFW2", "Tp02BtDt98",
     "gNxZYWKcDk", "gNwAs6rM0t", "I9KtJDoCVw", "cZpUdW0yMx", "u1JXqn6pP7", "TdBl6ZjTlO", "40EvQKGAQC", "MLqrDSDOw4", "A3ocUJ7Owa", "R5ZlkNhtam", "ySi9xb9fkT", "hSHnvHElr2", "vWG3npohHb", "2uXW0uhKqR", "jMsMp8A93J", "IkC7xn2kPP", "KDfbYCWwjq", "heIwNjmbBh", "mYoGd7Wo77", "1Lx69XeqwI", "86IcvBKiv9", "BtwsZSZPWS", "DomuPd8uk9", "7rGpXEch3I", "wqLlMsG4Be", "51rtzLU5jE", "p4FI4OR93k", "T7ufqxfu81", "wGBoblzy4k", "TLSIHFD37w",
     "uBDa4ezDEc", "qOi2ILl7xD", "1PP9wDyi0I", "tVGxGF98lx", "h163vUuuoe", "Mm0prSn0Ln", "FunudYIPM1", "3dmkqUM2hN", "CYEpZ2F1Dm", "PPCncRAXg5", "ATNO7MY42U", "9ob8qBPPlC", "q7VBh0a3yM", "UBaRRiZcK3", "xd7ilcLA4H", "oADUJT2lDs", "x2EG3MA8GX", "8VyEM2nTLa", "1xsDWzdrAc", "RDLuBk1PH9", "wIsk4FiIDm", "OKoYkctAu9", "BFx61ZnHgY", "tXB8UYj2HD", "1Q25OBeoCz", "FEqOupbhnE", "49Dgl5TQol", "vF7XS2IvNJ", "mhiU9prQSU", "PnLvBlvvZX", "EdyrsXWReC", "pQ8cKG22pI", "6vRKYypAFc", "Kyepud7pif", "yPvxfMhuND", "ihJgB9QpN5", "W92MbGaHsk", "ybXVVl9CNF", "ETBDKdqKzf", "KthymSDee0",
-    "2bRZQGCIV9", "WNdhbSpFoR", "Ohl47nJ1Ev", "I6vcZPlVFW", "sG4zo4DBmO", "ww13oqMCTm", "5dP9kocL1c", "IhduOG5qE4", "Oekb28eLP0", "vfZVUxPvnK", "UWYQhUWEl0", "syL3qJoFjx", "PvlHlzXO7W", "34xUe2sv2a", "AkNPzWkKot", "0GfYkEI72M", "gUnRsTvse1", "y334PUOolC", "6yuCaUqaKz", "5XnjtHA3Ii", "BP38uKSb1F", "MWGG4VaCZw", "Zq8tVqFKHZ", "T7uEtOQ6nF", "NtiyudRdP6", "MMuFDpTGCq", "wJ61jrPqJm", "ea5c8p6Z6e", "V9zP9wzkMp", "oZtVWVRx1G",     "10VvBufOsv","uE2lNabOE1","gM6i8ksEoa","zXZTwVEp71","poU0yRg3aE","U3WPFpHk15","IZHiaE3Qxj","3aiE7TnGan","Yi9lfv5w2G","N8Db2xgT74",
+    "2bRZQGCIV9", "WNdhbSpFoR", "Ohl47nJ1Ev", "I6vcZPlVFW", "sG4zo4DBmO", "ww13oqMCTm", "5dP9kocL1c", "IhduOG5qE4", "Oekb28eLP0", "vfZVUxPvnK", "UWYQhUWEl0", "syL3qJoFjx", "PvlHlzXO7W", "34xUe2sv2a", "AkNPzWkKot", "0GfYkEI72M", "gUnRsTvse1", "y334PUOolC", "6yuCaUqaKz", "5XnjtHA3Ii", "BP38uKSb1F", "MWGG4VaCZw", "Zq8tVqFKHZ", "T7uEtOQ6nF", "NtiyudRdP6", "MMuFDpTGCq", "wJ61jrPqJm", "10VvBufOsv","uE2lNabOE1","gM6i8ksEoa","zXZTwVEp71","poU0yRg3aE","U3WPFpHk15","IZHiaE3Qxj","3aiE7TnGan","Yi9lfv5w2G","N8Db2xgT74",
     "iuT76kvI1C","HpbKbozrME","Xin_Elizabeth2020","SakuraDee2006","HerbertAva55","Eddie_EDWARD54","C0DY_Christina","DanaAlanChristopher","XiaoDeirdre","MichikoEdwin2009",
     "ChunIrisAshley2005","Fred_Flora2010","Calvin_G3n3200333","KenshinBobFallon","ShioriGailGreg","Dominic_Bob96","Clair3_Fr3d","Lei_Eleanor200482","FredHannahAnn","Shigeru_Gavin2024",
     "ShengFi0naCamer0n29","FrankDawn76","Na0mi_Isaac2009","Gw3nEddi32022","SHIGERU_Dean16","NatsumiAid3n2007","EikoD3irdr3","H0ngDaria","Grant_Dani3l2011","EdgarChrisCatherine",
