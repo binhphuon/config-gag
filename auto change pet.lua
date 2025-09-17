@@ -152,13 +152,6 @@ local function autoPickupOldPets(ageThreshold)
             end
         end
 
-        if name == "Ostrich" then
-            shouldPickup = false
-        end
-        
-        if name == "Ostrich" and age >= 45 then
-            shouldPickup = true
-        end
 
         -- Thực hiện pickup nếu cần
         if shouldPickup then
