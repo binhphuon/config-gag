@@ -9,23 +9,6 @@ local player          = Players.LocalPlayer
 -- Modules
 local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 
--- Blacklist pet
-local unvalidToolNames = {"Capybara", "Ostrich", "Griffin", "Golden Goose", "Dragonfly", "Mimic Octopus", "Red Fox", "French Fry Ferret", "Cockatrice"}
-
--- Config lấy tool
-local DataGetTool = {
-    {
-        name_pet   = nil, -- nil = lấy tất cả pet trừ blacklist
-        min_age    = 75,
-        max_age    = 101,
-        playerlist = {"GIwWbKzdjr", "MzufYFK2pd", "YDwP1oMwXN", "nBuoW2yxUG", "463VbeQNhf", 
-    "K5bWgiXypY", "1kIMzhSU44", "AhbzjzlRH4", "XZu2QHLkhI", "0mP6jYBxKz", 
-    "pa1WLOiGM6", "8TwNwXiGUR", "b5lvj2eKeL", "46G4q7Zr3m", "14DcigDwuU", 
-    "l4joqnwZV5", "OdIT7nkbg8", "w2wB4ktTES", "M2DPALmu4E", "0YgjUkeM1f", 
-    "619T2zh71L", "BHGqFu6dfM", "mNMNvvh1N6", "AlxaKqMCEC"}
-    }
-}
-
 -- Helper parse pet name
 local function parsePetFromName(name)
     if not name then return nil end
