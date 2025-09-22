@@ -1,3 +1,4 @@
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/kaitun%203nn.lua"))()
 -- Đợi game và Player load xong
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 
