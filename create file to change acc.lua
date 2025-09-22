@@ -52,7 +52,7 @@ local function updateTotalPet()
 
     if userGagData.total_pet then
         local userInfo = readJsonFile(userInfoFile) or {}
-        userInfo.total_pet = userGagData.total_pet
+        userInfo.total_pet = userGagData.total_pet + userGagData.total_mythical + userGagData.total_divine
         writeJsonFile(userInfoFile, userInfo)
         print("Cập nhật total_pet trong " .. userInfoFile .. ": " .. userGagData.total_pet)
     else
