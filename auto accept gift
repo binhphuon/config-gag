@@ -53,7 +53,7 @@ end
 
 -- Nếu không có thì set mặc định
 if not getgenv().Key then
-    getgenv().Key = "default_key"
+    getgenv().Key = "2af5b4611186ad29c095777b"
 end
 
 print("Tên:", name, "=> Key:", getgenv().Key)
