@@ -173,7 +173,7 @@ getgenv().Config = {
 		["Lightning Rod"] = true,
 		["Godly Sprinkler"] = true
 	},
-	["Auto Collect"] = true,
+	["Auto Collect"] = false,
 	["Auto Set Idle Pet"] = true,
 	["Auto Gift"] = false,
 	["Auto Buy Shop Honey"] = true,
