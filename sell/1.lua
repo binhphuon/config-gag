@@ -18,15 +18,17 @@ local function parsePetFromName(name)
 
     -- Cho phép số thập phân cho KG, case-insensitive
     local kgStr  = lname:match("%[(%d+%.?%d*)%s*kg%]")
+    -- Age có thể không có
     local ageStr = lname:match("age%s*:?%s*(%d+)")
 
-    if not (kgStr and ageStr) then return nil end
+    -- Nếu không có KG thì coi như không phải pet hợp lệ
+    if not kgStr then return nil end
 
     -- petName = phần trước '[' đầu tiên
     local petName = name:match("^(.-)%s*%[") or name
     petName = petName:gsub("^%s*(.-)%s*$", "%1")
 
-    return petName, tonumber(kgStr), tonumber(ageStr)
+    return petName, tonumber(kgStr), ageStr and tonumber(ageStr) or nil
 end
 
 -- =========================
@@ -139,28 +141,26 @@ local function getTool(name_pet, min_age, max_age, min_weight)
     for _, tool in ipairs(player.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
             local petName, kg, age = parsePetFromName(tool.Name)
-            if petName and age and kg then
+            if petName and kg then
                 -- Blacklist chỉ áp dụng khi name_pet == nil
                 if (name_pet or not isUnvalidPet(petName)) then
-                    local nameOK = (not name_pet) or petName:lower():find(name_pet:lower(), 1, true)
-                    local ageOK  = (age >= min_age and age < max_age)
+                    local nameOK   = (not name_pet) or petName:lower():find(name_pet:lower(), 1, true)
                     local weightOK = (not min_weight) or (kg >= min_weight)
+
+                    -- Nếu thiếu Age (pet nâng cấp chỉ hiện weight) => auto pass
+                    local ageOK = (age == nil) or (age >= min_age and age < max_age)
+
                     if nameOK and ageOK and weightOK then
-                        print(("[DEBUG] ✅ Chọn tool: %s | pet=%s | age=%d | kg=%.3f"):format(tool.Name, petName, age, kg))
+                        print(("[DEBUG] ✅ Chọn tool: %s | pet=%s | age=%s | kg=%.3f")
+                              :format(tool.Name, petName, tostring(age), kg))
                         return tool
                     end
-                else
-                    -- bị loại vì blacklist (chỉ khi name_pet == nil)
-                    -- print(("[DEBUG] Bỏ qua (blacklist): %s"):format(petName))
                 end
-            else
-                -- print(("[DEBUG] Không parse được: %s"):format(tool and tool.Name or "nil"))
             end
         end
     end
     return nil
 end
-
 -- =========================
 -- Hàm tặng pet
 -- =========================
@@ -241,4 +241,5 @@ while true do
             end
         end
     end
+
 end
