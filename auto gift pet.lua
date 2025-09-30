@@ -1,3 +1,5 @@
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20gift%20pet.lua"))()
+
 getgenv().Keyyy = "NovaQ47"
 
 getgenv().auto_gift = true --false nếu như chỉ muốn auto accept gift
