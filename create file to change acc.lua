@@ -61,7 +61,7 @@ local function updateTotalPet()
 end
 
 -- 🧹 Gọi cleanup ngay khi script bắt đầu
---cleanupJsonFiles()
+cleanupJsonFiles()
 
 -- Lặp cập nhật mỗi 10 giây
 while true do
