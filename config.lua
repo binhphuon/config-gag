@@ -14,7 +14,7 @@ local function isAllowed(name)
     end
     return false
 end
-game.RunService:Set3dRenderingEnabled(false)
+
 -- Kiểm tra và in kết quả
 if isAllowed(username) then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/kaitun%20ostrich.lua"))()
