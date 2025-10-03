@@ -51,25 +51,25 @@ def save_last_index(idx: int) -> None:
     with open(state_file_path, 'w', encoding='utf-8') as f:
         f.write(str(idx))
 
-# --- HÀM CẬP NHẬT 4 DÒNG ---
+# --- HÀM CẬP NHẬT 3 DÒNG ---
 
 def update_server_links(svv_lines, server_links_lines, start_index):
     total_svv = len(svv_lines)
     if total_svv == 0:
         raise ValueError("File svv.txt trống – không có dòng nào để cập nhật.")
 
-    # Tạo danh sách 4 dòng cần thay thế (xoay vòng nếu cần)
+    # Tạo danh sách 3 dòng cần thay thế (xoay vòng nếu cần)
     updated_svv_lines = []
-    for i in range(4):
+    for i in range(3):
         svv_index = (start_index + i) % total_svv
         updated_svv_lines.append(svv_lines[svv_index])
 
-    # Đảm bảo server_links_lines có ít nhất 4 dòng
-    if len(server_links_lines) < 4:
-        raise ValueError("server_links.txt phải có tối thiểu 4 dòng để cập nhật.")
+    # Đảm bảo server_links_lines có ít nhất 3 dòng
+    if len(server_links_lines) < 3:
+        raise ValueError("server_links.txt phải có tối thiểu 3 dòng để cập nhật.")
 
-    # Cập nhật 4 dòng đầu trong server_links.txt
-    for i in range(4):
+    # Cập nhật 3 dòng đầu trong server_links.txt
+    for i in range(3):
         # Giữ phần trước dấu phẩy đầu tiên, thay SVV phía sau
         prefix = server_links_lines[i].split(',', 1)[0]
         server_links_lines[i] = f"{prefix},{updated_svv_lines[i]}"
@@ -91,24 +91,24 @@ def main():
     start_index = load_last_index(total_svv)
 
     while True:
-        # Cập nhật server_links.txt với 4 dòng svv từ svv.txt
+        # Cập nhật server_links.txt với 3 dòng svv từ svv.txt
         server_links_lines = update_server_links(svv_lines, server_links_lines, start_index)
 
         # Ghi lại kết quả vào server_links.txt
         write_server_links_file(server_links_lines)
 
         # Tính vị trí bắt đầu cho vòng sau và LƯU LẠI
-        next_start_index = (start_index + 4) % total_svv
+        next_start_index = (start_index + 3) % total_svv
         save_last_index(next_start_index)
 
-        print(f"Updated server_links.txt với SVV từ vị trí {start_index} đến {(start_index + 4) % total_svv}. "
+        print(f"Updated server_links.txt với SVV từ vị trí {start_index} đến {(start_index + 3) % total_svv}. "
               f"Lần sau sẽ bắt đầu từ {next_start_index}.")
 
         # Cập nhật chỉ số bắt đầu cho lần lặp tiếp theo trong bộ nhớ
         start_index = next_start_index
 
-        # Chờ 4 phút
-        time.sleep(4 * 3600)
+        # Chờ 3 phút
+        time.sleep(3 * 3600)
 
 if __name__ == "__main__":
     main()
