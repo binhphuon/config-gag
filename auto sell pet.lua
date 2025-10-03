@@ -15,10 +15,10 @@ local Manhattan2D  = require(ReplicatedStore.Code.Manhattan2D)
 local PetsService  = require(ReplicatedStore.Modules.PetServices.PetsService)
 
 -- Đặt giá trị AGE_THRESHOLD ra ngoài vòng lặp
-local AGE_THRESHOLD = 75  -- Thay đổi giá trị này theo nhu cầu
+local AGE_THRESHOLD = 60  -- Thay đổi giá trị này theo nhu cầu
 
 -- Danh sách các tên tool hợp lệ
-local unvalidToolNames = {"Capybara", "Ostrich", "Starfish", "Griffin", "Golden Goose", "Dragonfly", "Mimic Octopus", "Red Fox", "French Fry Ferret", "Cockatrice", "Swan"} -- sửa theo nhu cầu
+local unvalidToolNames = {"Ostrich", "Starfish", "Griffin", "Golden Goose", "Dragonfly", "Mimic Octopus", "Red Fox", "French Fry Ferret", "Cockatrice", "Swan"} -- sửa theo nhu cầu
 
 -- Helper: kiểm tra pet có nằm trong blacklist không
 local function isUnvalidPet(petName)
