@@ -87,7 +87,7 @@ getgenv().DataGetTool = {
         max_age     = 100,
         min_weight  = 0.5,           
         unequip_Pet = true,
-        playerlist  = {"KxhDm2IHSY","oZtVWVRx1G","ea5c8p6Z6e","V9zP9wzkMp"}
+        playerlist  = {"KxhDm2IHSY","oZtVWVRx1G","ea5c8p6Z6e"}
     },
     {
         name_pet    = "Cockatrice", 
@@ -95,7 +95,7 @@ getgenv().DataGetTool = {
         max_age     = 100,
         min_weight  = 0.5,           
         unequip_Pet = true,
-        playerlist  = {"7nn8GTpcoL","VmHEFQI1zk","FWKFFdXHtm"}
+        playerlist  = {"7nn8GTpcoL","VmHEFQI1zk"}
     },
     {
         name_pet    = "Golden Goose", 
@@ -103,7 +103,7 @@ getgenv().DataGetTool = {
         max_age     = 100,
         min_weight  = 0.5,           
         unequip_Pet = true,
-        playerlist  = {"y6UUgOnClg","BGLZCHMu3Y","fc3dH7Jf43"}
+        playerlist  = {"y6UUgOnClg","BGLZCHMu3Y"}
     },
     {
         name_pet    = "Griffin", 
@@ -111,7 +111,15 @@ getgenv().DataGetTool = {
         max_age     = 100,
         min_weight  = 0.5,           
         unequip_Pet = true,
-        playerlist  = {"GoWR7t32Mw","v3ABnWz2m9","OPVhlC5cLa","ypbuGS33vd"}
+        playerlist  = {"GoWR7t32Mw","v3ABnWz2m9","OPVhlC5cLa"}
+    },
+    {
+        name_pet    = "Capybara", 
+        min_age     = 75,
+        max_age     = 100,
+        min_weight  = 0.5,           
+        unequip_Pet = true,
+        playerlist  = {"FWKFFdXHtm","ypbuGS33vd","fc3dH7Jf43","2soU1WB3dD","V9zP9wzkMp"}
     },
     {
         name_pet    = "Red Fox", 
@@ -119,7 +127,7 @@ getgenv().DataGetTool = {
         max_age     = 100,
         min_weight  = 0.5,           
         unequip_Pet = true,
-        playerlist  = {"rqiSun9OAi","2soU1WB3dD"}
+        playerlist  = {"rqiSun9OAi"}
     }
 }
 
