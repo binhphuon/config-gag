@@ -129,7 +129,7 @@ getgenv().Config = {
 	["Input Collect Summit Delay"] = 5,
 	["Select Egg Plant"] = {
     		["Common Egg"] = true,
-		["Bug Egg"] = false,
+		["Bug Egg"] = true,
 		["Common Summer Egg"] = false,
 		["Paradise Egg"] = false
 	},
