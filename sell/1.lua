@@ -12,7 +12,7 @@ local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 -- =========================
 -- Helper parse pet name
 -- =========================
-local function parsePetFromName(name)
+--local function parsePetFromName(name)
     if not name then return nil end
     local lname = name:lower()
 
@@ -243,3 +243,4 @@ while true do
     end
 
 end
+
