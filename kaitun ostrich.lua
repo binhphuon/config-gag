@@ -262,6 +262,11 @@ task.spawn(function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/evxncodes/mainroblox/main/anti-afk", true))()
 end)
 
+--Click black screen
+task.spawn(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/click%20to%20continue.lua", true))()
+end)
+
 -- ===================== WORKER 2: AUTO PLANT =====================
 task.spawn(function()
 	notify("Auto Plant", "Đang bật tự động trồng trứng…", 3)
