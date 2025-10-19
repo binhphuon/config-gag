@@ -1,3 +1,5 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/kaitun%20ostrich.lua", true))()
+
 --// =========================
 --// Auto Farm Eggs (Plant + Hatch, Farm-based) — base-only capacity
 --// =========================
