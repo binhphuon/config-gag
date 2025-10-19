@@ -391,9 +391,15 @@ task.spawn(function()
         end
     end
 end)
+
 --Anti afk
 task.spawn(function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/evxncodes/mainroblox/main/anti-afk", true))()
+end)
+
+--Auto gift
+task.spawn(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20gift%20pet.lua"))()
 end)
 -- ===================== WORKER 2: AUTO PLANT =====================
 task.spawn(function()
