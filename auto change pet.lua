@@ -1,69 +1,42 @@
-
-
 -- Đợi game và Player load xong
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 
--- Services và Player
+-- Services & Player
 local Players         = game:GetService("Players")
 local ReplicatedStore = game:GetService("ReplicatedStorage")
 local player          = Players.LocalPlayer
 
-
--- Load các module
+-- Modules
 local GetFarm      = require(ReplicatedStore.Modules.GetFarm)
 local Manhattan2D  = require(ReplicatedStore.Code.Manhattan2D)
 local PetsService  = require(ReplicatedStore.Modules.PetServices.PetsService)
 
+-- Utils
 local function getHumanoid()
     local char = player.Character or player.CharacterAdded:Wait()
-    local hum = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoid", 5)
-    return hum
+    return char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoid", 5)
 end
 
 local function forceJump(humanoid)
     if not humanoid then return end
-    -- 1) Thử ép state (nếu hợp lệ)
-    pcall(function()
-        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end)
-    -- 2) Toggle Jump (an toàn hơn)
+    pcall(function() humanoid:ChangeState(Enum.HumanoidStateType.Jumping) end)
     humanoid.Jump = false
-    task.wait()     -- 1 frame
+    task.wait()
     humanoid.Jump = true
 end
 
-
--- Delay giữa mỗi lần equip
-local delayBetweenUses = 60
-
--- Đặt giá trị AGE_THRESHOLD để lấy tool có tuổi nhỏ hơn giá trị này
-local AGE_THRESHOLD = 75  -- Thay đổi giá trị này theo nhu cầu
-
--- Lấy tool Starfish với age < ageThreshold đầu tiên trong Backpack
-local function getTool(ageThreshold)
-    for _, tool in ipairs(player.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name:match("^Starfish %[%d+%.?%d* KG%] %[Age (%d+)%]$") then
-            local age = tonumber(tool.Name:match("^Starfish %[%d+%.?%d* KG%] %[Age (%d+)%]$"))
-            if age and age < ageThreshold then
-                return tool
-            end
-        end
-    end
-    return nil
-end
+-- Delay giữa mỗi lần EquipPet (điều chỉnh nếu cần)
+local delayBetweenUses = 1.0
 
 -- Lấy một CFrame hợp lệ ngẫu nhiên trong PetArea
 local function getValidCFrame()
     local farm = GetFarm(player)
     if not farm then return nil end
-
     local petArea = farm:FindFirstChild("PetArea")
     if not petArea then return nil end
 
-    local size   = petArea.Size
-    local center = petArea.Position
-
-    for _ = 1, 5 do
+    local size, center = petArea.Size, petArea.Position
+    for _ = 1, 6 do
         local offset = Vector3.new(
             math.random(-size.X/2 + 2, size.X/2 - 2),
             0,
@@ -75,155 +48,107 @@ local function getValidCFrame()
             return cf
         end
     end
-
     return nil
 end
 
--- Đọc số pet hiện tại và max từ UI
+-- Đọc số pet hiện tại / tối đa từ UI
 local function getPetCounts()
     local titleLabel = player.PlayerGui
         :FindFirstChild("ActivePetUI", true)
         :FindFirstChild("Frame", true)
         :FindFirstChild("Title", true)
 
-    if not titleLabel or not titleLabel:IsA("TextLabel") then
+    if not (titleLabel and titleLabel:IsA("TextLabel")) then
         warn("❌ Không tìm thấy TITLE TextLabel trong UI")
         return 0, 0
     end
-
     local cur, mx = titleLabel.Text:match("Active Pets:%s*(%d+)%s*/%s*(%d+)")
     return tonumber(cur) or 0, tonumber(mx) or 0
 end
 
--- Pickup tất cả pet có age >= AGE_THRESHOLD
-local function autoPickupOldPets(ageThreshold)
-    -- 1️⃣ Lấy đúng ScrollingFrame
-    local activeUI = player.PlayerGui:WaitForChild("ActivePetUI", 5)
-    if not activeUI then
-        warn("[autoPickup] Không tìm thấy ActivePetUI")
-        return
-    end
-    local scrolling = activeUI
-        :WaitForChild("Frame")
-        :WaitForChild("Main")
-        :WaitForChild("PetDisplay")
-        :WaitForChild("ScrollingFrame")
-
-    -- 2️⃣ Kiểm tra có Capybara không
-    local hasCapybara = false
-    for _, petFrame in ipairs(scrolling:GetChildren()) do
-        if petFrame:IsA("Frame") and petFrame.Name:match("^%b{}$") then
-            local nameLabel = petFrame:FindFirstChild("PET_TYPE", true)
-            if nameLabel and nameLabel.Text == "Capybara" then
-                hasCapybara = true
-                break
-            end
+-- Thu thập toàn bộ Tool là "Ostrich [...]" trong Backpack và sort theo weight DESC
+local function getAllOstrichToolsSorted()
+    local list = {}
+    for _, tool in ipairs(player.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name:find("^Ostrich") then
+            -- chấp nhận: "Ostrich [10 KG]" hoặc "Ostrich [10.2 KG] [Age 12]"
+            local w = tool.Name:match("%[(%d+%.?%d*)%s*KG%]")
+            local weight = tonumber(w or "0") or 0
+            table.insert(list, {tool = tool, weight = weight})
         end
     end
-
-    -- 3️⃣ Duyệt từng Frame
-    for _, petFrame in ipairs(scrolling:GetChildren()) do
-        if not (petFrame:IsA("Frame") and petFrame.Name:match("^%b{}$")) then
-            continue
-        end
-
-        local ageLabel = petFrame:FindFirstChild("PET_AGE", true)
-        local nameLabel = petFrame:FindFirstChild("PET_TYPE", true)
-        local age = ageLabel and tonumber(ageLabel.Text:match("(%d+)"))
-        local name = nameLabel and nameLabel.Text
-
-        if not age or not name then
-            warn(("[autoPickup] [%s] thiếu dữ liệu age/name"):format(petFrame.Name))
-            continue
-        end
-
-        local shouldPickup = false
-
-        -- 🔹 Starfish đủ tuổi → luôn pickup
-        if name == "Starfish" and age >= ageThreshold then
-            shouldPickup = true
-        end
-
-        -- 🔹 Nếu có Capybara → pickup tất cả pet khác
-        -- trừ Capybara và Starfish (nếu chưa đủ tuổi)
-        if hasCapybara and name ~= "Capybara" then
-            if name ~= "Starfish" or (name == "Starfish" and age >= ageThreshold) then
-                shouldPickup = true
-            end
-        end
-
-
-        -- Thực hiện pickup nếu cần
-        if shouldPickup then
-            print(("[autoPickup] Pickup %s [%s] (age=%d)"):format(petFrame.Name, name, age))
-            local ok, err = pcall(function()
-                PetsService:UnequipPet(petFrame.Name)
-            end)
-            if not ok then
-                warn(("[autoPickup] UnequipPet(%s) lỗi: %s"):format(petFrame.Name, err))
-            end
-        end
-    end
+    table.sort(list, function(a, b) return a.weight > b.weight end)
+    return list
 end
---Auto gift pet
+
+-- Auto gift pet (giữ nguyên nếu bạn cần; nếu không thì xoá 2 dòng dưới)
 task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20gift%20pet.lua"))()
 end)
 
+-- Nhảy nhẹ chống AFK
 task.spawn(function()
     local humanoid = getHumanoid()
     while true do
-         -- thay đổi interval nếu cần
         if humanoid and humanoid.Parent then
             forceJump(humanoid)
         else
-            -- nếu dead/respawn thì cố lấy lại humanoid
             humanoid = getHumanoid()
         end
         task.wait(540)
-
     end
 end)
 
-
--- Vòng lặp chính
+-- Vòng lặp chính: equip tất cả Ostrich từ nặng → nhẹ cho tới khi đầy slot
 while true do
-    task.wait(6)
-    -- Gọi autoPickupOldPets với AGE_THRESHOLD
-    autoPickupOldPets(AGE_THRESHOLD)
-    
-    -- 2) Kiểm tra số slot pet
+    task.wait(0.5)
+
     local cur, mx = getPetCounts()
+    if mx == 0 then
+        -- UI chưa sẵn sàng
+        continue
+    end
     if cur >= mx then
-        print(("🛑 Slot pet đầy (%d/%d), gọi pickup"):format(cur, mx))
+        -- Đầy slot, chờ thêm
+        -- print(("🛑 Slot đầy (%d/%d)"):format(cur, mx))
+        task.wait(2)
         continue
     end
 
-
-    task.wait(delayBetweenUses)
-    
-    -- 1) Lấy tool với age < AGE_THRESHOLD
-    local tool = getTool(AGE_THRESHOLD)
-    if not tool then
-        warn("❌ Không tìm thấy tool Starfish [Age < " .. AGE_THRESHOLD .. "]")
+    local list = getAllOstrichToolsSorted()
+    if #list == 0 then
+        -- Không còn Ostrich trong Backpack
+        task.wait(2)
         continue
     end
 
-    task.wait(1)
-
-    -- 3) Equip pet mới
-    local uuid = tool:GetAttribute("PET_UUID")
-    if not uuid then
-        warn("⚠️ Tool thiếu PET_UUID")
-        continue
-    end
-
+    -- Tìm vị trí hợp lệ một lần (reuse cho các equip kế tiếp nếu cần)
     local cf = getValidCFrame()
     if not cf then
-        warn("⚠️ Không tìm được vị trí hợp lệ")
+        warn("⚠️ Không tìm được vị trí hợp lệ để EquipPet")
+        task.wait(2)
         continue
     end
 
-    print("🚀 Đang equip pet", uuid, "tại", cf.Position)
-    PetsService:EquipPet(uuid, cf)
+    -- Equip lần lượt theo thứ tự nặng → nhẹ, cho tới khi đầy slot
+    for _, entry in ipairs(list) do
+        local curNow, mxNow = getPetCounts()
+        if curNow >= mxNow then break end
+
+        local tool = entry.tool
+        local uuid = tool and tool:GetAttribute("PET_UUID")
+        if not (tool and uuid) then
+            warn("⚠️ Tool thiếu hoặc không có PET_UUID:", tool and tool.Name)
+        else
+            print(("🚀 Equip Ostrich %.3f KG | UUID=%s"):format(entry.weight, tostring(uuid)))
+            local ok, err = pcall(function()
+                PetsService:EquipPet(uuid, cf)
+            end)
+            if not ok then
+                warn("❌ EquipPet lỗi:", err)
+            end
+        end
+
+        task.wait(delayBetweenUses)
+    end
 end
