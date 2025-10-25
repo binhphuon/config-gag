@@ -1,0 +1,25 @@
+while true do
+    -- Gói gọi mua trứng
+    local argsEgg = {
+        "Common Egg"
+    }
+
+    -- Gọi mua trứng trong pcall để tránh crash nếu lỗi
+    pcall(function()
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(argsEgg))
+    end)
+
+    task.wait(3)
+
+    -- Gói gọi mua gear
+    local argsGear = {
+        "Recall Wrench"
+    }
+
+    -- Gọi mua gear trong pcall để tránh lỗi làm dừng vòng lặp
+    pcall(function()
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyGearStock"):FireServer(unpack(argsGear))
+    end)
+
+    task.wait(60)
+end
