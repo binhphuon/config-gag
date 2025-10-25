@@ -7,16 +7,11 @@ local ReplicatedStorage  = game:GetService("ReplicatedStorage")
 local StarterGui         = game:GetService("StarterGui")
 local player             = Players.LocalPlayer
 
--- Modules: cố gắng require DataService theo 2 đường dẫn phổ biến
+-- Modules
 local DataService
 pcall(function()
     DataService = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("DataService"))
 end)
-if not DataService then
-    pcall(function()
-        DataService = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("DataService"))
-    end)
-end
 
 -- ===== Blacklist pet (không dùng các pet này để nâng slot) =====
 local unvalidToolNames = {
@@ -33,7 +28,6 @@ local function isBlacklisted(petName)
     end
     return false
 end
--- ===============================================================
 
 -- Parse tên pet: trả petName, kg (number), age (number|nil)
 local function parsePetFromName(name)
@@ -68,23 +62,20 @@ local function getEggMaxSlotFromDataService()
     return tonumber(mutable.MaxEggsInFarm or 0) or 0
 end
 
--- Tìm 1 pet trong Backpack theo khoảng tuổi và KHÔNG thuộc blacklist.
--- Ưu tiên age cao nhất trong khoảng để “đỡ phí”.
--- Trả về: tool, uuidString (đã có ngoặc nhọn)
+-- Tìm pet phù hợp để nâng slot
 local function findPetForUpgrade(ageMin, ageMax)
-    local best
-    local bestAge = -1
+    local best, bestAge = nil, -1
     for _, tool in ipairs(player.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
             local petName, _, age = parsePetFromName(tool.Name)
-            if petName and (not isBlacklisted(petName)) and age then
-                local okInRange
+            if petName and not isBlacklisted(petName) and age then
+                local ok
                 if ageMax == math.huge then
-                    okInRange = (age >= ageMin)
+                    ok = (age >= ageMin)
                 else
-                    okInRange = (age >= ageMin) and (age < ageMax)
+                    ok = (age >= ageMin) and (age < ageMax)
                 end
-                if okInRange and age > bestAge then
+                if ok and age > bestAge then
                     local uuid = tool:GetAttribute("PET_UUID")
                     if uuid and typeof(uuid) == "string" then
                         best = { tool = tool, uuid = uuid, age = age, name = petName }
@@ -101,8 +92,8 @@ local function findPetForUpgrade(ageMin, ageMax)
     return nil, nil
 end
 
--- Gọi Remote nâng slot
-local function unlockSlotWithPet(uuidStr, slotType) -- slotType: "Pet" | "Egg"
+-- Gọi remote nâng slot
+local function unlockSlotWithPet(uuidStr, slotType)
     local args = { uuidStr, slotType }
     local ok, err = pcall(function()
         ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("UnlockSlotFromPet"):FireServer(unpack(args))
@@ -115,24 +106,27 @@ local function unlockSlotWithPet(uuidStr, slotType) -- slotType: "Pet" | "Egg"
     return ok
 end
 
--- Rule tuổi theo mức slot hiện tại
+-- Quy tắc mới theo slot hiện tại
 local function decideAgeRangeForSlot(maxSlot)
-    -- <7 => [60,75) ; ==7 => [75, +inf) ; >=8 => nil
     if maxSlot >= 8 then return nil, nil end
-    if maxSlot < 7 then return 60, 75 end
-    return 75, math.huge
+    if maxSlot == 3 then return 20, 75 end
+    if maxSlot == 4 then return 30, 75 end
+    if maxSlot == 5 then return 45, 75 end
+    if maxSlot == 6 then return 60, 75 end
+    if maxSlot == 7 then return 75, 101 end
+    -- nhỏ hơn 3 => dùng mốc nhỏ nhất
+    if maxSlot < 3 then return 20, 75 end
+    return nil, nil
 end
 
--- Thử nâng 1 lần cho loại slot (ưu tiên PET trước khi gọi trong main)
-local function tryUpgradeOne(kind) -- "Pet" | "Egg"
+-- Thử nâng slot
+local function tryUpgradeOne(kind)
     local maxNow = (kind == "Pet") and getPetMaxSlotFromUI() or getEggMaxSlotFromDataService()
     print(("[Upgrade] %s slot hiện tại: %d"):format(kind, maxNow))
-
     if maxNow >= 8 then
         print(("[Upgrade] %s slot đã tối đa."):format(kind))
         return true
     end
-
     local minA, maxA = decideAgeRangeForSlot(maxNow)
     if not minA then return true end
 
@@ -147,19 +141,17 @@ local function tryUpgradeOne(kind) -- "Pet" | "Egg"
     return unlockSlotWithPet(uuidStr, kind)
 end
 
--- Main loop: ưu tiên Pet trước, sau đó Egg (không dùng goto/label)
+-- Main loop: ưu tiên Pet → Egg
 while true do
     task.wait(2)
 
-    -- 1) Ưu tiên nâng PET
     local petMax = getPetMaxSlotFromUI()
     if petMax < 8 then
         tryUpgradeOne("Pet")
-        task.wait(3)      -- chờ server cập nhật UI/DataService
+        task.wait(3)
         continue
     end
 
-    -- 2) PET max → thử nâng EGG
     local eggMax = getEggMaxSlotFromDataService()
     if eggMax < 8 then
         tryUpgradeOne("Egg")
@@ -167,7 +159,6 @@ while true do
         continue
     end
 
-    -- 3) Cả hai đều max
-    print("[Upgrade] ✅ Pet & Egg đều tối đa (8). Nghỉ 10s.")
+    print("[Upgrade] ✅ Pet & Egg đều tối đa (8)")
     task.wait(3600)
 end
