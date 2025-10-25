@@ -81,6 +81,39 @@ local function getAllOstrichToolsSorted()
     return list
 end
 
+-- === NEW: Pickup tất cả pet KHÔNG phải Ostrich ===
+local function pickupNonOstrich()
+    local pg = player:FindFirstChildOfClass("PlayerGui")
+    if not pg then return end
+
+    local activeUI = pg:FindFirstChild("ActivePetUI", true)
+    if not activeUI then return end
+
+    local ok, scrolling = pcall(function()
+        return activeUI
+            :WaitForChild("Frame", 1)
+            :WaitForChild("Main", 1)
+            :WaitForChild("PetDisplay", 1)
+            :WaitForChild("ScrollingFrame", 1)
+    end)
+    if not ok or not scrolling then return end
+
+    for _, petFrame in ipairs(scrolling:GetChildren()) do
+        if not (petFrame:IsA("Frame") and petFrame.Name:match("^%b{}$")) then
+            continue
+        end
+        local nameLabel = petFrame:FindFirstChild("PET_TYPE", true)
+        local petType   = nameLabel and nameLabel.Text or nil
+        if petType and petType ~= "Ostrich" then
+            local uuidKey = petFrame.Name -- theo game: Frame name là UUID dạng {....}
+            print(("[pickup] Unequip pet không phải Ostrich: %s (%s)"):format(petType, uuidKey))
+            pcall(function()
+                PetsService:UnequipPet(uuidKey)
+            end)
+        end
+    end
+end
+
 -- Auto gift pet (giữ nguyên nếu bạn cần; nếu không thì xoá 2 dòng dưới)
 task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20gift%20pet.lua"))()
@@ -99,6 +132,14 @@ task.spawn(function()
     end
 end)
 
+-- Loop pickup non-Ostrich chạy song song (mặc định 3s/lần)
+task.spawn(function()
+    while true do
+        pickupNonOstrich()
+        task.wait(3)
+    end
+end)
+
 -- Vòng lặp chính: equip tất cả Ostrich từ nặng → nhẹ cho tới khi đầy slot
 while true do
     task.wait(0.5)
@@ -110,7 +151,6 @@ while true do
     end
     if cur >= mx then
         -- Đầy slot, chờ thêm
-        -- print(("🛑 Slot đầy (%d/%d)"):format(cur, mx))
         task.wait(2)
         continue
     end
