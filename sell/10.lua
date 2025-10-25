@@ -1,3 +1,4 @@
+print("10")
 -- Đợi game & LocalPlayer
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 
@@ -158,3 +159,4 @@ while true do
     print("[Upgrade] ✅ Pet & Egg đều tối đa (8)")
     task.wait(3600)
 end
+
