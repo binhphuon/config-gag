@@ -70,17 +70,23 @@ end
 local function getAllOstrichToolsSorted()
     local list = {}
     for _, tool in ipairs(player.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name:find("^Ostrich") then
-            -- chấp nhận: "Ostrich [10 KG]" hoặc "Ostrich [10.2 KG] [Age 12]"
-            local w = tool.Name:match("%[(%d+%.?%d*)%s*KG%]")
-            local weight = tonumber(w or "0") or 0
-            table.insert(list, {tool = tool, weight = weight})
+        if tool:IsA("Tool") then
+            -- Lấy phần tên trước dấu '[' đầu tiên (nếu có)
+            local baseName = tool.Name:match("^(.-)%s*%[") or tool.Name
+            local lname    = baseName:lower()
+
+            -- Tên có chứa từ "ostrich" theo word-boundary (tránh match nhầm "ostrichling")
+            if lname:find("%f[%a]ostrich%f[%A]") then
+                -- Bắt cân nặng (int/float), KG không phân biệt hoa/thường
+                local w = tool.Name:lower():match("%[(%d+%.?%d*)%s*kg%]")
+                local weight = tonumber(w or "0") or 0
+                table.insert(list, { tool = tool, weight = weight })
+            end
         end
     end
     table.sort(list, function(a, b) return a.weight > b.weight end)
     return list
 end
-
 -- === NEW: Pickup tất cả pet KHÔNG phải Ostrich ===
 local function pickupNonOstrich()
     local pg = player:FindFirstChildOfClass("PlayerGui")
