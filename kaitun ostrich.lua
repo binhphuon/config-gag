@@ -394,6 +394,21 @@ end)
 
 --Anti afk
 task.spawn(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20change%20pet.lua", true))()
+end)
+
+--Auto slot
+task.spawn(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20slot.lua", true))()
+end)
+
+--Buy egg
+task.spawn(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/buy%20common%20egg", true))()
+end)
+
+--Equip ostrich
+task.spawn(function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/evxncodes/mainroblox/main/anti-afk", true))()
 end)
 
