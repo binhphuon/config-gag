@@ -146,6 +146,7 @@ local eggPriority = {
     "Legendary Egg",
     "Mythical Egg",
     "Bug Egg",
+	"Sprout Egg",
     "Fall Egg"
 }
 
