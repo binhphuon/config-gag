@@ -29,7 +29,7 @@ getgenv().DataGetTool = {
         name_pet    = "Ostrich",  -- nil = gift toàn bộ pet đủ điều kiện trừ pet trong blacklist (unvalidToolNames), chủ yếu gom pet age
         min_age     = 1,
         max_age     = 101,
-        min_weight  = 7.4,           
+        min_weight  = 7.0,           
         unequip_Pet = true, -- auto pickup pet đủ điều kiện để gift
         playerlist  = {"JaxonSt3althThund3r2", "ClawTurboPower2016", "XxLuk3HawkNinjaxX", "Samu3lPix3lUltra2021", "PrimalTurbo201698", "G0ldenPulseZer02012", "Epic_Rift200685", "Xx_Charlott3Thund3rG", "RogueMaxZero", "Shad0wRiftLi0n"}
     }
