@@ -141,7 +141,7 @@ end)
 -- Loop pickup non-Ostrich chạy song song (mặc định 3s/lần)
 task.spawn(function()
     while true do
-        pickupNonOstrich()
+        --pickupNonOstrich()
         task.wait(3)
     end
 end)
