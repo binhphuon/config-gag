@@ -24,14 +24,6 @@ getgenv().DataGetTool = {
         min_weight  = 2.5,           
         unequip_Pet = false, -- auto pickup pet đủ điều kiện để gift
         playerlist  = {"AuroraMysticHawk", "Xx_JACKSONBLASTTHUND", "ZaydenGalaxyHyper201", "HazelDawnVen0m", "AquaCod364", "XxEchoCraftHawkxX", "XxRileyFoxxX2011", "EzraBan3Zap", "XxJaxon_MaxxX2008", "LaylaIc346", "NinjaKingBlizzard200", "XX_CharlotteDuckEcho", "DANIEL_Panda202490", "CircuitFlick24", "XxFusionCircuitCraft", "FlashHyp3rGiga79", "Star_DRAG0N17", "HeroIceCircuit2024", "EliEchoStream", "JulianLion11", "XxChl0eHer0Shad0wxX2", "FrostGlitch12", "XxPrismVoidZoomxX201", "XxNightEagl3KingxX20", "XxKnightNovaxX2012", "XxHyp3rTurboPandaxX5", "MasonVenom201382", "XxSonicPix3lRogu3xX2", "XxStarBlazeFoxxX23", "CrazeRaven200922", "XxHawkStormyxX2014", "XxKingMasterGigaxX", "OliviaWolfCrystal202", "XxMasterStreamBlizza", "Logan_Vip3r33YT", "Danc3rEch02007", "BlockKnightEagl3", "EzraBlockInferno2019", "LeviStarryFlick2007", "AlphaPrismFire", "XX_HarperG0ldenArr0w", "BlockCyberBear48", "KingRift27YT", "B3ast_CIRCUIT60", "XxZoomMoonxX17", "StealthTurbo201931", "LIAMFROST2009_YT", "CodeDark202070", "LunaT0xic2008", "PrimalRiftBacon2015", "SkaterMinerGhost", "VenomFrost18", "XxG0ldenBuilderCraze", "Haz3Ban362", "DuckQueenFrost", "XXFLAME_ProxX97", "Aubr3yMast3r22", "XxBr00klynn_S0nicxXY", "XxKnightPhoenixChaos", "Str3amSkat3rSpark54", "JackPulse200928", "Ic3_H3ro201891", "TurboGhostArrow2024", "Rav3nStr3amB3ast", "St0rmyHaz3P0w3r", "FoxStreamPulse", "Vict0riaQueenBear200", "LuckyWraith2014YT", "XxTiger_BANEXX2015", "N0ah_Shad0w2021", "Flam3Hunt3r74", "L0ganBeastHunter", "N0ahSkyFlick2010", "FireStealth76", "S0NIC_Raven2021", "LionFoxBeast", "XxBlizzardUltraMiner", "XxWilliamFusionCyber", "Silv3rB3ar18", "MysticClawSlime20176", "Pix3lDawnFury", "Vict0riaPixelGalaxy2", "SophiaStr3amMagic", "AuroraPowerVoidYT", "DriftEch0Blade2024", "DuckN3onGold3n", "FlashLava200265", "Aid3nPrism53", "WilliamCyberAqua", "LunaThunder2021YT", "Sonic_Lucky49", "DanielStream44", "HunterZoomPanda2022", "MysticHazeChase22", "AsherPrismDuckYT", "G0ld3nFir3Primal2011", "Grays0nPulse53", "DanielProFlick", "KayleePowerEcho21", "Aubrey_FUSI0N89", "PrimalT0xicLight", "MichaelBlast202321", "H3r0S0nicDrift", "Xx_BearMasterCircuit", "ZoeWraithStormy2004", "V3nomFlashToxic2014", "NeonGlitchByte2007", "XxCooki3_ToxicxX2016"}
-    },
-    {
-        name_pet    = "Ostrich",  -- nil = gift toàn bộ pet đủ điều kiện trừ pet trong blacklist (unvalidToolNames), chủ yếu gom pet age
-        min_age     = 1,
-        max_age     = 101,
-        min_weight  = 7.0,           
-        unequip_Pet = true, -- auto pickup pet đủ điều kiện để gift
-        playerlist  = {"JaxonSt3althThund3r2", "ClawTurboPower2016", "XxLuk3HawkNinjaxX", "Samu3lPix3lUltra2021", "PrimalTurbo201698", "G0ldenPulseZer02012", "Epic_Rift200685", "Xx_Charlott3Thund3rG", "RogueMaxZero", "Shad0wRiftLi0n"}
     }
 }
 
