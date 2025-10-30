@@ -100,24 +100,41 @@ local function getPlayerMoney()
     return 0
 end
 
+local function getPlayerLevel()
+    local stats = player:FindFirstChild("PlayerStats") or player:WaitForChild("PlayerStats", 5)
+    if not stats then
+        warn("[getPlayerLevel] Không tìm thấy folder PlayerStats")
+        return 0
+    end
+    local levelValue = stats:FindFirstChild("Level")
+    if levelValue and levelValue:IsA("NumberValue") then
+        return levelValue.Value
+    end
+    warn("[getPlayerLevel] Không tìm thấy NumberValue 'Level' trong PlayerStats")
+    return 0
+end
+
 --// Update writer
 local function updateUserInfo()
     local total_arrow = 0
     local money       = 0
+    local level       = 0
 
     pcall(function()
         total_arrow = getTotalLuckyArrow() -- Backpack + Character (equipped)
         money       = getPlayerMoney()
+        level       = getPlayerLevel()
     end)
 
     -- Nếu sau này bạn thêm key khác, giữ lại; hiện tại chỉ cần hai key
     local userInfo = readJsonFile(userInfoFile) or {}
     userInfo.total_arrow = total_arrow
     userInfo.money       = money
+    userInfo.level       = level
 
     writeJsonFile(userInfoFile, userInfo)
     print(("[info] Cập nhật %s → total_arrow=%d, money=%s")
-        :format(userInfoFile, total_arrow, tostring(money)))
+        :format(userInfoFile, total_arrow, tostring(money), tostring(level)))
 end
 
 --// Chạy
@@ -128,3 +145,4 @@ while true do
     updateUserInfo()
     task.wait(2) -- mỗi 2 giây cập nhật 1 lần
 end
+
