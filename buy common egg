@@ -33,6 +33,39 @@ while true do
 
     task.wait(3)
 
+    local argsEgg = {
+        "Legendary Egg"
+    }
+
+    -- Gọi mua trứng trong pcall để tránh crash nếu lỗi
+    pcall(function()
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(argsEgg))
+    end)
+
+    task.wait(3)
+
+    local argsEgg = {
+        "Mythical Egg"
+    }
+
+    -- Gọi mua trứng trong pcall để tránh crash nếu lỗi
+    pcall(function()
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(argsEgg))
+    end)
+
+    task.wait(3)
+
+    local argsEgg = {
+        "Bug Egg"
+    }
+
+    -- Gọi mua trứng trong pcall để tránh crash nếu lỗi
+    pcall(function()
+        game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(argsEgg))
+    end)
+
+    task.wait(3)
+
     -- Gói gọi mua gear
     local argsGear = {
         "Recall Wrench"
