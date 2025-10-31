@@ -334,7 +334,7 @@ local function updateCapacityFromDataService()
         end)
     end
 end
-
+game:GetService("RunService"):Set3dRenderingEnabled(false)
 -- khởi tạo & cập nhật định kỳ
 task.spawn(function()
     -- đợi dữ liệu lên lần đầu
