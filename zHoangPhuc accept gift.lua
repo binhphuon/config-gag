@@ -134,7 +134,7 @@ end)
 -- periodic scan as fallback
 task.spawn(function()
     while true do
-        task.wait(1)
+        task.wait(3.5)
         tryClickAcceptInGift(giftGui)
     end
 end)
