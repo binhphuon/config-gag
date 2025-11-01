@@ -5,87 +5,89 @@ repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 local Players         = game:GetService("Players")
 local ReplicatedStore = game:GetService("ReplicatedStorage")
 local player          = Players.LocalPlayer
+local HttpService     = game:GetService("HttpService")
 
 -- Modules
 local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 
--- =========================
--- Helper parse pet name
--- =========================
+
+-- ============ LƯU / TẢI ĐẾM ============
+local GIFT_FILE = "gift_counts.txt"
+local GiftCount   = {}  -- { [playerName] = confirmed_count }
+local GiftPending = {}  -- { [playerName] = in_flight_count }
+
+local function loadGiftCounts()
+    GiftCount = {}
+    if isfile and isfile(GIFT_FILE) then
+        local content = readfile(GIFT_FILE)
+        for line in content:gmatch("[^\r\n]+") do
+            local name, cnt = line:match("^(.-)%-(%d+)$")
+            if name and cnt then GiftCount[name] = tonumber(cnt) end
+        end
+    end
+end
+local function saveGiftCounts()
+    if not writefile then return end
+    local lines = {}
+    for name, cnt in pairs(GiftCount) do
+        table.insert(lines, ("%s-%d"):format(name, cnt))
+    end
+    writefile(GIFT_FILE, table.concat(lines, "\n"))
+end
+local function getGiftedCountFor(name) return GiftCount[name] or 0 end
+local function incGiftedCountFor(name, delta)
+    delta = delta or 1
+    GiftCount[name] = (GiftCount[name] or 0) + delta
+    saveGiftCounts()
+end
+local function getPendingFor(name) return GiftPending[name] or 0 end
+local function addPending(name, n) GiftPending[name] = getPendingFor(name) + (n or 1) end
+local function subPending(name, n)
+    GiftPending[name] = math.max(getPendingFor(name) - (n or 1), 0)
+end
+pcall(loadGiftCounts)
+
+-- ============ HELPERS ============
 local function parsePetFromName(name)
     if not name then return nil end
     local lname = name:lower()
-
-    -- Cho phép số thập phân cho KG, case-insensitive
     local kgStr  = lname:match("%[(%d+%.?%d*)%s*kg%]")
-    -- Age có thể không có
     local ageStr = lname:match("age%s*:?%s*(%d+)")
-
-    -- Nếu không có KG thì coi như không phải pet hợp lệ
     if not kgStr then return nil end
-
-    -- petName = phần trước '[' đầu tiên
     local petName = name:match("^(.-)%s*%[") or name
     petName = petName:gsub("^%s*(.-)%s*$", "%1")
-
     return petName, tonumber(kgStr), ageStr and tonumber(ageStr) or nil
 end
 
--- =========================
--- Check blacklist
--- =========================
 local function isUnvalidPet(petName)
     if not petName then return false end
     local lname = petName:lower()
     for _, bad in ipairs(unvalidToolNames) do
-        if lname:find(bad:lower(), 1, true) then
-            return true
-        end
+        if lname:find(bad:lower(), 1, true) then return true end
     end
     return false
 end
 
--- =========================
--- Lấy ScrollingFrame ActivePetUI (đang equip)
--- =========================
 local function getActivePetScrollingFrame()
     local activeUI = player.PlayerGui:WaitForChild("ActivePetUI", 5)
-    if not activeUI then
-        warn("[autoPickup] Không tìm thấy ActivePetUI")
-        return nil
-    end
+    if not activeUI then return nil end
     local ok, scrolling = pcall(function()
-        return activeUI
-            :WaitForChild("Frame")
-            :WaitForChild("Main")
-            :WaitForChild("PetDisplay")
-            :WaitForChild("ScrollingFrame")
+        return activeUI:WaitForChild("Frame")
+                       :WaitForChild("Main")
+                       :WaitForChild("PetDisplay")
+                       :WaitForChild("ScrollingFrame")
     end)
-    if not ok or not scrolling then
-        warn("[autoPickup] Không lấy được ScrollingFrame trong ActivePetUI")
-        return nil
-    end
-    return scrolling
+    return (ok and scrolling) and scrolling or nil
 end
 
--- =========================
--- Unequip các pet đang equip theo 1 cfg block
--- =========================
 local function unequipPetsByConfig(cfg)
     if not cfg.unequip_Pet then return end
-
     local scrolling = getActivePetScrollingFrame()
     if not scrolling then return end
-
-    local function findLabel(frame, name)
-        return frame:FindFirstChild(name, true)
-    end
+    local function findLabel(frame, name) return frame:FindFirstChild(name, true) end
 
     for _, petFrame in ipairs(scrolling:GetChildren()) do
-        if not (petFrame:IsA("Frame") and petFrame.Name:match("^%b{}$")) then
-            continue
-        end
-
+        if not (petFrame:IsA("Frame") and petFrame.Name:match("^%b{}$")) then continue end
         local nameLabel = findLabel(petFrame, "PET_TYPE")
         local ageLabel  = findLabel(petFrame, "PET_AGE")
         local wtLabel   = findLabel(petFrame, "PET_WEIGHT")
@@ -97,69 +99,55 @@ local function unequipPetsByConfig(cfg)
             local w = wtLabel.Text:match("(%d+%.?%d*)%s*[Kk][Gg]")
             weight = w and tonumber(w) or nil
         end
-
-        if not petType then
-            warn(("[autoPickup] Frame %s thiếu name"):format(petFrame.Name))
-            continue
-        end
+        if not petType then continue end
 
         local nameOK   = (cfg.name_pet == nil) or petType:lower():find(cfg.name_pet:lower(), 1, true)
-        local weightOK = true
-        if cfg.min_weight then
-            if weight ~= nil then
-                weightOK = (weight >= cfg.min_weight)
-            else
-                weightOK = true -- Không đọc được weight thì bỏ qua
-            end
-        end
-
-        -- ✅ Chỉ auto pass tuổi nếu: unequip_Pet = true và không đọc được age
+        local weightOK = (not cfg.min_weight) or (weight and weight >= cfg.min_weight) or (weight == nil)
         local ageOK
-        if age == nil then
-            ageOK = cfg.unequip_Pet -- chỉ true nếu đang chạy chế độ unequip
-        else
-            ageOK = (age >= cfg.min_age and age < cfg.max_age)
-        end
+        if age == nil then ageOK = cfg.unequip_Pet else ageOK = (age >= cfg.min_age and age < cfg.max_age) end
 
         if nameOK and ageOK and weightOK then
-            print(("[autoPickup] Unequip %s [%s] age=%s wt=%s")
-                  :format(petFrame.Name, petType, tostring(age), tostring(weight)))
-            local ok2, err = pcall(function()
-                PetsService:UnequipPet(petFrame.Name)
-            end)
-            if not ok2 then
-                warn(("[autoPickup] UnequipPet(%s) lỗi: %s"):format(petFrame.Name, err))
-            end
+            pcall(function() PetsService:UnequipPet(petFrame.Name) end)
         end
     end
 end
 
--- =========================
--- Lấy tool từ Backpack theo 1 cfg block
--- name_pet nil => áp dụng blacklist
--- có min_weight => yêu cầu kg >= min_weight
--- =========================
+-- Tìm tool trong Backpack theo PET_UUID
+local function findBackpackToolByUUID(uuid)
+    if not uuid then return nil end
+    for _, tool in ipairs(player.Backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            local tUuid = tool:GetAttribute("PET_UUID")
+            if tUuid == uuid then return tool end
+        end
+    end
+    return nil
+end
+
+-- Chờ xác nhận biến mất (gift thành công)
+local function waitGiftConfirmed(uuid, timeoutSec)
+    local t0 = os.clock()
+    timeoutSec = timeoutSec or 120
+    while os.clock() - t0 < timeoutSec do
+        if not findBackpackToolByUUID(uuid) then
+            return true
+        end
+        task.wait(0.5)
+    end
+    return false
+end
+
 local function getTool(name_pet, min_age, max_age, min_weight, unequip_Pet)
     for _, tool in ipairs(player.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
             local petName, kg, age = parsePetFromName(tool.Name)
             if petName and kg then
-                -- Blacklist chỉ áp dụng khi name_pet == nil
                 if (name_pet or not isUnvalidPet(petName)) then
                     local nameOK   = (not name_pet) or petName:lower():find(name_pet:lower(), 1, true)
                     local weightOK = (not min_weight) or (kg >= min_weight)
-
-                    -- ✅ Nếu không đọc được tuổi → chỉ pass nếu unequip_Pet = true
                     local ageOK
-                    if age == nil then
-                        ageOK = unequip_Pet
-                    else
-                        ageOK = (age >= min_age and age < max_age)
-                    end
-
+                    if age == nil then ageOK = unequip_Pet else ageOK = (age >= min_age and age < max_age) end
                     if nameOK and ageOK and weightOK then
-                        print(("[DEBUG] ✅ Chọn tool: %s | pet=%s | age=%s | kg=%.3f")
-                              :format(tool.Name, petName, tostring(age), kg))
                         return tool
                     end
                 end
@@ -168,148 +156,72 @@ local function getTool(name_pet, min_age, max_age, min_weight, unequip_Pet)
     end
     return nil
 end
--- =========================
--- Hàm tặng pet
--- =========================
+
 local function giftPetToPlayer(targetPlayerName)
-    local args = {
-        "GivePet",
-        Players:WaitForChild(targetPlayerName)
-    }
+    local args = { "GivePet", Players:WaitForChild(targetPlayerName) }
     ReplicatedStore.GameEvents.PetGiftingService:FireServer(unpack(args))
-    print("🛍️ Tặng pet cho", targetPlayerName)
 end
-
-task.spawn(function()
-    -- ⚠️ ĐỔI WEBHOOK MỚI nếu bạn đã lộ webhook cũ.
-    local webhookUrl = "https://canary.discord.com/api/webhooks/1420994364930265108/eITVaIa9bTE0lyzoKjVE1pWEqxM2H-6_EbUk-TsOY4N5CObf_ard2c0DbBSdbKqSbN6O"
-
-    -- Services
-    local Players = game:GetService("Players")
-    local HttpService = game:GetService("HttpService")
-    repeat task.wait() until game:IsLoaded() and Players.LocalPlayer
-
-    -- Chọn hàm request phù hợp executor
-    local requestFunc = (http_request or request or (syn and syn.request) or (http and http.request))
-    if not requestFunc then
-        warn("❌ Executor không hỗ trợ HTTP (http_request/request/syn.request/http.request).")
-        return
-    end
-
-    -- 1) Mã hoá DataGetTool thành JSON
-    local okJSON, jsonStr = pcall(function()
-        return HttpService:JSONEncode(DataGetTool) -- <<=== GỬI CÁI NÀY
-    end)
-    if not okJSON then
-        warn("❌ JSONEncode(DataGetTool) lỗi: " .. tostring(jsonStr))
-        return
-    end
-
-    ----------------------------------------------------------------
-    -- CÁCH 1: Gửi kèm file DataGetTool.json qua webhook (multipart)
-    ----------------------------------------------------------------
-    local function sendAsFile(filename, content)
-        local boundary = "----rbx"..tostring(math.random(1e9, 9e9))
-        local parts = {
-            "--"..boundary,
-            'Content-Disposition: form-data; name="payload_json"',
-            "",
-            HttpService:JSONEncode({ content = "**DataGetTool.json** đính kèm" }),
-            "--"..boundary,
-            ('Content-Disposition: form-data; name="files[0]"; filename="%s"'):format(filename),
-            "Content-Type: application/octet-stream",
-            "",
-            content,
-            "--"..boundary.."--"
-        }
-        local body = table.concat(parts, "\r\n")
-        return requestFunc({
-            Url     = webhookUrl,
-            Method  = "POST",
-            Headers = {
-                ["Content-Type"]   = "multipart/form-data; boundary="..boundary,
-                ["Content-Length"] = tostring(#body)
-            },
-            Body = body
-        })
-    end
-
-    local okFile, resFile = pcall(function()
-        return sendAsFile("DataGetTool.json", jsonStr)
-    end)
-
-    -- Nếu gửi file thành công là xong
-    if okFile and resFile and (resFile.StatusCode == 200 or resFile.StatusCode == 204) then
-        print("✅ Đã gửi file DataGetTool.json lên webhook.")
-        return
-    end
-
-    ----------------------------------------------------------------
-    -- CÁCH 2 (fallback): chia nhỏ JSON và gửi nhiều tin nhắn
-    ----------------------------------------------------------------
-    local function sendChunk(chunk)
-        local payload = { content = "```json\n"..chunk.."\n```" }
-        return requestFunc({
-            Url     = webhookUrl,
-            Method  = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
-            Body    = HttpService:JSONEncode(payload)
-        })
-    end
-
-    local limit = 1800 -- dư chỗ cho ```json ... ```
-    local i, n = 1, #jsonStr
-    local part = 1
-    while i <= n do
-        local j = math.min(i + limit - 1, n)
-        local chunk = jsonStr:sub(i, j)
-        local okChunk, res = pcall(function() return sendChunk(chunk) end)
-        if not okChunk or not res or (res.StatusCode ~= 200 and res.StatusCode ~= 204) then
-            warn(("⚠️ Gửi chunk #%d lỗi: %s"):format(part, tostring(res and res.StatusCode)))
-            break
-        end
-        i = j + 1
-        part += 1
-        task.wait(0.6) -- tránh rate limit
-    end
-
-    print("✅ Đã gửi DataGetTool bằng nhiều tin nhắn (fallback).")
-end)
 
 -- =========================
 -- Vòng lặp chính
 -- =========================
 while true do
     task.wait(1)
-    if not auto_gift then
-        -- Cho phép bật/tắt nhanh không tốn CPU
-        task.wait(3600)
-        continue
-    end
+    if not auto_gift then task.wait(3600); continue end
 
     for _, cfg in ipairs(DataGetTool) do
-        -- (1) Unequip theo block nếu cần
-        if cfg.unequip_Pet then
-            unequipPetsByConfig(cfg)
-        end
+        -- 1) Unequip theo block nếu cần
+        if cfg.unequip_Pet then unequipPetsByConfig(cfg) end
 
-        -- (2) Duyệt player trong server
+        -- 2) Duyệt player trong server
         for _, p in ipairs(Players:GetPlayers()) do
             if table.find(cfg.playerlist, p.Name) then
-                -- (3) Chọn tool theo cfg (có thể gồm min_weight)
+                local limit        = tonumber(cfg.limit_pet) or math.huge
+                local giftedSoFar  = getGiftedCountFor(p.Name)
+                local pendingSoFar = getPendingFor(p.Name)
+
+                -- Tránh vượt limit khi gift song song
+                if giftedSoFar + pendingSoFar >= limit then
+                    -- print(("[limit] %s: %d confirmed + %d pending >= %d → skip"):format(p.Name, giftedSoFar, pendingSoFar, limit))
+                    continue
+                end
+
+                -- 3) Chọn tool theo cfg
                 local tool = getTool(cfg.name_pet, cfg.min_age, cfg.max_age, cfg.min_weight, cfg.unequip_Pet)
                 if tool then
-                    -- (4) Equip rồi gift
+                    local uuid = tool:GetAttribute("PET_UUID")
+                    if not uuid then
+                        warn("[gift] Tool thiếu PET_UUID, bỏ qua: ", tool.Name)
+                        continue
+                    end
+
+                    -- (4) Equip rồi gửi gift
                     local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-                    if hum then hum:EquipTool(tool) end
+                    if hum then pcall(function() hum:EquipTool(tool) end) end
+
+                    -- Tăng pending trước khi gửi
+                    addPending(p.Name, 1)
+
                     giftPetToPlayer(p.Name)
+
+                    -- (5) Xác nhận gift KHÔNG CHẶN vòng chính
+                    task.spawn(function(targetName, petUUID, limitForName)
+                        local okDisappear = waitGiftConfirmed(petUUID, 120)
+                        if okDisappear then
+                            incGiftedCountFor(targetName, 1)
+                            print(("[limit] ✅ %s: %d/%s (gift confirmed)")
+                                :format(targetName, getGiftedCountFor(targetName), tostring(limitForName)))
+                        else
+                            warn(("[limit] ⏳ %s: Chưa xác nhận pet biến mất (không cộng số lượng)."):format(targetName))
+                        end
+                        -- Giảm pending dù thành công hay không
+                        subPending(targetName, 1)
+                    end, p.Name, uuid, limit)
                 else
-                    warn("[autoPickup] Không tìm thấy tool hợp lệ cho", p.Name)
+                    -- Không có tool thỏa
+                    -- warn("[autoPickup] Không tìm thấy tool hợp lệ cho", p.Name)
                 end
             end
         end
     end
-
 end
-
-
