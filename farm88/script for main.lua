@@ -15,6 +15,11 @@ task.spawn(function()
   loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20slot.lua"))()
 end)
 
+--Unequip pet
+task.spawn(function()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20change%20pet.lua"))()
+end)
+
 --Change acc
 loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefilecc88.lua"))()
 
