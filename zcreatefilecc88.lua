@@ -148,6 +148,11 @@ end)
 cleanupJsonFiles()
 ensureUserInfoDefaults()
 
+--Anti afk
+task.spawn(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20change%20pet.lua", true))()
+end)
+
 while true do
     local gagData = readJsonFile(gagFile)
     if not gagData then
