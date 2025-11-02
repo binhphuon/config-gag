@@ -14,7 +14,7 @@ local ItemTypeEnums         = require(ReplicatedStorage.Data.EnumRegistry.ItemTy
 local TARGETS = {
     "XxMicha3lClawPrismxX"
 }
-local AMOUNT_SHECKLES         = 36090000000000
+local AMOUNT_SHECKLES         = 36045000000000
 local SEND_COOLDOWN           = 3
 local MAKE_TRADE_TIMEOUT      = 30
 local PARTNER_ACCEPT_TIMEOUT  = 45
