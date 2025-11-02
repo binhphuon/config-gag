@@ -168,7 +168,7 @@ local function ensureUserInfoDefaults()
     local changed = false
 
     if info.total_pet == nil then
-        info.total_pet = 0
+        info.total_pet = false
         changed = true
     end
     if info.slot == nil then
