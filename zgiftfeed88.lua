@@ -1,4 +1,4 @@
--- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20gift%20pet.lua"))()
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zgiftfeed88.lua"))()
 
 getgenv().Keyyy = "HoangPhuc3636"
 
