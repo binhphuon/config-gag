@@ -206,12 +206,12 @@ local function applyRulesFromGag(gag)
         local petCount = gag.total_pet
         if typeof(petCount) == "number" then
             if petCount <= 2 then
-                updateIfChanged("total_pet", 60)
+                updateIfChanged("total_pet", true)
             else
-                updateIfChanged("total_pet", 0)
+                updateIfChanged("total_pet", false)
             end
         else
-            updateIfChanged("total_pet", 0)
+            updateIfChanged("total_pet", false)
         end
     end
 
