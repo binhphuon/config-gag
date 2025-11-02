@@ -82,7 +82,7 @@ while true do
     -- Lấy tool với age < AGE_THRESHOLD
     local tool = getTool(AGE_THRESHOLD)
     if not tool then
-        warn("❌ Không tìm thấy tool hợp lệ (Dog, Golden Lab, Bunny) với Age < " .. AGE_THRESHOLD)
+        
         continue
     end
     player.Character.Humanoid:EquipTool(tool)
