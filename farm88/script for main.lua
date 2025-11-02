@@ -1,3 +1,5 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/farm88/script%20for%20main.lua"))()
+
 --Accept 60 75
 task.spawn(function()
   loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefilecc88.lua"))()
