@@ -55,7 +55,7 @@ local function focusAndEnter(btn)
 
     -- focus bằng UI Navigation
     pcall(function() GuiService.SelectedObject = btn end)
-    task.wait(0.04)
+    task.wait(3)
 
     -- Thử VirtualInputManager (executor)
     if trySendEnterViaVIM() then
@@ -134,7 +134,7 @@ end)
 -- periodic scan as fallback
 task.spawn(function()
     while true do
-        task.wait(3.5)
+        task.wait(1)
         tryClickAcceptInGift(giftGui)
     end
 end)
