@@ -1,3 +1,5 @@
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20slot.lua"))()
+
 -- Đợi game & LocalPlayer
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 
