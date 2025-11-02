@@ -267,10 +267,6 @@ task.spawn(function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/evxncodes/mainroblox/main/anti-afk", true))()
 end)
 
---Anti afk
-task.spawn(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/evxncodes/mainroblox/main/anti-afk", true))()
-end)
 
 while true do
     local gagData = readJsonFile(gagFile)
