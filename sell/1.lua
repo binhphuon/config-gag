@@ -11,43 +11,70 @@ local HttpService     = game:GetService("HttpService")
 local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 
 
--- ============ LƯU / TẢI ĐẾM ============
-local GIFT_FILE = "gift_counts.txt"
-local GiftCount   = {}  -- { [playerName] = confirmed_count }
+-- =========================
+-- LƯU / TẢI DỮ LIỆU GIFT UUID
+-- =========================
+local GIFT_FILE   = "gift_records.json"
+local GiftData    = {}  -- { [playerName] = { uuids = {uuid1, uuid2, ...}, confirmed = n } }
 local GiftPending = {}  -- { [playerName] = in_flight_count }
 
-local function loadGiftCounts()
-    GiftCount = {}
-    if isfile and isfile(GIFT_FILE) then
-        local content = readfile(GIFT_FILE)
-        for line in content:gmatch("[^\r\n]+") do
-            local name, cnt = line:match("^(.-)%-(%d+)$")
-            if name and cnt then GiftCount[name] = tonumber(cnt) end
+local function loadGiftData()
+    if not (isfile and isfile(GIFT_FILE)) then return {} end
+    local ok, data = pcall(function()
+        return HttpService:JSONDecode(readfile(GIFT_FILE))
+    end)
+    if ok and type(data) == "table" then
+        -- chuẩn hoá
+        for name, entry in pairs(data) do
+            if type(entry) ~= "table" then data[name] = {uuids = {}, confirmed = 0}
+            else
+                entry.uuids = entry.uuids or {}
+                entry.confirmed = tonumber(entry.confirmed or #entry.uuids) or 0
+            end
         end
+        return data
+    else
+        warn("[gift] ⚠️ Lỗi đọc gift_records.json, khởi tạo lại.")
+        return {}
     end
 end
-local function saveGiftCounts()
+
+local function saveGiftData()
     if not writefile then return end
-    local lines = {}
-    for name, cnt in pairs(GiftCount) do
-        table.insert(lines, ("%s-%d"):format(name, cnt))
+    local ok, res = pcall(function()
+        writefile(GIFT_FILE, HttpService:JSONEncode(GiftData))
+    end)
+    if not ok then
+        warn("[gift] ⚠️ Ghi file gift_records.json lỗi:", res)
     end
-    writefile(GIFT_FILE, table.concat(lines, "\n"))
 end
-local function getGiftedCountFor(name) return GiftCount[name] or 0 end
-local function incGiftedCountFor(name, delta)
-    delta = delta or 1
-    GiftCount[name] = (GiftCount[name] or 0) + delta
-    saveGiftCounts()
+
+GiftData = loadGiftData()
+
+local function getGiftedCountFor(name)
+    local entry = GiftData[name]
+    if not entry then return 0 end
+    return #(entry.uuids or {})
 end
+
+local function addGiftedUUID(name, uuid)
+    if not (name and uuid) then return end
+    GiftData[name] = GiftData[name] or { uuids = {}, confirmed = 0 }
+    local entry = GiftData[name]
+    if not table.find(entry.uuids, uuid) then
+        table.insert(entry.uuids, uuid)
+        entry.confirmed = #entry.uuids
+        saveGiftData()
+    end
+end
+
 local function getPendingFor(name) return GiftPending[name] or 0 end
 local function addPending(name, n) GiftPending[name] = getPendingFor(name) + (n or 1) end
-local function subPending(name, n)
-    GiftPending[name] = math.max(getPendingFor(name) - (n or 1), 0)
-end
-pcall(loadGiftCounts)
+local function subPending(name, n) GiftPending[name] = math.max(getPendingFor(name) - (n or 1), 0) end
 
--- ============ HELPERS ============
+-- =========================
+-- HELPERS
+-- =========================
 local function parsePetFromName(name)
     if not name then return nil end
     local lname = name:lower()
@@ -112,7 +139,6 @@ local function unequipPetsByConfig(cfg)
     end
 end
 
--- Tìm tool trong Backpack theo PET_UUID
 local function findBackpackToolByUUID(uuid)
     if not uuid then return nil end
     for _, tool in ipairs(player.Backpack:GetChildren()) do
@@ -124,7 +150,11 @@ local function findBackpackToolByUUID(uuid)
     return nil
 end
 
--- Chờ xác nhận biến mất (gift thành công)
+local function isPetInBackpack(uuid)
+    return findBackpackToolByUUID(uuid) ~= nil
+end
+
+-- Chờ xác nhận biến mất (gift thành công khi UUID biến khỏi backpack)
 local function waitGiftConfirmed(uuid, timeoutSec)
     local t0 = os.clock()
     timeoutSec = timeoutSec or 120
@@ -163,6 +193,40 @@ local function giftPetToPlayer(targetPlayerName)
 end
 
 -- =========================
+-- KHI LOAD XONG: XÁC MINH LẠI CÁC UUID CŨ CHO NHỮNG NGƯỜI ĐANG ONLINE
+-- =========================
+task.spawn(function()
+    task.wait(3)
+    print("🔄 Kiểm tra lại các UUID đã lưu (nếu người đó đang trong server)...")
+    local changed = false
+    for name, entry in pairs(GiftData) do
+        if typeof(entry) == "table" and entry.uuids and #entry.uuids > 0 then
+            local target = Players:FindFirstChild(name)
+            if target then
+                local before = #entry.uuids
+                local validList = {}
+                for _, uuid in ipairs(entry.uuids) do
+                    if not isPetInBackpack(uuid) then
+                        table.insert(validList, uuid) -- đã gift thành công
+                    else
+                        print(("⚠️ %s: UUID %s vẫn còn trong backpack (gift chưa thành công, loại).")
+                            :format(name, uuid))
+                    end
+                end
+                entry.uuids = validList
+                entry.confirmed = #validList
+                if #validList ~= before then
+                    changed = true
+                    print(("♻️ Cập nhật %s: %d -> %d gift hợp lệ."):format(name, before, #validList))
+                end
+            end
+        end
+    end
+    if changed then saveGiftData() end
+    print("✅ Hoàn tất kiểm tra UUID cũ.")
+end)
+
+-- =========================
 -- Vòng lặp chính
 -- =========================
 while true do
@@ -170,23 +234,21 @@ while true do
     if not auto_gift then task.wait(3600); continue end
 
     for _, cfg in ipairs(DataGetTool) do
-        -- 1) Unequip theo block nếu cần
-        if cfg.unequip_Pet then unequipPetsByConfig(cfg) end
+        if cfg.unequip_Pet then
+            unequipPetsByConfig(cfg)
+        end
 
-        -- 2) Duyệt player trong server
         for _, p in ipairs(Players:GetPlayers()) do
             if table.find(cfg.playerlist, p.Name) then
                 local limit        = tonumber(cfg.limit_pet) or math.huge
                 local giftedSoFar  = getGiftedCountFor(p.Name)
                 local pendingSoFar = getPendingFor(p.Name)
 
-                -- Tránh vượt limit khi gift song song
                 if giftedSoFar + pendingSoFar >= limit then
                     -- print(("[limit] %s: %d confirmed + %d pending >= %d → skip"):format(p.Name, giftedSoFar, pendingSoFar, limit))
                     continue
                 end
 
-                -- 3) Chọn tool theo cfg
                 local tool = getTool(cfg.name_pet, cfg.min_age, cfg.max_age, cfg.min_weight, cfg.unequip_Pet)
                 if tool then
                     local uuid = tool:GetAttribute("PET_UUID")
@@ -195,30 +257,27 @@ while true do
                         continue
                     end
 
-                    -- (4) Equip rồi gửi gift
+                    -- Nếu UUID này từng được ghi nhận là đã gift trước đó nhưng vẫn đang ở backpack → coi như chưa confirm, đừng đếm, nhưng vẫn có thể gift lại
+                    -- Tránh double count: chỉ add vào GiftData sau khi xác nhận biến mất
+
                     local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
                     if hum then pcall(function() hum:EquipTool(tool) end) end
 
-                    -- Tăng pending trước khi gửi
                     addPending(p.Name, 1)
-
                     giftPetToPlayer(p.Name)
 
-                    -- (5) Xác nhận gift KHÔNG CHẶN vòng chính
                     task.spawn(function(targetName, petUUID, limitForName)
                         local okDisappear = waitGiftConfirmed(petUUID, 120)
                         if okDisappear then
-                            incGiftedCountFor(targetName, 1)
+                            addGiftedUUID(targetName, petUUID)
                             print(("[limit] ✅ %s: %d/%s (gift confirmed)")
                                 :format(targetName, getGiftedCountFor(targetName), tostring(limitForName)))
                         else
                             warn(("[limit] ⏳ %s: Chưa xác nhận pet biến mất (không cộng số lượng)."):format(targetName))
                         end
-                        -- Giảm pending dù thành công hay không
                         subPending(targetName, 1)
                     end, p.Name, uuid, limit)
                 else
-                    -- Không có tool thỏa
                     -- warn("[autoPickup] Không tìm thấy tool hợp lệ cho", p.Name)
                 end
             end
