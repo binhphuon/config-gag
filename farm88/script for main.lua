@@ -2,7 +2,7 @@
 
 --Accept 60 75
 task.spawn(function()
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefilecc88.lua"))()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/Txlerz3636/Gag-Trading/main/Auto%20accept%20gift.lua"))()
 end)
 
 --Accept money
