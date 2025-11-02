@@ -244,11 +244,38 @@ while true do
                 local giftedSoFar  = getGiftedCountFor(p.Name)
                 local pendingSoFar = getPendingFor(p.Name)
 
+                -- 🔁 Nếu đã đạt limit_pet → xác minh lại các UUID cũ
                 if giftedSoFar + pendingSoFar >= limit then
-                    -- print(("[limit] %s: %d confirmed + %d pending >= %d → skip"):format(p.Name, giftedSoFar, pendingSoFar, limit))
-                    continue
+                    print(("🧩 %s đã đạt limit_pet (%d). Đang kiểm tra lại UUID cũ..."):format(p.Name, limit))
+                    local entry = GiftData[p.Name]
+                    if entry and entry.uuids and #entry.uuids > 0 then
+                        local before = #entry.uuids
+                        local validList = {}
+                        for _, uuid in ipairs(entry.uuids) do
+                            if not isPetInBackpack(uuid) then
+                                table.insert(validList, uuid)
+                            else
+                                print(("⚠️ %s: UUID %s vẫn còn trong backpack (gift chưa thành công, loại).")
+                                    :format(p.Name, uuid))
+                            end
+                        end
+                        entry.uuids = validList
+                        entry.confirmed = #validList
+                        if #validList ~= before then
+                            print(("♻️ Cập nhật lại %s: %d -> %d gift hợp lệ."):format(p.Name, before, #validList))
+                            saveGiftData()
+                        end
+                    end
+
+                    -- Nếu sau khi xác minh mà vẫn >= limit thì bỏ qua vòng này
+                    giftedSoFar = getGiftedCountFor(p.Name)
+                    if giftedSoFar + pendingSoFar >= limit then
+                        print(("🚫 %s vẫn đang ở giới hạn gift (%d/%d). Bỏ qua."):format(p.Name, giftedSoFar, limit))
+                        continue
+                    end
                 end
 
+                -- 🎁 Tiếp tục quy trình gift
                 local tool = getTool(cfg.name_pet, cfg.min_age, cfg.max_age, cfg.min_weight, cfg.unequip_Pet)
                 if tool then
                     local uuid = tool:GetAttribute("PET_UUID")
@@ -256,9 +283,6 @@ while true do
                         warn("[gift] Tool thiếu PET_UUID, bỏ qua: ", tool.Name)
                         continue
                     end
-
-                    -- Nếu UUID này từng được ghi nhận là đã gift trước đó nhưng vẫn đang ở backpack → coi như chưa confirm, đừng đếm, nhưng vẫn có thể gift lại
-                    -- Tránh double count: chỉ add vào GiftData sau khi xác nhận biến mất
 
                     local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
                     if hum then pcall(function() hum:EquipTool(tool) end) end
