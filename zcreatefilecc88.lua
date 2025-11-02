@@ -114,24 +114,22 @@ pcall(function()
 end)
 -- ======= END SPLASH BYPASS =======
 
-local Players       = game:GetService("Players")
-local HttpService   = game:GetService("HttpService")
-local player        = Players.LocalPlayer
-local username      = player.Name
-local userId        = player.UserId
+-- ======= MAIN LOGIC =======
+local Players     = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local player2     = Players.LocalPlayer
+local username    = player2.Name
+local userId      = player2.UserId
 
---// Files
-local userInfoFile  = tostring(userId) .. "-info.json"  -- đích
-local gagFile       = tostring(username) .. "_gag.json" -- nguồn
+-- Files
+local userInfoFile  = tostring(userId) .. "-info.json"      -- đích
+local gagFile       = tostring(username) .. "_gag.json"     -- nguồn
+local giftKeepFile  = "gift_records.json"                   -- file không xoá
 
---// Helpers
+-- Helpers
 local function safeJSONDecode(s)
-    local ok, data = pcall(function()
-        return HttpService:JSONDecode(s)
-    end)
-    if ok and type(data) == "table" then
-        return data
-    end
+    local ok, data = pcall(function() return HttpService:JSONDecode(s) end)
+    if ok and type(data) == "table" then return data end
     return nil
 end
 
@@ -148,13 +146,16 @@ local function writeJsonFile(fileName, data)
     writefile(fileName, encoded)
 end
 
--- Xoá mọi .json trừ 2 file cần giữ
+-- Xoá mọi .json trừ 3 file cần giữ (userInfo, _gag, gift_records.json)
 local function cleanupJsonFiles()
     local files = listfiles("") -- thư mục hiện tại
     for _, file in ipairs(files) do
         if file:match("%.json$") then
             local baseName = file:match("[^/\\]+$") -- chỉ lấy tên
-            if baseName ~= userInfoFile and baseName ~= gagFile then
+            if baseName ~= userInfoFile
+                and baseName ~= gagFile
+                and baseName ~= giftKeepFile
+            then
                 delfile(baseName)
                 print("[cleanup] Đã xoá:", baseName)
             end
@@ -162,7 +163,7 @@ local function cleanupJsonFiles()
     end
 end
 
--- Khởi tạo giá trị mặc định cho -info.json
+-- Khởi tạo giá trị mặc định cho -info.json (booleans)
 local function ensureUserInfoDefaults()
     local info = readJsonFile(userInfoFile) or {}
     local changed = false
@@ -197,25 +198,52 @@ local function updateIfChanged(key, newVal)
     end
 end
 
+-- Debounce state cho total_pet
+local _state = {
+    total_pet_desired_last = nil,
+    total_pet_stable_count = 0,
+    required_stable = 2, -- cần ổn định 2 tick liên tiếp
+}
+
+-- Parse số an toàn (nhận cả number/string), trả về number hoặc nil
+local function toNumber(v)
+    if typeof(v) == "number" then return v end
+    if type(v) == "string" then
+        local n = tonumber(v)
+        if n ~= nil then return n end
+    end
+    return nil
+end
+
 -- Áp dụng quy tắc cập nhật theo _gag.json
 local function applyRulesFromGag(gag)
     if type(gag) ~= "table" then return end
 
-    -- 1) total_pet
+    -- ===== 1) total_pet (boolean): dựa trên tổng (OPTION) total_pet + total_mythical + total_divine =====
     do
-        local petCount = gag.total_pet
-        if typeof(petCount) == "number" then
-            if petCount <= 2 then
-                updateIfChanged("total_pet", true)
-            else
-                updateIfChanged("total_pet", false)
-            end
+        local pet = toNumber(gag.total_pet) or 0
+        local tm  = toNumber(gag.total_mythical) or 0
+        local td  = toNumber(gag.total_divine) or 0
+        local petCount = pet + tm + td
+
+        -- Nếu không đọc được gì hợp lệ (tất cả nil) thì BỎ QUA vòng này
+        -- (Ở đây vẫn luôn là số vì default 0)
+        local desired = (petCount <= 2)
+
+        -- debounce
+        if _state.total_pet_desired_last == desired then
+            _state.total_pet_stable_count += 1
         else
-            updateIfChanged("total_pet", false)
+            _state.total_pet_desired_last = desired
+            _state.total_pet_stable_count = 1
+        end
+
+        if _state.total_pet_stable_count >= _state.required_stable then
+            updateIfChanged("total_pet", desired)
         end
     end
 
-    -- 2) slot
+    -- ===== 2) slot: true khi "8/8/60" =====
     do
         local slotStr = gag.slot
         if type(slotStr) == "string" and slotStr == "8/8/60" then
@@ -226,7 +254,7 @@ local function applyRulesFromGag(gag)
         end
     end
 
-    -- 3) money
+    -- ===== 3) money: true khi khác "20" =====
     do
         local moneyStr = gag.money
         if type(moneyStr) == "string" then
@@ -262,12 +290,12 @@ end)
 cleanupJsonFiles()
 ensureUserInfoDefaults()
 
---Anti afk
+-- Anti AFK
 task.spawn(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/evxncodes/mainroblox/main/anti-afk", true))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/evxncodes/mainroblox/main/anti-afk", true))()
 end)
 
-
+-- Loop
 while true do
     local gagData = readJsonFile(gagFile)
     if not gagData then
