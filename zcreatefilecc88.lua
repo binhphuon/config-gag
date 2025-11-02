@@ -1,6 +1,5 @@
 -- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefilecc88.lua"))()
 
---// Basic
 local Players       = game:GetService("Players")
 local HttpService   = game:GetService("HttpService")
 local player        = Players.LocalPlayer
@@ -11,7 +10,7 @@ local userId        = player.UserId
 local userInfoFile  = tostring(userId) .. "-info.json"  -- đích
 local gagFile       = tostring(username) .. "_gag.json" -- nguồn
 
---// Helpers: FS
+--// Helpers
 local function safeJSONDecode(s)
     local ok, data = pcall(function()
         return HttpService:JSONDecode(s)
@@ -49,7 +48,7 @@ local function cleanupJsonFiles()
     end
 end
 
--- Đảm bảo -info.json tồn tại và có key mặc định
+-- Khởi tạo giá trị mặc định cho -info.json
 local function ensureUserInfoDefaults()
     local info = readJsonFile(userInfoFile) or {}
     local changed = false
@@ -59,11 +58,11 @@ local function ensureUserInfoDefaults()
         changed = true
     end
     if info.slot == nil then
-        info.slot = "notok"
+        info.slot = false
         changed = true
     end
     if info.money == nil then
-        info.money = "notok"
+        info.money = false
         changed = true
     end
 
@@ -73,7 +72,7 @@ local function ensureUserInfoDefaults()
     end
 end
 
--- So sánh và chỉ ghi khi có thay đổi
+-- Ghi file chỉ khi có thay đổi
 local function updateIfChanged(key, newVal)
     local info = readJsonFile(userInfoFile) or {}
     if info[key] ~= newVal then
@@ -84,11 +83,11 @@ local function updateIfChanged(key, newVal)
     end
 end
 
--- Áp dụng luật cập nhật theo _gag.json
+-- Áp dụng quy tắc cập nhật theo _gag.json
 local function applyRulesFromGag(gag)
     if type(gag) ~= "table" then return end
 
-    -- 1) total_pet rule
+    -- 1) total_pet
     do
         local petCount = gag.total_pet
         if typeof(petCount) == "number" then
@@ -98,43 +97,39 @@ local function applyRulesFromGag(gag)
                 updateIfChanged("total_pet", 0)
             end
         else
-            -- Không có số hợp lệ => giữ 0
             updateIfChanged("total_pet", 0)
         end
     end
 
-    -- 2) slot rule
+    -- 2) slot
     do
         local slotStr = gag.slot
         if type(slotStr) == "string" and slotStr == "8/8/60" then
-            updateIfChanged("slot", "ok")
+            updateIfChanged("slot", true)
         else
-            -- giữ nguyên (mặc định notok); không ép ghi lại nếu chưa đạt
             local info = readJsonFile(userInfoFile) or {}
-            if info.slot == nil then updateIfChanged("slot", "notok") end
+            if info.slot == nil then updateIfChanged("slot", false) end
         end
     end
 
-    -- 3) money rule
+    -- 3) money
     do
         local moneyStr = gag.money
         if type(moneyStr) == "string" then
             if moneyStr ~= "20" then
-                updateIfChanged("money", "ok")
+                updateIfChanged("money", true)
             else
-                -- giữ nguyên (mặc định notok)
                 local info = readJsonFile(userInfoFile) or {}
-                if info.money == nil then updateIfChanged("money", "notok") end
+                if info.money == nil then updateIfChanged("money", false) end
             end
         else
-            -- Không có chuỗi hợp lệ => giữ nguyên
             local info = readJsonFile(userInfoFile) or {}
-            if info.money == nil then updateIfChanged("money", "notok") end
+            if info.money == nil then updateIfChanged("money", false) end
         end
     end
 end
 
--- Tải script gag định kỳ (an toàn với pcall)
+-- Nhiệm vụ tải gag script
 task.spawn(function()
     while true do
         task.wait(120)
@@ -149,20 +144,17 @@ task.spawn(function()
     end
 end)
 
--- Chạy
+-- Chạy chính
 cleanupJsonFiles()
 ensureUserInfoDefaults()
 
--- Vòng lặp cập nhật: đọc _gag.json và apply luật
 while true do
     local gagData = readJsonFile(gagFile)
     if not gagData then
-        -- Không có _gag.json hoặc lỗi decode
-        -- Đảm bảo file đích vẫn có mặc định
         ensureUserInfoDefaults()
         print("[loop] Không tìm thấy hoặc không đọc được "..gagFile..", sẽ thử lại.")
     else
         applyRulesFromGag(gagData)
     end
-    task.wait(2) -- lặp mỗi 2 giây
+    task.wait(2)
 end
