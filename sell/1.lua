@@ -24,9 +24,9 @@ local function loadGiftData()
         return HttpService:JSONDecode(readfile(GIFT_FILE))
     end)
     if ok and type(data) == "table" then
-        -- chuẩn hoá
         for name, entry in pairs(data) do
-            if type(entry) ~= "table" then data[name] = {uuids = {}, confirmed = 0}
+            if type(entry) ~= "table" then
+                data[name] = {uuids = {}, confirmed = 0}
             else
                 entry.uuids = entry.uuids or {}
                 entry.confirmed = tonumber(entry.confirmed or #entry.uuids) or 0
@@ -154,6 +154,17 @@ local function isPetInBackpack(uuid)
     return findBackpackToolByUUID(uuid) ~= nil
 end
 
+-- Đếm số tool có PET_UUID trong backpack (coi là số pet)
+local function countBackpackPetsByUUID()
+    local n = 0
+    for _, tool in ipairs(player.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool:GetAttribute("PET_UUID") then
+            n += 1
+        end
+    end
+    return n
+end
+
 -- Chờ xác nhận biến mất (gift thành công khi UUID biến khỏi backpack)
 local function waitGiftConfirmed(uuid, timeoutSec)
     local t0 = os.clock()
@@ -227,7 +238,66 @@ task.spawn(function()
 end)
 
 -- =========================
--- Vòng lặp chính
+-- NHẬN DIỆN “NGƯỜI NHẬN” & CHẠY KICK WATCHER
+-- =========================
+-- Chỉ kick nếu đã từng tăng số pet (PET_UUID) ít nhất 1 lần
+local function startKickWatcher(waitSec)
+    task.spawn(function()
+        local poll = tonumber(waitSec) or 20
+        local baseline = countBackpackPetsByUUID()
+        local hasEverIncreased = false
+
+        while true do
+            task.wait(poll)
+            local cur = countBackpackPetsByUUID()
+
+            if cur > baseline then
+                -- ghi nhận đã có pet mới và cập nhật mốc so sánh
+                hasEverIncreased = true
+                baseline = cur
+                print(("[kick_after_done] 📈 PET_UUID count increased to %d"):format(cur))
+
+            elseif cur == baseline then
+                -- chỉ kick nếu đã từng tăng trước đó mà giờ đứng yên
+                if hasEverIncreased then
+                    player:Kick(("Không nhận được pet nào trong %ds dừng lại ở %d")
+                        :format(poll, cur))
+                    return
+                else
+                    -- chưa có lần tăng nào → tiếp tục chờ
+                    print(("[kick_after_done] ⏳ Waiting for first increase... (current=%d)"):format(cur))
+                end
+
+            else -- cur < baseline (giảm)
+                -- cập nhật baseline nhưng không kick; có thể do bạn sử dụng/di chuyển pet
+                baseline = cur
+                print(("[kick_after_done] 📉 PET_UUID count decreased to %d (no kick)."):format(cur))
+            end
+        end
+    end)
+end
+
+-- Nếu LocalPlayer nằm trong bất kỳ block nào → là người nhận
+local isReceiver = false
+do
+    for _, cfg in ipairs(DataGetTool) do
+        if cfg.playerlist and table.find(cfg.playerlist, player.Name) then
+            isReceiver = true
+            if cfg.kick_after_done then
+                startKickWatcher(tonumber(cfg.wait_before_kick) or 20)
+            end
+        end
+    end
+end
+
+-- Nếu là người nhận → KHÔNG chạy auto gift
+if isReceiver then
+    print("🟢 Receiver mode: chỉ chạy kick_after_done watcher(s), không auto gift.")
+    return
+end
+
+-- =========================
+-- Vòng lặp chính (CHỈ CHẠY KHI KHÔNG PHẢI NGƯỜI NHẬN)
 -- =========================
 while true do
     task.wait(1)
@@ -267,7 +337,6 @@ while true do
                         end
                     end
 
-                    -- Nếu sau khi xác minh mà vẫn >= limit thì bỏ qua vòng này
                     giftedSoFar = getGiftedCountFor(p.Name)
                     if giftedSoFar + pendingSoFar >= limit then
                         print(("🚫 %s vẫn đang ở giới hạn gift (%d/%d). Bỏ qua."):format(p.Name, giftedSoFar, limit))
