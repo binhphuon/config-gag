@@ -1,0 +1,371 @@
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/send%20small%20money%20.lua"))()
+
+repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
+
+-- Services
+local Players           = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TradeEvents       = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("TradeEvents")
+
+-- Controllers / Enums
+local TradingController     = require(ReplicatedStorage.Modules.TradeControllers.TradingController)
+local InventoryServiceEnums = require(ReplicatedStorage.Data.EnumRegistry.InventoryServiceEnums)
+local ItemTypeEnums         = require(ReplicatedStorage.Data.EnumRegistry.ItemTypeEnums)
+
+-- ====== CONFIG ======
+local TARGETS = {
+    "Masat0Fr3yaEl0is3", "GuoG3orgia", "BonnieEarl2016", "AyumiElis32019", "ManabuGary2024", "KaiDeirdre12", "ChrisAvaCharli32023", "EdwinDominic28", "CalebElise2004", "TakashiElisa2018", "ChunDavidCara", "GeraldElli0t95",
+    "Zhong_Greg2006", "Sh3ngGabri3lChristop", "Daphne_Grant2007", "CHAD_Doris44", "CarrieAiden2003", "Natsumi_Charlott3201", "KotaroGloriaAdam", "DouglasFrancisDanny1", "EdwinElise2005", "FionaBonnieCarol", "Gid3onGary2023", "B3njaminIan2004",
+    "Camer0nDeclan2024", "Ig0r_B3cky", "BorisHarry2006", "Fr3d_Chl03", "SoraEdmundAva", "YunDani3l2005", "Ax3lGr3gD33", "An_Easton2024", "RenDawnEric2019", "LiBennett2006", "HuaHowardDalton20037", "AudreyEbony50",
+    "ShengFiona2022", "EleanorBeth2023", "EmmaAng3lica200445", "FengAva2014", "HeidiElisaHugo", "DeirdreBoris200987", "Dal3B3cky2007", "LinAng3lica2010", "Cas3yEliasHugh", "L0ng_Barry", "ChloeGeneEddie", "FanGene2007",
+    "D3annaAx3l47", "Hit0shiBrett2002", "EdwinB0nnie54", "ChadAmelia2007", "BarryGide0n2006", "IngridAlmaBeth", "BobBarry2012", "Hikaru_Hugh2002", "IanAnn2016", "Sachik0_Aar0n", "GuangEdmundBrett2020", "Br3ntChristina2022",
+    "CharlieErin2009", "FrankHop3Gavin2023", "ChikaAngelaEarl2007", "EikoCalvin2011", "LinBrent2023", "IgorAliceGary", "ErinBrent2012", "ElsaH3nryIr3n3", "TakashiAidenCheryl", "TakashiCarol2023", "Gide0nDavid2015", "CaraBoyd2014",
+    "BlakeDorisErin2003", "SatsukiGailAriel", "Amber_ABBY2002", "AsukaElijah2014", "IrisHarold2024", "Gw3nG3raldB0ris", "IngridEli80", "BeauDannyGavin", "LongEbba84", "GarethAliceElla", "HotaruElsaBrad", "BrianD3an2011",
+    "GuoBrenda201437", "Wei_Helen2004", "HiroshiBarry201163", "LuAnnHannah", "BonnieBeth44", "BlairGloriaBenjamin2", "Ern3stHug0", "IrisCaraIda", "FumikoChris200616", "Sheng_Grace29", "EsmeGwen35", "XiaBailey2004",
+    "ShengFredHolly", "XxTiger_BANEXX2015", "N0ah_Shad0w2021", "Flam3Hunt3r74", "L0ganBeastHunter", "N0ahSkyFlick2010", "FireStealth76", "S0NIC_Raven2021", "LionFoxBeast", "XxBlizzardUltraMiner", "XxWilliamFusionCyber", "Silv3rB3ar18",
+    "MysticClawSlime20176", "IgorBettyChad", "QingGailImog3n2008", "GertrudeDallas2007", "DeeDanaCecilia", "Fl0raEliasHarry", "FumiyaG3n349", "L0ngHughCar0l2012", "NatsumiDiegoHugo", "AkiraEdwin75", "W3nBail3y2019", "LingIsaacAri",
+    "Ang3licaBrad2015", "SakuraChristina2008", "F3lixEl3an0r", "ColinGertrudeBeau", "HughDallas2021", "BeckyDee2019", "Y0ng_Charlie", "HITOSHI_Hope54", "Gid30n_Ebba", "EdwardDean2009", "BlairDaisy59", "Saki_Amy2012",
+    "ManabuAudreyGrace", "Grac3BobBoyd2002", "ElenaHunter2006", "Donna_Hannah2014", "Hiroshi_CAS3Y2016", "Calvin_DAPHNE2023", "Christopher_Fred2009", "RyoAlmaElla76", "HunterHughBailey", "Br3nt_BARRY", "HeidiCasey68", "B3nn3ttIgor2021",
+    "AxelHolly48", "DaphneEleanor2013", "GrantDieg0Dana", "Gw3nBlak32024", "HeatherDeanna2017", "FanAxel33", "Bonnie_DANNY50", "XiaoDerekEdgar55", "Ch3ls3aAlan72", "XiaoElise2018", "PengDiegoCasey", "FumiyaCheryl39",
+    "S0raBarry14", "XiaoHail3y2009", "Alic3_H3IDI", "FrancesDawnCody", "GeneAlice58", "ShinjiBiancaGerald", "AxelEddieHolly2023", "MasashiCatherine2013", "HikaruDarius2007", "HelenDeeIrene", "WenFredAlma", "ZhiChris73",
+    "ElijahDanEddie", "DavidHope2002", "LingAri16", "Yun_ERIC38", "Gr3taHail3y2007", "BaoAnnIris", "DanAndrea200336", "NaAlma44", "BoydDouglas2023", "AyumiGwenAnn", "KiyomiCarmen2005", "GavinEmmaBob",
+    "HongChadIsabel", "NaCarrie2010", "NorikoFranc3s2006", "Takashi_Alan12", "LiangEarlDebra", "Ming_Cody202043", "Satsuki_Dalt0n74", "WenEbony200940", "NoboruEaston2017", "IreneHenryAdam", "DanielFi0na", "Franc3s_Haz3l67",
+    "ShioriArnold52", "EmiD3anB0nni3", "B3thChristina2006", "FrancesCar0l", "CodyErnest2021", "BoydGraham2016", "Qia0Carl0s2017", "HopeColinDarius2005", "GangGertrude2019", "Dallas_Hunter2016", "FanHailey71", "Ir3n3Aid3nHaz3l",
+    "LuArielCalvin", "Masat0Ella28", "QingFaith2002", "Zhu_Hope2010", "QingBetty2022", "W3nBorisBr3tt2002", "BethAaronDaisy2020", "KotaroDavid22", "HaroldCelia94", "BobAnthonyB3cky74", "XUAN_Axel93", "WuAngelica2004",
+    "DanBorisCalvin", "RikuDaisyGavin", "Sakura_Ge0rgia", "KozueGeneAlexandra91", "Hugh_Bonnie2015", "AnnHarryD33", "Ichir0Hailey95", "LingAmy2014", "B3llaImog3nDian399", "BenjaminAnna2005", "H0wardIsabel91", "EddieGeraldChristoph",
+    "Gu0Amelia84", "KenshinEliseIgor33", "DouglasD3r3kElsa2009", "IngridGreta15", "TakumiChris81", "Br3ndaDam0n51", "ShigeruBeth2019", "CodyEsme2011", "RongIris2019", "ArielBeauClara", "Esm3Carol2013", "YongDan200541",
+    "RyoElena2014", "LuAdam45", "RikuElliotGavin80", "Dalt0nHenry", "KozueHoward200711", "BeauAaronAmber", "B3ttyBrad84", "R0NG_Harry", "Ashl3yBr3ntErin65", "Riku_Faith2005", "DeeHeidi2004", "Riku_B0b2010",
+    "FaithCarm3n2005", "Da0Bennett2013", "RenGeorgia89", "YangElijah20", "Michik0_Dalt0n2007", "L3iD33Elsa", "EricDawn28", "XinHerbertEddie", "ImogenAidenCameron", "ChadChrisChase", "BellaBeauIrene", "Masashi_Esme2012",
+    "CharlieDebraBrianna", "ArielAbbyAnita", "DannyFrank85", "GwenFallonAmy2022", "ImogenEdward2003", "H0peFrankBetty", "K0zueChristina91", "ShengCasey201979", "SAKURA_Gabri3l", "QiuDerekEddie", "BrianFi0naFaith56", "Xia0_Heather",
+    "Kenshin_AARON2010", "Kiy0shiBetty62", "Carl0sAmy68", "EddieCameron2007", "KOTARO_Hunter2024", "GregCalebDanny", "ClaudiaCh3ls3a99", "Hir0B3njamin2016", "EikoArthurDoris", "SakiDaisyDeirdre2007", "R0ngFr3d", "Donna_Greta2008",
+    "Harut0_Angelica2004", "ChadCassandraHeather", "ErnestAustin64", "Charli3DavidAndr3a", "EriG3n3vi3v3Easton20", "AnnaGene85", "HongElisaGene", "GavinHolly2009", "DallasClaudia2021", "Ma0H3rb3rt2009", "SakuraElsa2021", "Danny_Esme2006",
+    "EbonyBarry2023", "GrahamChris2019", "Br3ntDorothy2006", "BeauHenry49", "IreneDaleGene", "HaoBarry2024", "HugoAngela2023", "Peng_Edward19", "DawnDaniel40", "SotaIrisEli", "CARA_Betty2007", "CaraElsaBob",
+    "BarryIan2009", "EarlIsaacDarius", "Lin_Chris2018", "Ning_Eloise2023", "RikuHoward2019", "IrisIsabel80", "NatsukiDanielle32", "NATSUMI_Gavin14", "GeneArnoldFiona", "K3nshinGloriaChlo3", "ClaudiaFred2018", "Tao_Eleanor2009",
+    "DariusEarl2018", "Gr3gAaronElain3", "AaronBob35", "Shiori_ISAB3L", "DanHannahEric", "Wen_Chris78", "KazukiHeatherEbba", "Harold_CAL3B2011", "EliasElsa41", "Ying_Dorothy60", "NaCharlotte2004", "XinEddieAlice2016",
+    "KazukiHeatherElijah", "GaryBeth2022", "HuiBrianBeth", "Fallon_Alan2003", "KiyomiFredHeather82", "SHIG3RU_Fallon2017", "AlexandraCharlie2005", "BlakeEddie2013", "CherylGwenIsaac", "NaArthurFaith", "NaokiDonna2021", "Na0kiElla2012",
+    "Kozu3_Isab3l", "DerekAustinElaine", "EdmundAnna26", "DariusGarethD0nna", "SakuraDavidCharlie", "Dam0n_Esm380", "ColinDaltonCalvin", "KiyoshiBennettAva200", "EarlHug02006", "HugoGretaBlake2024", "ElsaChristina30", "HaoHeidi2015",
+    "YunGrahamHazel", "IngridEl3na2009", "ShuDee2009", "Sachik0_Dan", "GilbertFrancisEbba", "BeauClaudia2011", "EliChadChelsea", "TaoGideon92", "EricaAiden99", "AdamIris69", "RenAnnDarius", "GregAmy92",
+    "ChengDaisy2018", "Zhu_Gerald2024", "XiaoAaron201931", "EsmeAriel95", "DebraCarol49", "MasashiChrisBlair", "KozueDanaHazel", "Hug0AxelFaith", "Jing_Isabel2011", "BorisFrances89", "HughGilbert201221", "HollyDouglasChloe",
+    "AnnaChadAmanda", "BETTY_Eli76", "Carrie_Dawn99", "FrancisDanGar3th", "Jun_Douglas23", "Asuka_Elijah84", "EbbaBrand0n88", "D0nnaEl3na44", "HitoshiBeckyEli2013", "Ichir0_GRACE", "GuoBrenda2024", "NatsumiBrett2007",
+    "D0uglasH3l3n", "GuoFrank27", "DebraDerekAxel", "HelenDanielle63", "YongDaltonAaron2006", "FangCheryl30", "HuaBrad2014", "DeannaEdithDan", "Shi0riFr3yaDawn", "Ha0GabrielDaniel", "MasashiCh3ryl2003", "PengEbba31",
+    "Gid3onDan36", "GangAngelica96", "BarryIan71", "IgorAnitaAlice", "Sh3ngIsab3lAnn2021", "ChikaBecky2017", "MichikoHarold75", "AkaneCarmen90", "C0DY_Brent73", "AnitaGid3on2012", "ClaraGreg88", "KiyoshiD3irdr3200425",
+    "Xin_DALE2002", "S0taDallas2018", "AaronEarl2003", "AyakaD0ris2004", "AnCal3b2011", "TaoChelsea202010", "R3n_Hunt3r2002", "DannyDeeEdgar", "IchiroFredDaphne", "ElsaFiona53", "QiaoEdithFrancis", "D3annaDaphn32014",
+    "F3NG_Dominic", "Igor_Chad2021", "CharlesHazel2003", "HarukiBettyGloria", "FrankChris2004", "Br3ttEbonyChas3", "NorikoGavin2011", "LinIngrid2017", "HongClaudiaDana31", "XiAaron2005", "DannyD3anCarri3", "CarlaD3an2002",
+    "NatsumiErica83", "R0ngIda71", "Ling_Ang3lica", "GeorgiaHeather68", "HarutoBrad35", "B3th_Brandon2023", "Holly_Dalton63", "SakiHugo201728", "Hikaru_Hannah2018", "Elaine_CHERYL12", "LeiEllen2002", "GwenHollyCalvin",
+    "LongDaisyAaron", "AngelaHope2005", "Har0ldAmberIris", "FrancesAustinIngrid2", "JingDanAmy2015", "RenFi0na2013", "BennettErin2024", "BriannaEarl54", "HitoshiDanielGenevie", "JunGenevieveArnold", "ShiDominicF3lix2015", "EarlDeanna2003",
+    "Naoki_DEIRDRE2006", "CharlieBeauDaphne", "EdmundElena2018", "DorothyDaphne2023", "B0ydAar0nHug0", "Sachiko_Bennett2006", "L0ngBrad2020", "ShigeruGary63", "Zhi_AUDREY2020", "AsukaBrendaChloe", "AyakaD0minic36", "CaraBrianAnna",
+    "EikoIngridBrent", "Kotaro_Aaron2004", "ChadDeeEddie", "Michiko_Betty15", "DariaDannyCody", "RenAnthony2018", "CeliaElli0tClaudia", "AnAbby201780", "AyumiElisaEbba", "ChengBrenda2013", "CharlesCherylBlake", "DavidBecky87",
+    "CaseyHugo2016", "DaoCassandraIda", "B3th_Elizab3th2024", "Fumiko_Hugo2008", "ArthurEarlBoyd", "AndreaCodyArthur", "K3ikoH3nry2011", "HiroshiGrantBarbara2", "KentaGareth77", "YanCas3y2023", "AkaneDanaHannah2003", "LiImog3nFallon2002",
+    "BlakeGareth2003", "D3clanFr3ddi3H3l3n20", "CHUN_Claudia37", "SoraHolly2018", "CarolIgor2003", "IchiroBarry22", "GeraldGraceAri", "DanaHunter2020", "NaAar0nHelen", "DebraEmily2022", "CaraDee2009", "BoElliot32",
+    "NoboruChelsea32", "LinEaston2014", "NaokiDonna2009", "HarukaHeidi2017", "ArthurAustinIr3n3200", "Ichir0Brand0n30", "QiaoG3raldErin", "Holly_Grac319", "BrettCaraDaphne", "EriBrad200630", "HaroldGeneDonna", "BarbaraDaphne2002",
+    "Ashl3y_Gid3on2006", "TakashiGw3nBonni3", "ManabuDorothy89", "Dee_Holly42", "D0uglasBenjamin20119", "Christ0ph3rHunt3r", "HowardDeclan2011", "Ayaka_BOB17", "Cheryl_El0ise2002", "BeauHolly2022", "YiCheryl43", "HelenBrad2023",
+    "DallasDale46", "Xia0Heather2022", "MaoChadBoris2012", "Zhu_Amber2021", "HiroColinBrian2024", "DerekBobDouglas", "HeatherErnest12", "XiFlora200478", "Clair3Gavin70", "Dean_Deirdre58", "R3n_FRANC3S", "AmberAar0n93",
+    "B3auCarlos83", "Kiy0mi_Chris32", "BorisAaron2024", "AngelicaFallon2014", "YongElisaBrad", "EriDeirdre46", "CharlieBrent201661", "AnitaGarethEarl", "D3clanAaron46", "GretaAdam2009", "BoydEliGr3g", "Yun_Daisy41",
+    "GailCarrie2022", "NoboruCarol2009", "SakuraElias2024", "Y0ngHaz3l", "ChengBarry2007", "IdaFrancis41", "AnthonyEdmund2018", "AlanEdwin2023", "HarukiCharlie56", "DaltonAmyEbony", "Wei_Dana2015", "HotaruIda2020",
+    "ShinjiGar3thAmy", "EbonyIan19", "Lan_Deirdre48", "YongCalvinEllen2014", "NorikoD3irdr32014", "SakuraElsaBonni3", "EbonyDawn2022", "WeiAnnChase", "NatsukiAng3laGw3n201", "ManabuGreg2023", "ChloeIan2009", "Elizabeth_DANNY2006",
+    "Blak3Hannah58", "YangDaniel2003", "H0taruGeraldDana", "DaltonElliot2007", "Keiko_Aaron2011", "BettyIsaacCarmen", "CherylIan2011", "ElliotDeanna2020", "GrantBob79", "Bo_Claudia2008", "HitoshiGloriaEli", "FrancisDeirdre76",
+    "BaoAmanda2018", "BobGilb3rtGloria", "Aar0nDaleHunter", "Kiyoshi_Dalton2024", "Wu_Elsa91", "EleanorGary32", "Jing_Charlie38", "DawnEmma2002", "Alma_FALLON2004", "TaoHelenBob", "KaiAri2023", "RyoElla2004",
+    "ElenaBrad2005", "TakumiCecilia65", "GrahamImogen2016", "CherylCharles2005", "XiGe0rgiaGwen", "K3ikoFloraG3rald", "R3nAx3l2007", "HarryCalvin18", "D33_ARI3L2012", "Carrie_Iris2003", "Gavin_Easton37", "ErinHowardHannah98",
+    "TaoDiane90", "DallasFrancisHugh", "FangElliot2018", "ShigeruEliasFallon", "GarethDaltonIan", "DallasBennett26", "EarlArielEllen", "R3nGr3g49", "RyoEloise2012", "R3nDanaEll3n", "YunCh3ls3aBrian41", "MeiDerek2021",
+    "Gilb3rtChadBarry2023", "HarukiBecky2012", "Kozue_Eddie2015", "MariBonnie2014", "Dallas_Frank29", "Ba0H3rb3rtElli0t", "IgorEaston72", "DaisukeEsme25", "Dallas_Graham28", "RikuAmanda2017", "Carm3nHarry96", "Har0ld_H0pe2014",
+    "Ir3n3Ebba2017", "FrancisEbonyBlake201", "GretaBrian2006", "Ry0BradAmy", "DaltonGw3n2006", "LiangFall0nAnna2013", "FionaEdith2020", "EricHannah2009", "BaileyErin2008", "DianaGideon16", "Saki_DALTON2019", "Br3ttFaith22",
+    "Kiy0shiElla68", "Qia0Grace95", "ChadGr3taCara", "Emma_Dee2019", "CalvinDiego200785", "Hong_GLORIA50", "AnBonni3Alic345", "SATSUKI_Elena14", "AiBradAiden", "AkaneFiona2015", "DariusD3bra2004", "ErinGavin2023",
+    "FelixIngridEli", "CH3RYL_Ang3lica", "ChaseEleanor2002", "Dal3Doris", "SakuraGaryDerek", "AvaGloriaCheryl", "HikaruH3l3n2017", "ShuElias2023", "EsmeFreya52", "Christina_Daphne2008", "BlairElla2015", "DamonAidenAva",
+    "FumiyaHugh2022", "SakuraEliasAaron", "Hui_Fred2003", "Dan_DEIRDRE2012", "DallasDeanna200214", "EllaFall0n91", "K0zueFall0nDavid", "BethChelsea2010", "AsahiDale2007", "HenryAngelaGwen", "XinErnestHugh", "AsahiEliasCharles95",
+    "LinAngelicaFallon52", "B0nnie_B0b", "ShigeruDeclanCarol", "LinDaphne38", "Clair3Fr3ddi32023", "B0yd_Iris2008", "RongHowardBoris", "JieDawnCheryl", "RinaAbbyIan", "Ichiro_Brett2010", "HopeDaisy2023", "GeneBlairCheryl",
+    "Harry_El0is3", "CodyDeirdreElsa2016", "HughIgor73", "Carl0sIr3n3", "YiHelen78", "Shan_Brett2020", "H3rb3rtFrank2016", "An_Angelica50", "EdithGilbert2017", "CaraFallonCharles200", "QingAnthony98", "HelenD0r0thy2009",
+    "XiaDorothy2017", "ZhuHannah2016", "Kiy0shi_ELENA68", "Elena_ABBY55", "Christoph3rHunt3rHar", "Gar3thDaria2005", "SotaDorothy2009", "Asuka_Eleanor54", "FangBrian28", "BettyArthurDeclan", "Amb3rD3braEbony", "KaiDeeEbony",
+    "KotaroDorothyHannah", "K0zu3Cam3r0n71", "FaithDale2015", "Hong_IMOGEN32", "DariusAmy46", "EdwinElli0t2003", "TaoChloeGreta", "HughEdmundBrandon", "ZhuHowardAl3xandra", "DeirdreAudreyDarius", "LongCarrie200871", "Adam_Chris2005",
+    "MariChelsea48", "JieBradHerbert", "HiroDee201228", "HarryHollyGavin", "KenshinAmberElsa42", "Earl_Eleanor83", "NorikoGareth2004", "ShuColin2006", "ChristinaArthurEarl", "GwenCara11", "Howard_Ch3ls3a", "IsaacGary2007",
+    "GeneCalvin2018", "AiDale78", "M3iDarius2002", "ShioriFelix2004", "C3liaCh3ls3aHop3", "DamonDani3l2006", "Yong_Greg55", "D0ris_Frances", "HikaruGertrudeDee", "YingDeclanChad", "HarryGene19", "BradAar0n",
+    "H3ath3rEmily42", "EliChadCharli3", "ShanFrank2008", "MasahiroGrac3Br3tt", "Hop3Ir3n32012", "H0ward_Erica2008", "ElaineB0yd2015", "DeeAlan13", "YingCharlieGerald", "DanielFred2018", "Charlott3Brad2022", "KeikoIngrid2011",
+    "ShuGilbertEmma", "DallasDanielle2018", "Am3liaGid3on18", "Wu_Br3tt2015", "LuCodyHarry", "IAN_Damon2017", "MasakoGloria95", "Ir3n3Cal3b2018", "LiFreyaDouglas", "Hong_Gilbert2014", "HowardEliEdmund", "BorisDaltonHeather20",
+    "DawnDan51", "Gene_ESME2022", "MasashiAngela45", "GeraldDeclanAriel", "GuangBrandon2023", "ElsaBailey2024", "BarryClara2010", "ANN_Christopher2021", "NingDariaDeclan", "C0lin_AIDEN2021", "SoraBethEli", "DianeHannah49",
+    "ArielAbbyDana", "CaraEmilyGabri3l2007", "ErnestGary2010", "B0risFrances2002", "BrettAxelAnna2016", "YingGene202363", "HuaIngridHannah", "IanHaroldGeorgia", "ChikaH3idi2017", "IsaacD3r3k200478", "GrahamGreta2003", "AlanGrahamEmily",
+    "NaAdamEddie44", "DannyChad2020", "DeannaDorisDeirdre20", "KazukiAlexandra2010", "XiAdam2018", "HollyAaronClara", "S0taDawnBlair48", "BobEliasHeather", "FredBradGilbert", "HuiEbbaB3au", "Anita_Donna2014", "AsahiAbby2010",
+    "Ge0rgiaDam0n2021", "LiArthur2023", "GeraldHannah17", "HaoBlak3Bob", "Gar3thAlma2014", "G3raldDal321", "Akira_DAN52", "Fang_Fallon88", "KentaBonnie2004", "LingChrisAlice", "Keik0_Frances2005", "Peng_CATHERINE2013",
+    "Ernest_Heather2013", "DorisBlake92", "HollyC3lia2019", "DaikiFredIgor", "WuEricAmanda90", "MeiB0nnie2015", "Ros3Glow39", "ruthdreamCraft2022", "SamFalcon13", "ScorchInk", "LeahParagon2006", "MrsNathanChaseWhispe",
+    "NexusAddisonnook2012", "MrsBellalake", "TheRealOwenBlaze57", "Ella_Glow33", "TheRealSkylarZest", "MILA_Neon2008", "EvelynbubbleCactus", "MrsRil3y_N3ON2016", "Charles_Hero2004", "TinaLegendYT", "MrsSilverDawn", "MrsTwilightMeteorRum",
+    "TheRealJoseph_Ultra", "NexusChaosSurge2014", "MrsmarkFlicker", "chrisFlame201369", "TheRealEmerald_Orbit", "MRSELISE_Blaze", "Moon_Noodle2003", "ItsPeteVortex_YT", "Itsshadeember201543", "TheRealJamesBounce", "ItsWolfflick", "Gabriel_Hearth2006",
+    "PaisleyG0ldenTitan", "MrsZachary_plume", "THEREALDANA_Crystal2", "BethXenonfrosty2019", "NexusKenNinja2005", "Th3R3alN3bulaStarry", "NexusDew_Flicker2023", "gl33_j3t", "NexusChristopherbubb", "FireL00m"
+}
+
+local AMOUNT_SHECKLES         = 1000000
+local SEND_COOLDOWN           = 3
+local MAKE_TRADE_TIMEOUT      = 30
+local PARTNER_ACCEPT_TIMEOUT  = 45
+-- =====================
+
+local me = Players.LocalPlayer
+local CompletedTargets = {}  -- tên đã trade xong trong session này
+
+local function inList(list, name)
+    for _, n in ipairs(list) do if n == name then return true end end
+    return false
+end
+
+-- ====== Trading Ticket helpers ======
+local function isTradingTicket(tool)
+    if not (tool and tool:IsA("Tool")) then return false end
+    local t = tool:GetAttribute(InventoryServiceEnums.ITEM_TYPE)
+    if t and t == ItemTypeEnums["Trading Ticket"] then return true end
+    local name = tool.Name or ""
+    if name:match("^Trading%s+Ticket%s+x%d+") then return true end
+    local lname = name:lower()
+    if lname:find("trading") and (lname:find("ticket") or lname:find("tick")) then
+        return true
+    end
+    return false
+end
+
+local function getHumanoid()
+    local char = me.Character or me.CharacterAdded:Wait()
+    return char:FindFirstChildOfClass("Humanoid")
+end
+
+local function getEquippedTradingTicket()
+    local char = me.Character or me.CharacterAdded:Wait()
+    for _, inst in ipairs(char:GetChildren()) do
+        if inst:IsA("Tool") and isTradingTicket(inst) then
+            return inst
+        end
+    end
+    return nil
+end
+
+local function getBackpackTradingTicket()
+    for _, tool in ipairs(me.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and isTradingTicket(tool) then
+            return tool
+        end
+    end
+    return nil
+end
+
+local function ensureTradingTicketEquipped()
+    if getEquippedTradingTicket() then return true end
+    local inBag = getBackpackTradingTicket()
+    if not inBag then
+        warn("⚠️ Không tìm thấy Trading Ticket trong Backpack lẫn đang equip.")
+        return false
+    end
+    local hum = getHumanoid()
+    if not hum then
+        warn("⚠️ Không tìm thấy Humanoid để equip Trading Ticket.")
+        return false
+    end
+    local ok, err = pcall(function() hum:EquipTool(inBag) end)
+    if not ok then
+        warn("⚠️ Equip Trading Ticket lỗi:", err)
+        return false
+    end
+    task.wait(0.15)
+    return getEquippedTradingTicket() ~= nil
+end
+-- ====================
+
+local function bothAccepted(rep)
+    local data = rep and rep:GetData()
+    if not data then return false end
+    local idxMe = table.find(data.players, me)
+    if not idxMe then return false end
+    local idxOther = idxMe == 1 and 2 or 1
+    local myState    = data.states and data.states[idxMe]
+    local otherState = data.states and data.states[idxOther]
+    return (myState == "Accepted" or myState == "Confirmed")
+       and (otherState == "Accepted" or otherState == "Confirmed")
+end
+
+local function driveAcceptAndConfirm()
+    task.spawn(function()
+        while true do
+            pcall(function() TradeEvents.Accept:FireServer() end)
+            task.wait(1.0)
+            pcall(function() TradeEvents.Confirm:FireServer() end)
+            task.wait(2.0)
+            if not TradingController.CurrentTradeReplicator then
+                break
+            end
+        end
+    end)
+end
+
+-- ========== MODE: AUTO-ACCEPT nếu LocalPlayer nằm trong TARGETS ==========
+if inList(TARGETS, me.Name) then
+    print("🟢 MODE: AUTO-ACCEPT (LocalPlayer có trong TARGETS)")
+    TradeEvents.SendRequest.OnClientEvent:Connect(function(uuid, fromPlayer, expireTime)
+        task.wait(1)
+        pcall(function() TradeEvents.RespondRequest:FireServer(uuid, true) end)
+        driveAcceptAndConfirm()
+    end)
+
+    task.spawn(function()
+        while true do
+            task.wait(1.5)
+            if TradingController.CurrentTradeReplicator then
+                driveAcceptAndConfirm(); break
+            end
+        end
+    end)
+    return
+end
+
+-- ========== MODE: AUTO-TRADE ==========
+print("🟡 MODE: AUTO-TRADE (LocalPlayer không trong TARGETS)")
+
+local function getPlayerByName(name) return Players:FindFirstChild(name) end
+
+-- B1: gửi request
+local function sendTradeRequest(targetPlayer)
+    TradeEvents.SendRequest:FireServer(targetPlayer)
+    print(("[B1] 📤 Đã gửi trade tới %s"):format(targetPlayer.Name))
+end
+
+-- Chờ trade mở đúng với target cụ thể
+local function waitForTradeWith(targetPlayer, timeoutSec)
+    local t0 = time()
+    while time() - t0 < (timeoutSec or MAKE_TRADE_TIMEOUT) do
+        local rep = TradingController.CurrentTradeReplicator
+        if rep then
+            local data = rep:GetData()
+            if data and data.players then
+                local p1, p2 = data.players[1], data.players[2]
+                if (p1 == me and p2 == targetPlayer) or (p2 == me and p1 == targetPlayer) then
+                    print("[B1] ✅ Trade đã mở với:", targetPlayer.Name)
+                    return rep
+                end
+            end
+        end
+        task.wait(0.25)
+    end
+    return nil
+end
+
+-- B2: set tiền
+local function setShecklesSafe(amount)
+    local ok, err = pcall(function()
+        TradeEvents.SetSheckles:FireServer(amount)
+    end)
+    if not ok then
+        warn("[B2] SetSheckles lỗi:", err)
+        return false
+    end
+    print(("[B2] 💰 SetSheckles = %s"):format(tostring(amount)))
+    return true
+end
+
+-- Chờ cả 2 bên Accept
+local function waitPartnerAccept(rep, timeoutSec)
+    local t0 = time()
+    while time() - t0 < (timeoutSec or PARTNER_ACCEPT_TIMEOUT) do
+        if bothAccepted(rep) then
+            print("[WAIT] 🤝 Cả 2 đã Accept!")
+            return true
+        end
+        pcall(function() TradeEvents.Accept:FireServer() end)
+        task.wait(2.0)
+    end
+    return false
+end
+
+-- Chờ trade đóng hẳn
+local function waitTradeClosed(timeoutSec)
+    local t0 = time()
+    while time() - t0 < (timeoutSec or 15) do
+        if not TradingController.CurrentTradeReplicator then
+            return true
+        end
+        task.wait(0.25)
+    end
+    return false
+end
+
+local function doTradeTo(targetName)
+    -- BỎ QUA nếu đã hoàn tất trước đó
+    if CompletedTargets[targetName] then
+        print("⏩ Bỏ qua (đã trade xong trước đó):", targetName)
+        return
+    end
+
+    local targetPlayer = getPlayerByName(targetName)
+    if not targetPlayer then
+        print("⚠️ Không thấy người chơi trong server:", targetName)
+        return
+    end
+
+    -- BẮT BUỘC equip Trading Ticket
+    if not ensureTradingTicketEquipped() then
+        warn("❌ Bỏ qua trade (không equip được Trading Ticket).")
+        return
+    end
+
+    -- B1
+    sendTradeRequest(targetPlayer)
+
+    -- B1.5: chờ trade mở
+    local rep = waitForTradeWith(targetPlayer, MAKE_TRADE_TIMEOUT)
+    if not rep then
+        warn("⏳ Hết thời gian chờ mở trade với:", targetName)
+        return
+    end
+
+    -- B2
+    setShecklesSafe(AMOUNT_SHECKLES)
+
+    -- B3/B4: lặp Accept/Confirm
+    driveAcceptAndConfirm()
+
+    -- Chờ đối phương Accept, rồi Confirm lại lần nữa
+    local ok = waitPartnerAccept(rep, PARTNER_ACCEPT_TIMEOUT)
+    if ok then
+        task.wait(0.5)
+        pcall(function() TradeEvents.Confirm:FireServer() end)
+        -- Chờ trade đóng hẳn → đánh dấu hoàn tất
+        if waitTradeClosed(20) then
+            CompletedTargets[targetName] = true
+            print("✅ ĐÃ HOÀN TẤT trade với:", targetName, "→ sẽ không gửi lại.")
+        else
+            print("⚠️ Trade chưa đóng sau Confirm (không đánh dấu hoàn tất).")
+        end
+    else
+        warn("⌛ Đối phương không Accept kịp.")
+    end
+end
+
+-- ====== Chỉ quét người đang ở server và nằm trong TARGETS ======
+
+-- Set tra cứu nhanh O(1)
+local TARGET_SET = {}
+for _, n in ipairs(TARGETS) do TARGET_SET[n] = true end
+
+local function isTargetInList(name)
+    return TARGET_SET[name] == true
+end
+
+-- Quét tất cả người đang ở server ngay khi start
+local function scanAndTradePresentTargets()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= me and isTargetInList(plr.Name) and not CompletedTargets[plr.Name] then
+            doTradeTo(plr.Name)
+            task.wait(SEND_COOLDOWN)
+        end
+    end
+end
+
+-- Khi có người vào server, nếu là target thì xử lý ngay
+Players.PlayerAdded:Connect(function(plr)
+    if plr == me then return end
+    if isTargetInList(plr.Name) and not CompletedTargets[plr.Name] then
+        -- đợi nhân vật/replicator game ổn định một nhịp
+        task.wait(2)
+        doTradeTo(plr.Name)
+    end
+end)
+
+-- Vòng quét nhẹ định kỳ (phòng lỡ lúc PlayerAdded bị miss)
+task.spawn(function()
+    while true do
+        scanAndTradePresentTargets()
+        task.wait(8) -- chu kỳ quét
+    end
+end)
