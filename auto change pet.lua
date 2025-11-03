@@ -1,3 +1,5 @@
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20change%20pet.lua"))()
+
 -- Đợi game và Player load xong
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 
