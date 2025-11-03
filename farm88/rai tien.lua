@@ -120,4 +120,4 @@ task.spawn(function()
 end)
 
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/send%20small%20money%20.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/send%20small%20money.lua"))()
