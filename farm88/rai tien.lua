@@ -1,4 +1,4 @@
--- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/send%20small%20money%20.lua"))()
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/farm88/rai%20tien.lua"))()
 
 -- ======= BYPASS "CLICK ANYWHERE TO CONTINUE" =======
 local Players           = game:GetService("Players")
