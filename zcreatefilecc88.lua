@@ -330,9 +330,14 @@ while true do
     local slotOK = CONFIG.slot.all_required and (petSlotOK and eggSlotOK)
                     or (petSlotOK or eggSlotOK)
 
+    math.randomseed(os.time())
+    if moneyOK and slotOK then task.wait(math.random(1, 30)) end
+    
     updateIfChanged("money", moneyOK)
     updateIfChanged("total_pet", totalPetOK)
     updateIfChanged("slot", slotOK)
+    
+    
 
     -- print(("💰 %s | Pet=%d | PetSlot=%d | EggSlot=%d | → money=%s total_pet=%s slot=%s")
     --     :format(player.leaderstats.Sheckles.Value, totalPet, maxPetSlot, maxEggSlot, moneyOK, totalPetOK, slotOK))
