@@ -254,7 +254,7 @@ local function tryUpgradeOne(kind)
     task.wait(DELAY_BETWEEN_USES)
 
     -- kiểm tra sau khi bắn remote
-    local newMax = (kind == "Pet") ? getPetMaxSlotFromUI() : getEggMaxSlotFromDataService()
+    local newMax = (kind == "Pet" and getPetMaxSlotFromUI()) or getEggMaxSlotFromDataService()
     if newMax and newMax > maxNow then
         print(("[Upgrade] 🎉 %s slot tăng: %d → %d"):format(kind, maxNow, newMax))
         lastSeenMax[kind] = newMax
@@ -267,12 +267,6 @@ local function tryUpgradeOne(kind)
     end
 end
 
--- Toán tử 3 ngôi đơn giản (Lua không có ?:)
-do
-    local _tern = function(cond, a, b) if cond then return a else return b end end
-    getfenv().["?"] = function(cond) return { ["__"] = cond } end
-    getmetatable(getfenv()["?"]).__call = function(self, a, b) return (self.__ and a) or b end
-end
 
 -- ================= MAIN LOOP =================
 while true do
