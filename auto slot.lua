@@ -15,6 +15,29 @@ pcall(function()
     DataService = require(ReplicatedStorage:WaitForChild("Modules"):WaitForChild("DataService"))
 end)
 
+-- ===== Config chống lặp lại cùng 1 pet =====
+local ATTEMPT_LIMIT          = 2        -- Nếu cùng 1 PET_UUID bị thử >= số lần này, ưu tiên đổi sang pet khác
+local RECENT_BUFFER_SIZE     = 3        -- Nhớ vài UUID gần nhất để tránh chọn lại ngay lập tức
+local COOLDOWN_AFTER_FAIL    = 0.5      -- chờ nhẹ sau khi không unlock được
+
+local AttemptCount = {}                 -- [uuid] = số lần đã thử
+local RECENT_UUID  = { Pet = {}, Egg = {} }  -- nhớ các uuid vừa dùng theo slotType
+
+local function pushRecent(kind, uuid)
+    local buf = RECENT_UUID[kind]
+    if not buf then return end
+    table.insert(buf, 1, uuid)
+    if #buf > RECENT_BUFFER_SIZE then
+        table.remove(buf) -- bỏ phần tử cuối
+    end
+end
+local function inRecent(kind, uuid)
+    local buf = RECENT_UUID[kind]
+    if not buf then return false end
+    for _, u in ipairs(buf) do if u == uuid then return true end end
+    return false
+end
+
 -- ===== Blacklist pet (không dùng các pet này để nâng slot) =====
 local unvalidToolNames = {
     "Capybara", "Ostrich", "Griffin", "Golden Goose", "Dragonfly",
@@ -64,34 +87,54 @@ local function getEggMaxSlotFromDataService()
     return tonumber(mutable.MaxEggsInFarm or 0) or 0
 end
 
--- Tìm pet phù hợp để nâng slot
-local function findPetForUpgrade(ageMin, ageMax)
-    local best, bestAge = nil, -1
+-- Thu thập toàn bộ ứng viên hợp lệ trong backpack
+local function collectCandidates(ageMin, ageMax)
+    local list = {}
     for _, tool in ipairs(player.Backpack:GetChildren()) do
         if tool:IsA("Tool") then
             local petName, _, age = parsePetFromName(tool.Name)
             if petName and not isBlacklisted(petName) and age then
-                local ok
-                if ageMax == math.huge then
-                    ok = (age >= ageMin)
-                else
-                    ok = (age >= ageMin) and (age < ageMax)
-                end
-                if ok and age > bestAge then
+                local ok = (ageMax == math.huge) and (age >= ageMin) or ((age >= ageMin) and (age < ageMax))
+                if ok then
                     local uuid = tool:GetAttribute("PET_UUID")
                     if uuid and typeof(uuid) == "string" then
-                        best = { tool = tool, uuid = uuid, age = age, name = petName }
-                        bestAge = age
+                        table.insert(list, {tool = tool, uuid = uuid, age = age, name = petName})
                     end
                 end
             end
         end
     end
-    if best then
-        print(("[Upgrade] Chọn pet: %s | Age=%d | UUID=%s"):format(best.name, best.age, best.uuid))
-        return best.tool, best.uuid
+    -- sắp xếp ưu tiên age giảm dần
+    table.sort(list, function(a,b) return (a.age or 0) > (b.age or 0) end)
+    return list
+end
+
+-- Chọn candidate theo luật: tránh uuid trong RECENT, tránh uuid đã vượt ATTEMPT_LIMIT
+local function pickCandidate(list, kind)
+    if #list == 0 then return nil end
+
+    -- ưu tiên: attempt < limit và không nằm trong RECENT buffer
+    for _, c in ipairs(list) do
+        local tries = AttemptCount[c.uuid] or 0
+        if tries < ATTEMPT_LIMIT and not inRecent(kind, c.uuid) then
+            return c
+        end
     end
-    return nil, nil
+    -- nếu không có ai < limit, thử ai không trong RECENT
+    for _, c in ipairs(list) do
+        if not inRecent(kind, c.uuid) then
+            return c
+        end
+    end
+    -- không còn lựa chọn, lấy con có attempt nhỏ nhất
+    local best, bestTries = nil, math.huge
+    for _, c in ipairs(list) do
+        local tries = AttemptCount[c.uuid] or 0
+        if tries < bestTries then
+            best, bestTries = c, tries
+        end
+    end
+    return best
 end
 
 -- Gọi remote nâng slot
@@ -121,7 +164,7 @@ local function decideAgeRangeForSlot(maxSlot)
     return nil, nil
 end
 
--- Thử nâng slot
+-- Thử nâng slot với anti-repeat
 local function tryUpgradeOne(kind)
     local maxNow = (kind == "Pet") and getPetMaxSlotFromUI() or getEggMaxSlotFromDataService()
     print(("[Upgrade] %s slot hiện tại: %d"):format(kind, maxNow))
@@ -129,18 +172,36 @@ local function tryUpgradeOne(kind)
         print(("[Upgrade] %s slot đã tối đa."):format(kind))
         return true
     end
+
     local minA, maxA = decideAgeRangeForSlot(maxNow)
     if not minA then return true end
 
-    local _, uuidStr = findPetForUpgrade(minA, maxA)
-    if not uuidStr then
+    local candidates = collectCandidates(minA, maxA)
+    if #candidates == 0 then
         local needStr = (maxA == math.huge) and (">= " .. minA) or (("%d-%d"):format(minA, maxA - 1))
         warn(("[Upgrade] Không có pet hợp lệ (lọc blacklist) để nâng %s: yêu cầu age %s")
             :format(kind, needStr))
         return false
     end
 
-    return unlockSlotWithPet(uuidStr, kind)
+    local chosen = pickCandidate(candidates, kind)
+    if not chosen then
+        warn("[Upgrade] Không chọn được ứng viên nào (anti-repeat filter).")
+        return false
+    end
+
+    print(("[Upgrade] Chọn pet: %s | Age=%d | UUID=%s (attempt=%d)")
+        :format(chosen.name, chosen.age, chosen.uuid, (AttemptCount[chosen.uuid] or 0)))
+
+    -- Đánh dấu và gửi
+    AttemptCount[chosen.uuid] = (AttemptCount[chosen.uuid] or 0) + 1
+    pushRecent(kind, chosen.uuid)
+
+    local ok = unlockSlotWithPet(chosen.uuid, kind)
+    if not ok then
+        task.wait(COOLDOWN_AFTER_FAIL)
+    end
+    return ok
 end
 
 -- Main loop: ưu tiên Pet → Egg
