@@ -224,6 +224,7 @@ local function doTradeTo(targetName)
     end
 
     -- B1
+    task.wait(5)
     sendTradeRequest(targetPlayer)
 
     -- B1.5: chờ trade mở
@@ -290,6 +291,6 @@ end)
 task.spawn(function()
     while true do
         scanAndTradePresentTargets()
-        task.wait(8) -- chu kỳ quét
+        task.wait(3) -- chu kỳ quét
     end
 end)
