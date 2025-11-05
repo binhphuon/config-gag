@@ -1,0 +1,49 @@
+-- Script mua Egg + Gear tự động, cho phép tùy chỉnh list egg
+
+repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
+
+-- Service
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Cấu hình danh sách trứng và thời gian chờ
+
+
+local EggDelay = 3       -- delay giữa các lần mua egg
+local GearDelay = 60     -- delay giữa các lần mua gear
+local GearName  = "Recall Wrench"
+
+-- Hàm mua egg
+local function buyEgg(eggName)
+    local ok, err = pcall(function()
+        local event = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("BuyPetEgg")
+        event:FireServer(eggName)
+    end)
+    if ok then
+        print("🥚 Đã mua:", eggName)
+    else
+        warn("⚠️ Lỗi khi mua", eggName, err)
+    end
+end
+
+-- Hàm mua gear
+local function buyGear(gearName)
+    local ok, err = pcall(function()
+        local event = ReplicatedStorage:WaitForChild("GameEvents"):WaitForChild("BuyGearStock")
+        event:FireServer(gearName)
+    end)
+    if ok then
+        print("🔧 Đã mua gear:", gearName)
+    else
+        warn("⚠️ Lỗi khi mua gear", gearName, err)
+    end
+end
+
+-- Vòng lặp chính
+while true do
+    -- Mua toàn bộ egg trong danh sách
+    for _, eggName in ipairs(EggList) do
+        buyEgg(eggName)
+        task.wait(EggDelay)
+    end
+    task.wait(10)
+end
