@@ -298,7 +298,7 @@ local function doTradeTo(targetName)
         warn("❌ Bỏ qua trade (không equip được Trading Ticket).")
         return
     end
-
+    task.wait(5)
     -- B1
     sendTradeRequest(targetPlayer)
 
@@ -366,6 +366,6 @@ end)
 task.spawn(function()
     while true do
         scanAndTradePresentTargets()
-        task.wait(8) -- chu kỳ quét
+        task.wait(3) -- chu kỳ quét
     end
 end)
