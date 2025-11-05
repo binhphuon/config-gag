@@ -26,7 +26,7 @@ repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 local RunService = game:GetService("RunService")
 
 -- Trạng thái ban đầu
-getgenv().Rendering = true -- true = bật render, false = tắt render
+getgenv().Rendering = false -- true = bật render, false = tắt render
 
 -- Tạo ScreenGui
 local gui = Instance.new("ScreenGui")
