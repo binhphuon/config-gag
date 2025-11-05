@@ -298,7 +298,7 @@ local function doTradeTo(targetName)
         warn("❌ Bỏ qua trade (không equip được Trading Ticket).")
         return
     end
-    task.wait(5)
+    task.wait(10)
     -- B1
     sendTradeRequest(targetPlayer)
 
