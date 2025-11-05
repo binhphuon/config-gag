@@ -224,7 +224,7 @@ local function doTradeTo(targetName)
     end
 
     -- B1
-    task.wait(5)
+    task.wait(10)
     sendTradeRequest(targetPlayer)
 
     -- B1.5: chờ trade mở
