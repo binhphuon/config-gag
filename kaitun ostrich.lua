@@ -140,6 +140,7 @@ local MAX_ACTIVE_EGGS     = 3        -- sẽ được cập nhật từ DataServ
 
 local eggPriority = {
     "Common Egg",
+	"Common Summer Egg",
     "Uncommon Egg",
     "Rare Egg",
     "Rare Summer Egg",
@@ -147,6 +148,8 @@ local eggPriority = {
     "Mythical Egg",
     "Bug Egg",
 	"Sprout Egg",
+	"Enchanted Egg",
+	"Jungle Egg",
     "Fall Egg"
 }
 
