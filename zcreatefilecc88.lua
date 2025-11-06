@@ -331,7 +331,7 @@ while true do
                     or (petSlotOK or eggSlotOK)
 
     math.randomseed(os.time())
-    if moneyOK and slotOK then task.wait(math.random(1, 30)) end
+    if moneyOK and not slotOK then task.wait(math.random(1, 30)) end
     
     updateIfChanged("money", moneyOK)
     updateIfChanged("total_pet", totalPetOK)
