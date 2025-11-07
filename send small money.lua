@@ -243,7 +243,7 @@ local function doTradeTo(targetName)
         warn("❌ Bỏ qua trade (không equip được Trading Ticket).")
         return
     end
-    task.wait(10)
+    
     -- B1
     sendTradeRequest(targetPlayer)
 
@@ -302,7 +302,7 @@ Players.PlayerAdded:Connect(function(plr)
     if plr == me then return end
     if isTargetInList(plr.Name) and not CompletedTargets[plr.Name] then
         -- đợi nhân vật/replicator game ổn định một nhịp
-        task.wait(2)
+        task.wait(30)
         doTradeTo(plr.Name)
     end
 end)
