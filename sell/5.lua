@@ -138,11 +138,12 @@ local function updateUserInfo()
 end
 
 --// Chạy
-cleanupJsonFiles()  -- xoá .json thừa, chỉ giữ {userId}-info.json
+--cleanupJsonFiles()  -- xoá .json thừa, chỉ giữ {userId}-info.json
 
 -- Cập nhật định kỳ
 while true do
     updateUserInfo()
     task.wait(2) -- mỗi 2 giây cập nhật 1 lần
 end
+
 
