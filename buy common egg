@@ -21,8 +21,8 @@ local EggList = {
     "Fall Egg"
 }
 
-local EggDelay = 3       -- delay giữa các lần mua egg
-local GearDelay = 60     -- delay giữa các lần mua gear
+local EggDelay = 1       -- delay giữa các lần mua egg
+local GearDelay = 10     -- delay giữa các lần mua gear
 local GearName  = "Recall Wrench"
 
 -- Hàm mua egg
