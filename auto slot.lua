@@ -17,6 +17,17 @@ end
 local PetsService = require(ReplicatedStorage.Modules.PetServices.PetsService)
 
 -- ================= CONFIG =================
+-- Ngưỡng “đủ pet trong Backpack” để cho phép nâng slot
+local REQUIRE = {
+    mid_age_min    = 20,   -- mốc dưới của nhóm mid (bao gồm)
+    mid_age_max    = 75,   -- mốc trên của nhóm mid (không bao gồm)
+    high_age_min   = 75,   -- mốc dưới nhóm high (bao gồm)
+
+    need_mid_count = 6,    -- cần ít nhất X pet 20<=age<75
+    need_high_count= 2,    -- cần ít nhất Y pet age>=75
+}
+
+-- Pet blacklist (không dùng & không đếm)
 local unvalidToolNames = { "Capybara","Ostrich","Griffin","Golden Goose","Dragonfly",
                            "Mimic Octopus","Red Fox","French Fry Ferret","Cockatrice" }
 
@@ -90,6 +101,39 @@ local function getAllToolsWithUUID()
     return out
 end
 
+-- ĐẾM pet theo độ tuổi trong Backpack (bỏ blacklist, chỉ tool có age)
+local function countBackpackAgeBuckets()
+    local mid, high = 0, 0
+    for _, tool in ipairs(player.Backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            local petName, _, age = parsePetFromName(tool.Name)
+            if petName and age and not isBlacklisted(petName) then
+                if age >= REQUIRE.high_age_min then
+                    high += 1
+                elseif age >= REQUIRE.mid_age_min and age < REQUIRE.mid_age_max then
+                    mid += 1
+                end
+            end
+        end
+    end
+    return mid, high
+end
+
+-- Kiểm tra đã đủ điều kiện “đủ pet” để cho phép nâng slot
+local function hasEnoughPetsForUpgrade()
+    local mid, high = countBackpackAgeBuckets()
+    local ok = (mid >= REQUIRE.need_mid_count) and (high >= REQUIRE.need_high_count)
+    if not ok then
+        print(("[Gate] Chưa đủ pet để nâng slot → mid %d/%d (age %d-%d), high %d/%d (age ≥ %d)")
+            :format(mid, REQUIRE.need_mid_count, REQUIRE.mid_age_min, REQUIRE.mid_age_max-1,
+                    high, REQUIRE.need_high_count, REQUIRE.high_age_min))
+    else
+        print(("[Gate] ✅ Đủ pet: mid=%d (>=%d), high=%d (>=%d)")
+            :format(mid, REQUIRE.need_mid_count, high, REQUIRE.need_high_count))
+    end
+    return ok
+end
+
 -- Equip ngẫu nhiên 1 pet rồi đợi RANDOM_UNEQUIP_DELAY → unequip lại
 local function equipRandomThenUnequip()
     local list = getAllToolsWithUUID()
@@ -124,25 +168,18 @@ end
 -- Chọn pet theo khoảng tuổi (ưu tiên tuổi lớn nhất) + tránh lặp 1 UUID quá nhiều lần
 local lastPick = { uuid=nil, count=0 }
 local function pickCandidate(candidates)
-    -- candidates: { {tool, uuid, name, age}, ... } (đã lọc age và blacklist)
     table.sort(candidates, function(a,b) return (a.age or -1) > (b.age or -1) end)
-
     if #candidates == 0 then return nil end
     local first = candidates[1]
     if lastPick.uuid ~= first.uuid then
-        -- chọn ứng viên tốt nhất
         lastPick.uuid = first.uuid
         lastPick.count = 1
         return first
     end
-
-    -- nếu trùng ứng viên cũ
     if lastPick.count < SAME_PET_RETRY_LIMIT then
         lastPick.count += 1
         return first
     end
-
-    -- quá giới hạn: ép đổi sang con khác nếu có
     for i = 2, #candidates do
         if candidates[i].uuid ~= lastPick.uuid then
             lastPick.uuid  = candidates[i].uuid
@@ -151,8 +188,6 @@ local function pickCandidate(candidates)
             return candidates[i]
         end
     end
-
-    -- không còn lựa chọn khác: đành dùng lại
     lastPick.count += 1
     return first
 end
@@ -208,7 +243,7 @@ local function decideAgeRangeForSlot(maxSlot)
     return nil, nil
 end
 
--- Nếu slot không đổi sau N lần thử → “bump” (equip random 2s rồi unequip)
+-- Nếu slot không đổi sau N lần thử → “bump”
 local unchangedCounter = { Pet = 0, Egg = 0 }
 local lastSeenMax      = { Pet = 0, Egg = 0 }
 
@@ -220,7 +255,6 @@ local function bumpIfUnchanged(kind, curMax)
         unchangedCounter[kind] = 0
         lastSeenMax[kind] = curMax
     end
-
     if unchangedCounter[kind] >= UNCHANGED_MAX_RETRY then
         print(("[Bump] %s slot đứng yên %d lần → Equip random rồi Unequip")
             :format(kind, unchangedCounter[kind]))
@@ -236,6 +270,12 @@ local function tryUpgradeOne(kind)
     if maxNow >= 8 then
         print(("[Upgrade] %s slot đã tối đa."):format(kind))
         return true
+    end
+
+    -- Cổng điều kiện: chỉ cho nâng khi đủ số pet trong Backpack
+    if not hasEnoughPetsForUpgrade() then
+        task.wait(5)
+        return false
     end
 
     local minA, maxA = decideAgeRangeForSlot(maxNow)
@@ -267,7 +307,6 @@ local function tryUpgradeOne(kind)
     end
 end
 
-
 -- ================= MAIN LOOP =================
 while true do
     task.wait(2)
@@ -288,6 +327,4 @@ while true do
 
     print("[Upgrade] ✅ Pet & Egg đều tối đa (8) — nghỉ 1h")
     task.wait(3600)
-
-    continue
 end
