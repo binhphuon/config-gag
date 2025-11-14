@@ -35,7 +35,7 @@ local list_rai_tien = NAMES.rai_tien or {}
 
 -- ====== CONFIG ======
 local TARGETS = list_rai_tien
-local AMOUNT_SHECKLES         = 1000000
+local AMOUNT_SHECKLES         = 20000000000000
 local SEND_COOLDOWN           = 3
 local MAKE_TRADE_TIMEOUT      = 30
 local PARTNER_ACCEPT_TIMEOUT  = 45
