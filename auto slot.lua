@@ -134,9 +134,10 @@ while true do
         break
     end
 
-    task.wait(4)
+    task.wait(1)
 end
 
+task.wait(5)
 ----------------------------------------------------
 -- 🔥 MAIN UPGRADE LOGIC (giữ nguyên như cũ của bạn)
 ----------------------------------------------------
