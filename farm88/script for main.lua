@@ -12,7 +12,7 @@ end)
 
 --Up 8/8
 task.spawn(function()
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20slot.lua"))()
+  --loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20slot.lua"))()
 end)
 
 --Unequip pet
