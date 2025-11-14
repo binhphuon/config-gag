@@ -10,30 +10,6 @@ local HttpService     = game:GetService("HttpService")
 -- Modules
 local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 
--- =========================
--- CONFIG
--- =========================
-local auto_gift = true -- false nếu chỉ muốn auto accept gift
-
--- Blacklist pet
-local unvalidToolNames = {
-    "Capybara","Ostrich","Griffin","Golden Goose","Dragonfly",
-    "Mimic Octopus","Red Fox","French Fry Ferret","Cockatrice","Swan"
-}
-
-local DataGetTool = {
-    {
-        name_pet    = nil,      -- nil = gift toàn bộ pet đủ điều kiện trừ blacklist
-        min_age     = 75,
-        max_age     = 101,
-        min_weight  = 2.5,
-        unequip_Pet = false,    -- auto pickup pet đủ điều kiện để gift
-        limit_pet   = 2,
-        kick_after_done = false,
-        wait_before_kick = 30,
-        playerlist  = {"a","b"},
-    }
-}
 
 -- =========================
 -- LƯU / TẢI DỮ LIỆU GIFT UUID + VERIFIED2
@@ -472,3 +448,4 @@ while true do
         end
     end
 end
+
