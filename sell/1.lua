@@ -353,7 +353,7 @@ end
 -- Vòng lặp chính (Auto Gift)
 -- =========================
 while true do
-    task.wait(1)
+    task.wait(0.5)
     if not auto_gift then task.wait(3600); continue end
 
     for _, cfg in ipairs(DataGetTool) do
@@ -448,4 +448,5 @@ while true do
         end
     end
 end
+
 
