@@ -21,7 +21,7 @@ task.spawn(function()
 end)
 
 --Change acc
-loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefilecc88.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefile8885.lua"))()
 
 
 
