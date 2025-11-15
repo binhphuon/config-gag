@@ -1,4 +1,4 @@
--- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20unequip%20all%20pets.lua"))()
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/unequip%20pet.lua"))()
 
 -- Đợi game và Player load xong
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
