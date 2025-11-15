@@ -82,6 +82,24 @@ local function getHRPCFrame()
     return hrp.CFrame
 end
 
+-- 🔹 Unequip toàn bộ Tool đang cầm trên tay → đưa về Backpack
+local function unequipAllHeldTools()
+    local char = player.Character or player.CharacterAdded:Wait()
+    if not char then return end
+
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if hum then
+        pcall(function() hum:UnequipTools() end)
+    end
+
+    -- đảm bảo không còn Tool nằm trong Character
+    for _, inst in ipairs(char:GetChildren()) do
+        if inst:IsA("Tool") then
+            inst.Parent = player.Backpack
+        end
+    end
+end
+
 -- Lấy list Tool có PET_UUID trong Backpack + Character
 local function getAllToolsWithUUID()
     local out = {}
@@ -276,6 +294,10 @@ local function bumpIfUnchanged(kind, curMax)
 end
 
 local function tryUpgradeOne(kind)
+    -- 🔹 Đảm bảo không cầm Tool nào (pet về Backpack) trước khi chọn & bắn remote
+    unequipAllHeldTools()
+    task.wait(0.1)
+
     local maxNow = (kind=="Pet") and getPetMaxSlotFromUI() or getEggMaxSlotFromDataService()
     print("[Upgrade] "..kind.." slot="..maxNow)
 
@@ -293,6 +315,10 @@ local function tryUpgradeOne(kind)
         bumpIfUnchanged(kind, maxNow)
         return false
     end
+
+    -- 🔹 Trước khi bắn remote, unequip 1 lần nữa cho chắc con pet đang ở Backpack
+    unequipAllHeldTools()
+    task.wait(0.05)
 
     unlockSlotWithPet(pet.uuid, kind)
     task.wait(DELAY_BETWEEN_USES)
