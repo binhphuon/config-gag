@@ -38,7 +38,9 @@ local DELAY_BETWEEN_USES   = 1.0
 local function isBlacklisted(petName)
     if not petName then return false end
     for _, bad in ipairs(unvalidToolNames) do
-        if petName:lower():find(bad:lower(), 1, true) then return true end
+        if petName:lower():find(bad:lower(), 1, true) then
+            return true
+        end
     end
     return false
 end
@@ -67,7 +69,9 @@ local function getEggMaxSlotFromDataService()
     if not DataService then return 0 end
     local ok, data = pcall(function() return DataService:GetData() end)
     if ok and type(data) == "table" then
-        return tonumber(data.PetsData.MutableStats.MaxEggsInFarm or 0) or 0
+        local pets = data.PetsData or {}
+        local mutable = pets.MutableStats or {}
+        return tonumber(mutable.MaxEggsInFarm or 0) or 0
     end
     return 0
 end
@@ -78,36 +82,60 @@ local function getHRPCFrame()
     return hrp.CFrame
 end
 
+-- Lấy list Tool có PET_UUID trong Backpack + Character
 local function getAllToolsWithUUID()
     local out = {}
-    for _, tool in ipairs(player.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and typeof(tool:GetAttribute("PET_UUID")) == "string" then
-            table.insert(out, {tool = tool, uuid = tool:GetAttribute("PET_UUID")})
+    local char = player.Character
+
+    local function collectFrom(container)
+        if not container then return end
+        for _, inst in ipairs(container:GetChildren()) do
+            if inst:IsA("Tool") then
+                local uuid = inst:GetAttribute("PET_UUID")
+                if uuid and typeof(uuid) == "string" then
+                    table.insert(out, {tool = inst, uuid = uuid, name = inst.Name})
+                end
+            end
         end
     end
+
+    collectFrom(player.Backpack)
+    collectFrom(char)
+
     return out
 end
 
 ----------------------------------------------------
--- 🔥 COUNT PET AGE BUCKETS (mid & high)
+-- 🔥 COUNT PET AGE BUCKETS (mid & high) – Backpack + tay cầm
 ----------------------------------------------------
-local function countBackpackAgeBuckets()
+local function countAgeBuckets()
     local mid, high = 0, 0
-    for _, tool in ipairs(player.Backpack:GetChildren()) do
-        local petName, age = parsePetFromName(tool.Name)
-        if petName and age and not isBlacklisted(petName) then
-            if age >= REQUIRE.high_age_min then
-                high += 1
-            elseif age >= REQUIRE.mid_age_min and age < REQUIRE.mid_age_max then
-                mid += 1
+    local char = player.Character
+
+    local function countFrom(container)
+        if not container then return end
+        for _, tool in ipairs(container:GetChildren()) do
+            if tool:IsA("Tool") then
+                local petName, age = parsePetFromName(tool.Name)
+                if petName and age and not isBlacklisted(petName) then
+                    if age >= REQUIRE.high_age_min then
+                        high += 1
+                    elseif age >= REQUIRE.mid_age_min and age < REQUIRE.mid_age_max then
+                        mid += 1
+                    end
+                end
             end
         end
     end
+
+    countFrom(player.Backpack)
+    countFrom(char)
+
     return mid, high
 end
 
 local function hasEnoughPetsForUpgrade()
-    local mid, high = countBackpackAgeBuckets()
+    local mid, high = countAgeBuckets()
     local ok = (mid >= REQUIRE.need_mid_count) and (high >= REQUIRE.need_high_count)
 
     if ok then
@@ -133,13 +161,13 @@ while true do
         print("[Gate] 🚀 Đã đủ pet → bắt đầu nâng slot!")
         break
     end
-
     task.wait(1)
 end
 
 task.wait(5)
+
 ----------------------------------------------------
--- 🔥 MAIN UPGRADE LOGIC (giữ nguyên như cũ của bạn)
+-- 🔥 MAIN UPGRADE LOGIC
 ----------------------------------------------------
 
 local lastPick = {uuid=nil, count=0}
@@ -148,7 +176,6 @@ local lastSeenMax      = {Pet = 0, Egg = 0}
 
 local function pickCandidate(candidates)
     table.sort(candidates, function(a,b) return a.age > b.age end)
-
     if #candidates == 0 then return nil end
     local first = candidates[1]
 
@@ -167,6 +194,7 @@ local function pickCandidate(candidates)
         if candidates[i].uuid ~= lastPick.uuid then
             lastPick.uuid = candidates[i].uuid
             lastPick.count = 1
+            print(("[Pick] 🔀 Đổi sang pet khác UUID=%s (tránh lặp)"):format(lastPick.uuid))
             return candidates[i]
         end
     end
@@ -175,20 +203,32 @@ local function pickCandidate(candidates)
     return first
 end
 
+-- Tìm pet hợp lệ theo tuổi trong Backpack + tay cầm
 local function findPetForUpgrade(ageMin, ageMax)
     local cand = {}
-    for _, tool in ipairs(player.Backpack:GetChildren()) do
-        local petName, age = parsePetFromName(tool.Name)
-        if petName and age and not isBlacklisted(petName) then
-            local okAge = (age >= ageMin and age < ageMax)
-            if okAge then
-                local uuid = tool:GetAttribute("PET_UUID")
-                if uuid then
-                    table.insert(cand, {tool=tool, uuid=uuid, name=petName, age=age})
+    local char = player.Character
+
+    local function collectFrom(container)
+        if not container then return end
+        for _, tool in ipairs(container:GetChildren()) do
+            if tool:IsA("Tool") then
+                local petName, age = parsePetFromName(tool.Name)
+                if petName and age and not isBlacklisted(petName) then
+                    local okAge = (age >= ageMin and age < ageMax)
+                    if okAge then
+                        local uuid = tool:GetAttribute("PET_UUID")
+                        if uuid and typeof(uuid) == "string" then
+                            table.insert(cand, {tool=tool, uuid=uuid, name=petName, age=age})
+                        end
+                    end
                 end
             end
         end
     end
+
+    collectFrom(player.Backpack)
+    collectFrom(char)
+
     return pickCandidate(cand)
 end
 
@@ -196,6 +236,9 @@ local function unlockSlotWithPet(uuid, slotType)
     local ok,err = pcall(function()
         ReplicatedStorage.GameEvents.UnlockSlotFromPet:FireServer(uuid, slotType)
     end)
+    if not ok then
+        warn("[Upgrade] UnlockSlotFromPet lỗi:", err)
+    end
     return ok
 end
 
@@ -218,13 +261,15 @@ local function bumpIfUnchanged(kind, curMax)
     end
 
     if unchangedCounter[kind] >= UNCHANGED_MAX_RETRY then
-        print("[Bump] slot không đổi → equip random")
+        print("[Bump] "..kind.." slot không đổi → equip random + unequip")
         local list = getAllToolsWithUUID()
         if #list > 0 then
             local pick = list[math.random(1,#list)]
             PetsService:EquipPet(pick.uuid, getHRPCFrame())
             task.wait(RANDOM_UNEQUIP_DELAY)
             PetsService:UnequipPet(pick.uuid)
+        else
+            warn("[Bump] Không tìm thấy pet nào có PET_UUID để equip random.")
         end
         unchangedCounter[kind] = 0
     end
@@ -240,8 +285,11 @@ local function tryUpgradeOne(kind)
     end
 
     local minA,maxA = decideAgeRangeForSlot(maxNow)
+    if not minA then return true end
+
     local pet = findPetForUpgrade(minA,maxA)
     if not pet then
+        print("[Upgrade] Không tìm thấy pet hợp lệ cho "..kind)
         bumpIfUnchanged(kind, maxNow)
         return false
     end
@@ -253,9 +301,10 @@ local function tryUpgradeOne(kind)
     if newMax > maxNow then
         unchangedCounter[kind] = 0
         lastSeenMax[kind] = newMax
-        print("[Upgrade] tăng slot!")
+        print("[Upgrade] 🎉 "..kind.." slot tăng: "..maxNow.." → "..newMax)
         return true
     else
+        print("[Upgrade] ⏸ "..kind.." slot chưa đổi ("..maxNow..")")
         bumpIfUnchanged(kind, maxNow)
         return false
     end
