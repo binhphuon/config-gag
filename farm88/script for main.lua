@@ -17,7 +17,7 @@ end)
 
 --Unequip pet
 task.spawn(function()
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20change%20pet.lua"))()
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/unequip%20pet.lua"))()
 end)
 
 --Change acc
