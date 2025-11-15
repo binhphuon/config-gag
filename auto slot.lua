@@ -21,8 +21,8 @@ local REQUIRE = {
     mid_age_max     = 75,
     high_age_min    = 75,
 
-    need_mid_count  = 6,   -- yêu cầu tối thiểu pet age 20–74
-    need_high_count = 2,   -- yêu cầu tối thiểu pet age >=75
+    need_mid_count  = 4,   -- yêu cầu tối thiểu pet age 20–74
+    need_high_count = 1,   -- yêu cầu tối thiểu pet age >=75
 }
 
 local unvalidToolNames = { "Capybara","Ostrich","Griffin","Golden Goose","Dragonfly",
@@ -265,10 +265,10 @@ end
 -- 🔥 MAIN LOOP
 ----------------------------------------------------
 while true do
-    task.wait(2)
+    task.wait(1)
 
     local petMax = getPetMaxSlotFromUI()
-    if petMax < 8 then
+    if petMax < 3 then
         tryUpgradeOne("Pet")
         task.wait(3)
         continue
