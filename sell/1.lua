@@ -10,7 +10,6 @@ local HttpService     = game:GetService("HttpService")
 -- Modules
 local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 
-
 -- =========================
 -- LƯU / TẢI DỮ LIỆU GIFT UUID + VERIFIED2
 -- =========================
@@ -18,7 +17,11 @@ local GIFT_FILE   = "gift_records.json"
 -- GiftData[name] = { uuids = {...}, confirmed = number, verified2 = boolean }
 local GiftData    = {}
 local GiftPending = {}  -- { [playerName] = in_flight_count }
-local firstSeen = {}   -- [playerName] = os.clock()
+local firstSeen   = {}  -- [playerName] = true nếu đã delay lần đầu
+local PendingStart = {} -- PendingStart[playerName] = { [uuid] = startTime }
+local PendingLastSend = {} -- PendingLastSend[playerName] = { [uuid] = lastSendTime }
+
+local PENDING_RETRY_INTERVAL = 5 -- giây giữa các lần gửi lại pet đang pending
 
 local function loadGiftData()
     if not (isfile and isfile(GIFT_FILE)) then return {} end
@@ -213,7 +216,7 @@ end
 -- Chờ xác nhận biến mất (gift thành công khi UUID biến khỏi backpack của mình)
 local function waitGiftConfirmed(uuid, timeoutSec)
     local t0 = os.clock()
-    timeoutSec = timeoutSec or 45
+    timeoutSec = timeoutSec or 120
     while os.clock() - t0 < timeoutSec do
         if not findBackpackToolByUUID(uuid) then
             return true
@@ -376,13 +379,13 @@ while true do
 
             -- Nếu đã khóa layer-2 rồi thì bỏ qua luôn cho nhẹ
             if isVerified2(p.Name) then
-                -- print(("[skip] %s đã verified2, bỏ qua."):format(p.Name))
                 continue
             end
 
+            -- Lần đầu gặp player trong config → delay 10s cho load Backpack/UI
             if not firstSeen[p.Name] then
                 firstSeen[p.Name] = true
-                print("⏳ Đợi 10s cho " .. p.Name .. " load đầy đủ...")
+                print(("⏳ Đợi 10s cho %s load đầy đủ..."):format(p.Name))
                 task.wait(10)
             end
 
@@ -427,10 +430,17 @@ while true do
                     end
 
                     addPending(p.Name, 1)
+
+                    -- Lưu thời điểm bắt đầu pending & lần gửi cuối cho UUID này
+                    PendingStart[p.Name] = PendingStart[p.Name] or {}
+                    PendingStart[p.Name][uuid] = os.clock()
+                    PendingLastSend[p.Name] = PendingLastSend[p.Name] or {}
+                    PendingLastSend[p.Name][uuid] = os.clock()
+
                     giftPetToPlayer(p.Name)
 
                     task.spawn(function(targetName, petUUID, limitForName, cfgLocal)
-                        local okDisappear = waitGiftConfirmed(petUUID, 45)
+                        local okDisappear = waitGiftConfirmed(petUUID, 120)
                         if okDisappear then
                             addGiftedUUID(targetName, petUUID)
                             print(("[limit] ✅ %s: %d/%s (gift confirmed)"):format(
@@ -451,7 +461,16 @@ while true do
                         else
                             warn(("[limit] ⏳ %s: Chưa xác nhận pet biến mất (không cộng số lượng)."):format(targetName))
                         end
+
                         subPending(targetName, 1)
+
+                        -- Xóa timestamp pending cho UUID này
+                        if PendingStart[targetName] then
+                            PendingStart[targetName][petUUID] = nil
+                        end
+                        if PendingLastSend[targetName] then
+                            PendingLastSend[targetName][petUUID] = nil
+                        end
                     end, p.Name, uuid, limit, cfg)
                 else
                     -- Không tìm thấy tool hợp lệ cho p, bỏ qua vòng này
@@ -464,11 +483,36 @@ while true do
 
             -- =====================
             -- PHASE 2: ĐÃ ĐỦ THEO SỔ SÁCH NHƯNG CÒN PENDING
-            -- → CHỈ CHỜ XÁC NHẬN, KHÔNG GIFT, KHÔNG LAYER-2
+            -- → THAY VÌ CHỜ, GỬI LẠI CÁC PET ĐANG PENDING
             -- =====================
             if pendingSoFar > 0 then
-                -- print(("[wait] %s đang có %d pending, chờ confirm xong rồi mới layer-2."):format(
-                --     p.Name, pendingSoFar))
+                local pendTable = PendingStart[p.Name]
+                if pendTable then
+                    for uuid, tStart in pairs(pendTable) do
+                        local tool = findBackpackToolByUUID(uuid)
+                        if tool then
+                            local now = os.clock()
+                            PendingLastSend[p.Name] = PendingLastSend[p.Name] or {}
+                            local last = PendingLastSend[p.Name][uuid] or 0
+                            if now - last >= PENDING_RETRY_INTERVAL then
+                                -- Equip lại và gửi lại
+                                local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                                if hum then
+                                    pcall(function() hum:EquipTool(tool) end)
+                                end
+                                giftPetToPlayer(p.Name)
+                                PendingLastSend[p.Name][uuid] = now
+
+                                local elapsed = now - tStart
+                                local remaining = math.max(0, 120 - elapsed)
+                                print(("[retry] 🔁 Gửi lại pet %s (%s) cho %s | đã chờ %.1fs, còn %.1fs timeout")
+                                    :format(tool.Name, tostring(uuid), p.Name, elapsed, remaining))
+                            end
+                        end
+                    end
+                end
+
+                -- Không gift mới trong Phase 2, chỉ retry pet đang pending
                 continue
             end
 
@@ -477,18 +521,42 @@ while true do
             -- Lúc này mới check layer-2 thật sự để khóa hoặc gift bù ở vòng sau
             -- =====================
             local have = countQualifiedInPlayerBackpack(p, cfg)
+
             if have >= limit then
                 print(("[L2] 🟢 %s đủ %d/%d, khóa layer-2."):format(p.Name, have, limit))
                 setVerified2(p.Name, true)
                 continue
             else
                 local need = math.max(limit - have, 0)
-                print(("[L2] 🟡 %s chỉ có %d/%d, thiếu %d. Những vòng sau sẽ gift bù (khi gifted+pending < limit).")
-                    :format(p.Name, have, limit, need))
+
+                -- Build thông tin pending chi tiết (phase này pendingSoFar = 0 theo design,
+                -- nhưng in ra cho debug nếu sau này logic đổi)
+                local pendingInfo = ""
+                local pendingTable = PendingStart[p.Name]
+                if pendingTable then
+                    for uuid, tStart in pairs(pendingTable) do
+                        local elapsed = os.clock() - tStart
+                        local remaining = math.max(0, 120 - elapsed)
+                        pendingInfo = pendingInfo ..
+                            string.format("\n   • UUID %s: đã chờ %.1fs, còn %.1fs",
+                                tostring(uuid), elapsed, remaining)
+                    end
+                end
+
+                print(("[L2] 🟡 %s chỉ có %d/%d, thiếu %d.\nPending hiện tại: %d%s")
+                    :format(
+                        p.Name,
+                        have,
+                        limit,
+                        need,
+                        getPendingFor(p.Name),
+                        pendingInfo ~= "" and pendingInfo or "\n   (không có pending)"
+                    )
+                )
+
                 -- Không chỉnh GiftData ở đây.
                 -- Khi có gift fail hoặc các vòng sau, gifted+pending sẽ < limit → Phase 1 tự động gift bù.
             end
         end
     end
 end
-
