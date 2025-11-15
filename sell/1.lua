@@ -213,7 +213,7 @@ end
 -- Chờ xác nhận biến mất (gift thành công khi UUID biến khỏi backpack của mình)
 local function waitGiftConfirmed(uuid, timeoutSec)
     local t0 = os.clock()
-    timeoutSec = timeoutSec or 120
+    timeoutSec = timeoutSec or 45
     while os.clock() - t0 < timeoutSec do
         if not findBackpackToolByUUID(uuid) then
             return true
@@ -430,7 +430,7 @@ while true do
                     giftPetToPlayer(p.Name)
 
                     task.spawn(function(targetName, petUUID, limitForName, cfgLocal)
-                        local okDisappear = waitGiftConfirmed(petUUID, 120)
+                        local okDisappear = waitGiftConfirmed(petUUID, 45)
                         if okDisappear then
                             addGiftedUUID(targetName, petUUID)
                             print(("[limit] ✅ %s: %d/%s (gift confirmed)"):format(
@@ -491,3 +491,4 @@ while true do
         end
     end
 end
+
