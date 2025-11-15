@@ -34,7 +34,7 @@ local list_up88 = NAMES.up88 or {}
 
 -- ====== CONFIG ======
 local TARGETS = list_up88
-local AMOUNT_SHECKLES         = 36000000000000
+local AMOUNT_SHECKLES         = 20000000000000
 local SEND_COOLDOWN           = 3
 local MAKE_TRADE_TIMEOUT      = 30
 local PARTNER_ACCEPT_TIMEOUT  = 45
