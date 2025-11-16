@@ -529,6 +529,21 @@ while true do
             else
                 local need = math.max(limit - have, 0)
 
+                -- 🔧 FIX FILE: nếu file ghi nhiều hơn thực tế → cắt bớt uuids xuống = have
+                local entry = GiftData[p.Name]
+                if entry and entry.uuids then
+                    local beforeCount = #entry.uuids
+                    if beforeCount > have then
+                        while #entry.uuids > have do
+                            table.remove(entry.uuids)
+                        end
+                        entry.confirmed = #entry.uuids
+                        saveGiftData()
+                        print(("🔧 [FixFile] Điều chỉnh gift_records cho %s: từ %d xuống %d (theo layer-2).")
+                            :format(p.Name, beforeCount, entry.confirmed))
+                    end
+                end
+
                 -- Build thông tin pending chi tiết (phase này pendingSoFar = 0 theo design,
                 -- nhưng in ra cho debug nếu sau này logic đổi)
                 local pendingInfo = ""
@@ -554,8 +569,8 @@ while true do
                     )
                 )
 
-                -- Không chỉnh GiftData ở đây.
-                -- Khi có gift fail hoặc các vòng sau, gifted+pending sẽ < limit → Phase 1 tự động gift bù.
+                -- Sau khi fix file, vòng sau giftedSoFar sẽ <= have,
+                -- nên điều kiện gifted+pending < limit sẽ true → Phase 1 tự động gift bù.
             end
         end
     end
