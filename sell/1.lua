@@ -474,7 +474,6 @@ while true do
                     end, p.Name, uuid, limit, cfg)
                 else
                     -- Không tìm thấy tool hợp lệ cho p, bỏ qua vòng này
-                    -- warn("[autoPickup] Không tìm thấy tool hợp lệ cho", p.Name)
                 end
 
                 -- Sau khi xử lý Phase 1 (dù có gift hay không), move on sang player tiếp theo
@@ -518,7 +517,7 @@ while true do
 
             -- =====================
             -- PHASE 3: gifted + pending >= limit VÀ pending = 0
-            -- Lúc này mới check layer-2 thật sự để khóa hoặc gift bù ở vòng sau
+            -- Lúc này chỉ log layer-2, KHÔNG sửa file, KHÔNG gift thêm
             -- =====================
             local have = countQualifiedInPlayerBackpack(p, cfg)
 
@@ -529,23 +528,7 @@ while true do
             else
                 local need = math.max(limit - have, 0)
 
-                -- 🔧 FIX FILE: nếu file ghi nhiều hơn thực tế → cắt bớt uuids xuống = have
-                local entry = GiftData[p.Name]
-                if entry and entry.uuids then
-                    local beforeCount = #entry.uuids
-                    if beforeCount > have then
-                        while #entry.uuids > have do
-                            table.remove(entry.uuids)
-                        end
-                        entry.confirmed = #entry.uuids
-                        saveGiftData()
-                        print(("🔧 [FixFile] Điều chỉnh gift_records cho %s: từ %d xuống %d (theo layer-2).")
-                            :format(p.Name, beforeCount, entry.confirmed))
-                    end
-                end
-
-                -- Build thông tin pending chi tiết (phase này pendingSoFar = 0 theo design,
-                -- nhưng in ra cho debug nếu sau này logic đổi)
+                -- Build thông tin pending chi tiết (thường pending = 0 ở Phase 3)
                 local pendingInfo = ""
                 local pendingTable = PendingStart[p.Name]
                 if pendingTable then
@@ -568,9 +551,7 @@ while true do
                         pendingInfo ~= "" and pendingInfo or "\n   (không có pending)"
                     )
                 )
-
-                -- Sau khi fix file, vòng sau giftedSoFar sẽ <= have,
-                -- nên điều kiện gifted+pending < limit sẽ true → Phase 1 tự động gift bù.
+                -- Không chỉnh GiftData ở Phase 3 nữa → không spawn UUID mới vô hạn
             end
         end
     end
