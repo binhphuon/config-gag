@@ -30,11 +30,14 @@ local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 local GIFT_FILE   = "gift_records.json"
 -- GiftData[name] = { uuids = {...}, confirmed = number, verified2 = boolean }
 local GiftData    = {}
-local firstSeen   = {}  -- [playerName] = true nếu đã delay lần đầu
 
 -- Kế hoạch gift: AssignedGifts[playerName][uuid] = { startTime, lastSend }
 local AssignedGifts = {}
-local PENDING_RETRY_INTERVAL = 5 -- giây giữa các lần gửi lại pet đang trong plan
+local PENDING_RETRY_INTERVAL = 5   -- giây giữa các lần gửi lại pet đang trong plan
+local STALE_HAVE_TIMEOUT      = 60 -- 1 phút have không tăng thì sửa file & gift bù
+local LastHave = {}               -- LastHave[playerName] = { have = number, lastChange = time }
+
+local firstSeen = {}  -- [playerName] = true nếu đã delay lần đầu
 
 local function loadGiftData()
     if not (isfile and isfile(GIFT_FILE)) then
@@ -45,7 +48,7 @@ local function loadGiftData()
         return HttpService:JSONDecode(readfile(GIFT_FILE))
     end)
     if ok and type(data) == "table" then
-        dbg("FILE", "Đọc %s thành công, có %d entry.", GIFT_FILE, (#data))
+        dbg("FILE", "Đọc %s thành công.", GIFT_FILE)
         for name, entry in pairs(data) do
             if type(entry) ~= "table" then
                 dbg("FILE", "Entry %s không hợp lệ, reset.", tostring(name))
@@ -459,10 +462,11 @@ while true do
     end
 
     for cfgIndex, cfg in ipairs(DataGetTool) do
-        local limit  = tonumber(cfg.limit_pet) or math.huge
-        local unlim  = limit > 100
+        local limit = tonumber(cfg.limit_pet) or math.huge
+        local unlim = limit > 100
 
-        dbg("CFG", "=== Xử lý cfg[%d] (limit=%s, unlimited=%s) ===", cfgIndex, tostring(cfg.limit_pet), tostring(unlim))
+        dbg("CFG", "=== Xử lý cfg[%d] (limit=%s, unlimited=%s) ===",
+            cfgIndex, tostring(cfg.limit_pet), tostring(unlim))
 
         if cfg.unequip_Pet then
             unequipPetsByConfig(cfg)
@@ -483,7 +487,7 @@ while true do
 
             if unlim then
                 ----------------------------------------------------------------
-                -- UNLIMITED MODE
+                -- UNLIMITED MODE: limit_pet > 100
                 ----------------------------------------------------------------
                 dbg("UNL", "Bắt đầu cycle unlimited cho %s (limit=%s > 100).", p.Name, tostring(cfg.limit_pet))
                 local chosen, petName, kg, age
@@ -551,23 +555,62 @@ while true do
                 end
             end
 
-            -- Số pet hiện có bên người nhận (để log & layer-2)
+            -- Số pet hiện có bên người nhận
             local haveNow = countQualifiedInPlayerBackpack(p, cfg)
+            local now     = os.clock()
 
-            -- Không cho plan vượt quá limit lifetime
-            local effectiveGifted = math.min(giftedLifetime, limit)
-            local maxByCap        = limit - (effectiveGifted + assignedCount)
-            local maxByBackpack   = limit - (haveNow + assignedCount)
-            local canAssignNew    = math.max(math.min(maxByCap, maxByBackpack), 0)
+            -- Cập nhật LastHave cho player này
+            do
+                local info = LastHave[p.Name]
+                if not info then
+                    LastHave[p.Name] = { have = haveNow, lastChange = now }
+                else
+                    if haveNow ~= info.have then
+                        dbg("FIX", "%s: have đổi từ %d → %d.", p.Name, info.have, haveNow)
+                        info.have       = haveNow
+                        info.lastChange = now
+                    end
+                end
+            end
 
-            dbg("PLAN", "%s: have=%d, gifted=%d, assigned=%d, limit=%d, canAssignNew=%d.",
-                p.Name, haveNow, giftedLifetime, assignedCount, limit, canAssignNew)
+            -- 🕒 Nếu file ghi nhiều hơn thực tế, have không tăng trong 60s và không còn plan pending
+            --     → cắt file xuống đúng haveNow để cho phép gift thêm.
+            do
+                local info = LastHave[p.Name]
+                if info and haveNow < limit and assignedCount == 0 and giftedLifetime > haveNow then
+                    local elapsed = now - info.lastChange
+                    if elapsed >= STALE_HAVE_TIMEOUT then
+                        local entry  = ensureEntry(p.Name)
+                        local before = #entry.uuids
+                        while #entry.uuids > haveNow do
+                            table.remove(entry.uuids)
+                        end
+                        entry.confirmed = #entry.uuids
+                        saveGiftData()
+                        giftedLifetime = entry.confirmed
 
+                        dbg("FIX",
+                            "%s: Sau %.1fs have vẫn =%d/%d nhưng file có %d → cắt còn %d.",
+                            p.Name, elapsed, haveNow, limit, before, entry.confirmed)
+                    end
+                end
+            end
+
+            -- ⚙️ Gift hiệu lực = min(giftedLifetime, haveNow, limit)
+            local effectiveGifted = math.min(giftedLifetime, haveNow, limit)
+
+            local maxByCap      = limit - (effectiveGifted + assignedCount)
+            local maxByBackpack = limit - (haveNow      + assignedCount)
+            local canAssignNew  = math.max(math.min(maxByCap, maxByBackpack), 0)
+
+            dbg("PLAN", "%s: have=%d, gifted=%d (eff=%d), assigned=%d, limit=%d, canAssignNew=%d.",
+                p.Name, haveNow, giftedLifetime, effectiveGifted, assignedCount, limit, canAssignNew)
+
+            -- 🔹 Chọn thêm UUID mới nếu còn slot
             if canAssignNew > 0 then
                 AssignedGifts[p.Name] = AssignedGifts[p.Name] or {}
                 assignedMap = AssignedGifts[p.Name]
 
-                -- Chọn thêm đúng canAssignNew UUID đủ điều kiện trong backpack mình
                 for _, tool in ipairs(player.Backpack:GetChildren()) do
                     if canAssignNew <= 0 then break end
                     if tool:IsA("Tool") then
@@ -589,7 +632,7 @@ while true do
 
                                 dbg("SEND", "Lần đầu gửi %s [%s] cho %s.", tool.Name, tostring(uuid), p.Name)
 
-                                -- Bật thread theo dõi confirm cho UUID này
+                                -- Thread theo dõi confirm cho UUID này
                                 trackUUID(p.Name, uuid, cfg, limit)
 
                                 canAssignNew -= 1
@@ -603,7 +646,7 @@ while true do
                     p.Name, haveNow, giftedLifetime, assignedCount, limit)
             end
 
-            -- Spam lại: chỉ gửi các UUID đã có trong plan
+            -- 🔁 Retry các UUID đang trong plan
             assignedMap = AssignedGifts[p.Name]
             if assignedMap then
                 for uuid, info in pairs(assignedMap) do
@@ -612,7 +655,6 @@ while true do
                         dbg("PLAN", "%s: UUID %s biến mất khỏi người → bỏ khỏi plan.", p.Name, tostring(uuid))
                         assignedMap[uuid] = nil
                     else
-                        local now  = os.clock()
                         local last = info.lastSend or 0
                         if now - last >= PENDING_RETRY_INTERVAL then
                             local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
@@ -634,7 +676,7 @@ while true do
                 end
             end
 
-            -- Layer-2 hard check: nếu giờ đã đủ limit trong backpack → khóa
+            -- 🔒 Layer-2 hard check: nếu giờ đã đủ limit trong backpack → khóa
             local haveAfter = countQualifiedInPlayerBackpack(p, cfg)
             if haveAfter >= limit and not isVerified2(p.Name) then
                 dbg("L2", "%s hiện có %d/%d → khóa layer-2.", p.Name, haveAfter, limit)
