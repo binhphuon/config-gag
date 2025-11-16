@@ -20,6 +20,7 @@ local GiftPending = {}  -- { [playerName] = in_flight_count }
 local firstSeen   = {}  -- [playerName] = true nếu đã delay lần đầu
 local PendingStart = {} -- PendingStart[playerName] = { [uuid] = startTime }
 local PendingLastSend = {} -- PendingLastSend[playerName] = { [uuid] = lastSendTime }
+local L2FixOnce   = {}  -- [playerName] = true nếu đã fix file 1 lần ở Phase 3
 
 local PENDING_RETRY_INTERVAL = 5 -- giây giữa các lần gửi lại pet đang pending
 
@@ -517,7 +518,7 @@ while true do
 
             -- =====================
             -- PHASE 3: gifted + pending >= limit VÀ pending = 0
-            -- Lúc này chỉ log layer-2, KHÔNG sửa file, KHÔNG gift thêm
+            -- Lúc này có thể fix file 1 lần rồi cho Phase 1 gift bù
             -- =====================
             local have = countQualifiedInPlayerBackpack(p, cfg)
 
@@ -527,6 +528,23 @@ while true do
                 continue
             else
                 local need = math.max(limit - have, 0)
+
+                -- 🔧 FIX FILE 1 LẦN DUY NHẤT CHO MỖI PLAYER KHI LAYER-2 THIẾU
+                local entry = GiftData[p.Name]
+                if entry and entry.uuids and not L2FixOnce[p.Name] then
+                    local beforeCount = #entry.uuids
+                    if beforeCount > have then
+                        -- cắt danh sách uuids xuống = have
+                        while #entry.uuids > have do
+                            table.remove(entry.uuids)
+                        end
+                        entry.confirmed = #entry.uuids
+                        saveGiftData()
+                        L2FixOnce[p.Name] = true
+                        print(("🔧 [FixFile-L2] Điều chỉnh gift_records cho %s: từ %d xuống %d (theo layer-2, chỉ 1 lần).")
+                            :format(p.Name, beforeCount, entry.confirmed))
+                    end
+                end
 
                 -- Build thông tin pending chi tiết (thường pending = 0 ở Phase 3)
                 local pendingInfo = ""
@@ -551,7 +569,9 @@ while true do
                         pendingInfo ~= "" and pendingInfo or "\n   (không có pending)"
                     )
                 )
-                -- Không chỉnh GiftData ở Phase 3 nữa → không spawn UUID mới vô hạn
+                -- Sau khi fix 1 lần, vòng sau gifted+pending < limit → Phase 1 tự gift bù.
+                -- Nếu sau khi bù mà vẫn thiếu, L2FixOnce[p.Name] = true nên sẽ không fix lần 2,
+                -- tránh spam nhiều UUID mới vô hạn.
             end
         end
     end
