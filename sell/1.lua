@@ -16,13 +16,11 @@ local PetsService     = require(ReplicatedStore.Modules.PetServices.PetsService)
 local GIFT_FILE   = "gift_records.json"
 -- GiftData[name] = { uuids = {...}, confirmed = number, verified2 = boolean }
 local GiftData    = {}
-local GiftPending = {}  -- { [playerName] = in_flight_count }
 local firstSeen   = {}  -- [playerName] = true nếu đã delay lần đầu
-local PendingStart = {} -- PendingStart[playerName] = { [uuid] = startTime }
-local PendingLastSend = {} -- PendingLastSend[playerName] = { [uuid] = lastSendTime }
-local L2FixOnce   = {}  -- [playerName] = true nếu đã fix file 1 lần ở Phase 3
 
-local PENDING_RETRY_INTERVAL = 5 -- giây giữa các lần gửi lại pet đang pending
+-- Kế hoạch gift: AssignedGifts[playerName][uuid] = { startTime, lastSend }
+local AssignedGifts = {}
+local PENDING_RETRY_INTERVAL = 5 -- giây giữa các lần gửi lại pet đang trong plan
 
 local function loadGiftData()
     if not (isfile and isfile(GIFT_FILE)) then return {} end
@@ -64,9 +62,18 @@ local function getGiftedCountFor(name)
     return #(entry.uuids or {})
 end
 
-local function setVerified2(name, v)
+local function ensureEntry(name)
     GiftData[name] = GiftData[name] or {uuids = {}, confirmed = 0, verified2 = false}
-    GiftData[name].verified2 = not not v
+    local e = GiftData[name]
+    e.uuids     = e.uuids or {}
+    e.confirmed = tonumber(e.confirmed or #e.uuids) or 0
+    e.verified2 = not not e.verified2
+    return e
+end
+
+local function setVerified2(name, v)
+    local e = ensureEntry(name)
+    e.verified2 = not not v
     saveGiftData()
 end
 
@@ -76,18 +83,13 @@ end
 
 local function addGiftedUUID(name, uuid)
     if not (name and uuid) then return end
-    GiftData[name] = GiftData[name] or { uuids = {}, confirmed = 0, verified2 = false }
-    local entry = GiftData[name]
-    if not table.find(entry.uuids, uuid) then
-        table.insert(entry.uuids, uuid)
-        entry.confirmed = #entry.uuids
+    local e = ensureEntry(name)
+    if not table.find(e.uuids, uuid) then
+        table.insert(e.uuids, uuid)
+        e.confirmed = #e.uuids
         saveGiftData()
     end
 end
-
-local function getPendingFor(name) return GiftPending[name] or 0 end
-local function addPending(name, n) GiftPending[name] = getPendingFor(name) + (n or 1) end
-local function subPending(name, n) GiftPending[name] = math.max(getPendingFor(name) - (n or 1), 0) end
 
 -- =========================
 -- HELPERS
@@ -121,7 +123,7 @@ local function qualifiesByCfg(petName, kg, age, cfg)
     end
     if cfg.min_weight and kg < cfg.min_weight then return false end
     if age == nil then
-        -- nếu không đọc được age: chỉ pass khi đang unequip_Pet (giữ nguyên rule cũ của bạn)
+        -- nếu không đọc được age: chỉ pass khi đang unequip_Pet (rule cũ)
         return cfg.unequip_Pet == true
     end
     return (age >= (cfg.min_age or -1)) and (age < (cfg.max_age or math.huge))
@@ -227,58 +229,81 @@ local function waitGiftConfirmed(uuid, timeoutSec)
     return false
 end
 
-local function getTool(name_pet, min_age, max_age, min_weight, unequip_Pet)
-    for _, tool in ipairs(player.Backpack:GetChildren()) do
-        if tool:IsA("Tool") then
-            local petName, kg, age = parsePetFromName(tool.Name)
-            if petName and kg then
-                local nameOK   = (not name_pet) or petName:lower():find(name_pet:lower(), 1, true)
-                local weightOK = (not min_weight) or (kg >= min_weight)
-                local ageOK
-                if age == nil then ageOK = unequip_Pet else ageOK = (age >= min_age and age < max_age) end
-                if (name_pet or not isUnvalidPet(petName)) and nameOK and ageOK and weightOK then
-                    return tool
-                end
-            end
-        end
-    end
-    return nil
-end
-
 local function giftPetToPlayer(targetPlayerName)
     local args = { "GivePet", Players:WaitForChild(targetPlayerName) }
     ReplicatedStore.GameEvents.PetGiftingService:FireServer(unpack(args))
 end
 
 -- =========================
--- KHI LOAD XONG: XÁC MINH LẠI CÁC UUID CŨ & LAYER-2 NẾU NGƯỜI ĐÓ ONLINE
+-- TRACK MỖI UUID TRONG PLAN
+-- =========================
+local function trackUUID(targetName, uuid, cfgLocal, limitForName)
+    task.spawn(function()
+        local okDisappear = waitGiftConfirmed(uuid, 120)
+        if okDisappear then
+            addGiftedUUID(targetName, uuid)
+            print(("[limit] ✅ %s: %d/%s (gift confirmed)")
+                :format(targetName, getGiftedCountFor(targetName), tostring(limitForName)))
+
+            -- Sau khi confirm, kiểm tra layer-2 (khóa nếu đã đủ)
+            local targetPlr = Players:FindFirstChild(targetName)
+            if targetPlr then
+                local have2 = countQualifiedInPlayerBackpack(targetPlr, cfgLocal)
+                local limitCfg = tonumber(cfgLocal.limit_pet) or math.huge
+                if have2 >= limitCfg then
+                    if not isVerified2(targetName) then
+                        print(("🟢 Layer-2 đạt sau confirm cho %s (%d/%d) → khóa.")
+                            :format(targetName, have2, limitCfg))
+                        setVerified2(targetName, true)
+                    end
+                end
+            end
+        else
+            warn(("[limit] ⏳ %s: UUID %s timeout, không xác nhận pet biến mất.")
+                :format(targetName, tostring(uuid)))
+        end
+
+        -- Dù sao cũng xóa khỏi plan
+        local m = AssignedGifts[targetName]
+        if m then
+            m[uuid] = nil
+            if next(m) == nil then
+                AssignedGifts[targetName] = nil
+            end
+        end
+    end)
+end
+
+-- =========================
+-- KHI LOAD XONG: DỌN FILE CŨ & LAYER-2 NẾU NGƯỜI ĐÓ ONLINE
 -- =========================
 task.spawn(function()
     task.wait(3)
-    print("🔄 Kiểm tra lại UUID + layer-2 cho người đang online...")
+    print("🔄 Kiểm tra lại UUID cũ + layer-2 cho người đang online...")
     local changed = false
     for name, entry in pairs(GiftData) do
         if typeof(entry) == "table" then
-            entry.uuids     = entry.uuids or {}
-            entry.confirmed = tonumber(entry.confirmed or #entry.uuids) or 0
-            entry.verified2 = not not entry.verified2
+            ensureEntry(name)
             local target = Players:FindFirstChild(name)
             if target then
-                -- Cập nhật confirmed (loại UUID vẫn còn trong backpack của mình)
+                -- Loại các UUID vẫn còn trong backpack của mình (gift fail từ trước)
                 local before = #entry.uuids
                 local validList = {}
                 for _, uuid in ipairs(entry.uuids) do
                     if not isPetInBackpack(uuid) then
                         table.insert(validList, uuid)
                     else
-                        print(("⚠️ %s: UUID %s vẫn còn trong backpack (gift chưa thành công, loại).")
+                        print(("⚠️ %s: UUID %s vẫn còn trong backpack (gift chưa thành công trước đó, loại).")
                             :format(name, uuid))
                     end
                 end
                 entry.uuids = validList
                 entry.confirmed = #validList
+                if #validList ~= before then
+                    changed = true
+                end
 
-                -- Với mỗi block cfg có playerlist chứa name → check layer-2
+                -- Check layer-2 theo Backpack hiện tại
                 for _, cfg in ipairs(DataGetTool) do
                     local limit = tonumber(cfg.limit_pet) or math.huge
                     if cfg.playerlist and table.find(cfg.playerlist, name) then
@@ -287,18 +312,16 @@ task.spawn(function()
                             if not entry.verified2 then
                                 entry.verified2 = true
                                 print(("🟢 Layer-2 OK cho %s (%d/%d)."):format(name, have, limit))
+                                changed = true
                             end
                         else
                             if entry.verified2 then
                                 print(("🟡 Layer-2 reset %s (chỉ có %d/%d)."):format(name, have, limit))
+                                entry.verified2 = false
+                                changed = true
                             end
-                            entry.verified2 = false
                         end
                     end
-                end
-
-                if (#validList ~= before) or changed then
-                    changed = true
                 end
             end
         end
@@ -355,7 +378,7 @@ if isReceiver then
 end
 
 -- =========================
--- Vòng lặp chính (Auto Gift) với 3 phase
+-- Vòng lặp chính (Auto Gift) – dựa trên kế hoạch UUID
 -- =========================
 while true do
     task.wait(0.5)
@@ -374,12 +397,13 @@ while true do
                 continue
             end
 
-            local limit        = tonumber(cfg.limit_pet) or math.huge
-            local giftedSoFar  = getGiftedCountFor(p.Name)
-            local pendingSoFar = getPendingFor(p.Name)
+            local limit         = tonumber(cfg.limit_pet) or math.huge
+            local giftedLifetime = getGiftedCountFor(p.Name)
+            local assignedMap   = AssignedGifts[p.Name]
 
-            -- Nếu đã khóa layer-2 rồi thì bỏ qua luôn cho nhẹ
             if isVerified2(p.Name) then
+                -- Người này đã khóa layer-2 → khỏi tính
+                AssignedGifts[p.Name] = nil
                 continue
             end
 
@@ -390,188 +414,112 @@ while true do
                 task.wait(10)
             end
 
-            -- LAYER-2 CỨNG: nếu backpack người nhận đã đủ thì khóa luôn, không cần phase
-            local qualifiedNow = countQualifiedInPlayerBackpack(p, cfg)
-            if qualifiedNow >= limit then
-                if not isVerified2(p.Name) then
-                    print(("🟢 %s đã đủ pet thỏa cấu hình (%d/%d). Ghi nhận layer-2."):format(
-                        p.Name, qualifiedNow, limit))
-                    setVerified2(p.Name, true)
+            -- Gom lại kế hoạch hiện tại: chỉ giữ UUID nào tool còn trong backpack
+            local assignedCount = 0
+            if assignedMap then
+                for uuid, info in pairs(assignedMap) do
+                    if not findBackpackToolByUUID(uuid) then
+                        assignedMap[uuid] = nil
+                    else
+                        assignedCount += 1
+                    end
                 end
-                continue
+                if next(assignedMap) == nil then
+                    AssignedGifts[p.Name] = nil
+                    assignedMap = nil
+                end
             end
 
-            -- =====================
-            -- PHASE 1: BƠM GIFT CHO ĐỦ LIMIT THEO SỔ SÁCH
-            -- Chỉ quan tâm gifted + pending, KHÔNG dựa vào have để gift bù
-            -- =====================
-            if giftedSoFar + pendingSoFar < limit then
-                local tool = getTool(cfg.name_pet, cfg.min_age, cfg.max_age, cfg.min_weight, cfg.unequip_Pet)
-                if tool then
-                    -- check lại nhanh layer-2 tránh race trong lúc lấy tool
-                    qualifiedNow = countQualifiedInPlayerBackpack(p, cfg)
-                    if qualifiedNow >= limit then
-                        if not isVerified2(p.Name) then
-                            print(("🟢 %s đã đủ ngay trước khi gửi (%d/%d) → ghi nhận layer-2."):format(
-                                p.Name, qualifiedNow, limit))
-                            setVerified2(p.Name, true)
-                        end
-                        continue
-                    end
+            -- Số pet hiện có bên người nhận (chỉ để log & layer-2)
+            local haveNow = countQualifiedInPlayerBackpack(p, cfg)
 
-                    local uuid = tool:GetAttribute("PET_UUID")
-                    if not uuid then
-                        warn("[gift] Tool thiếu PET_UUID, bỏ qua: ", tool.Name)
-                        continue
-                    end
+            -- Nếu lifetime gifted đã >= limit → không assign thêm UUID mới.
+            local effectiveGifted = math.min(giftedLifetime, limit)
 
-                    local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-                    if hum then
-                        pcall(function() hum:EquipTool(tool) end)
-                    end
+            -- Số slot còn có thể tạo plan mới, bị chặn bởi cả limit lẫn nhu cầu hiện tại
+            local maxByCap      = limit - (effectiveGifted + assignedCount)
+            local maxByBackpack = limit - (haveNow + assignedCount)
+            local canAssignNew  = math.max(math.min(maxByCap, maxByBackpack), 0)
 
-                    addPending(p.Name, 1)
+            if canAssignNew > 0 then
+                print(("[PLAN] 📋 %s: have=%d, gifted=%d, assigned=%d, limit=%d → có thể chọn thêm %d UUID.")
+                    :format(p.Name, haveNow, giftedLifetime, assignedCount, limit, canAssignNew))
+                AssignedGifts[p.Name] = AssignedGifts[p.Name] or {}
+                assignedMap = AssignedGifts[p.Name]
 
-                    -- Lưu thời điểm bắt đầu pending & lần gửi cuối cho UUID này
-                    PendingStart[p.Name] = PendingStart[p.Name] or {}
-                    PendingStart[p.Name][uuid] = os.clock()
-                    PendingLastSend[p.Name] = PendingLastSend[p.Name] or {}
-                    PendingLastSend[p.Name][uuid] = os.clock()
+                -- Chọn thêm đúng canAssignNew UUID đủ điều kiện trong backpack mình
+                for _, tool in ipairs(player.Backpack:GetChildren()) do
+                    if canAssignNew <= 0 then break end
+                    if tool:IsA("Tool") then
+                        local petName, kg, age = parsePetFromName(tool.Name)
+                        if petName and kg and qualifiesByCfg(petName, kg, age, cfg) then
+                            local uuid = tool:GetAttribute("PET_UUID")
+                            if uuid and not assignedMap[uuid] then
+                                assignedMap[uuid] = {
+                                    startTime = os.clock(),
+                                    lastSend  = 0,
+                                }
 
-                    giftPetToPlayer(p.Name)
-
-                    task.spawn(function(targetName, petUUID, limitForName, cfgLocal)
-                        local okDisappear = waitGiftConfirmed(petUUID, 120)
-                        if okDisappear then
-                            addGiftedUUID(targetName, petUUID)
-                            print(("[limit] ✅ %s: %d/%s (gift confirmed)"):format(
-                                targetName, getGiftedCountFor(targetName), tostring(limitForName)))
-
-                            -- Sau khi confirm, kiểm tra layer-2 lần nữa (chỉ set flag, không gift)
-                            local targetPlr = Players:FindFirstChild(targetName)
-                            if targetPlr then
-                                local have2 = countQualifiedInPlayerBackpack(targetPlr, cfgLocal)
-                                if have2 >= (tonumber(cfgLocal.limit_pet) or math.huge) then
-                                    if not isVerified2(targetName) then
-                                        print(("🟢 Layer-2 đạt sau confirm cho %s (%d/%d) → khóa."):format(
-                                            targetName, have2, tonumber(cfgLocal.limit_pet) or math.huge))
-                                        setVerified2(targetName, true)
-                                    end
-                                end
-                            end
-                        else
-                            warn(("[limit] ⏳ %s: Chưa xác nhận pet biến mất (không cộng số lượng)."):format(targetName))
-                        end
-
-                        subPending(targetName, 1)
-
-                        -- Xóa timestamp pending cho UUID này
-                        if PendingStart[targetName] then
-                            PendingStart[targetName][petUUID] = nil
-                        end
-                        if PendingLastSend[targetName] then
-                            PendingLastSend[targetName][petUUID] = nil
-                        end
-                    end, p.Name, uuid, limit, cfg)
-                else
-                    -- Không tìm thấy tool hợp lệ cho p, bỏ qua vòng này
-                end
-
-                -- Sau khi xử lý Phase 1 (dù có gift hay không), move on sang player tiếp theo
-                continue
-            end
-
-            -- =====================
-            -- PHASE 2: ĐÃ ĐỦ THEO SỔ SÁCH NHƯNG CÒN PENDING
-            -- → THAY VÌ CHỜ, GỬI LẠI CÁC PET ĐANG PENDING
-            -- =====================
-            if pendingSoFar > 0 then
-                local pendTable = PendingStart[p.Name]
-                if pendTable then
-                    for uuid, tStart in pairs(pendTable) do
-                        local tool = findBackpackToolByUUID(uuid)
-                        if tool then
-                            local now = os.clock()
-                            PendingLastSend[p.Name] = PendingLastSend[p.Name] or {}
-                            local last = PendingLastSend[p.Name][uuid] or 0
-                            if now - last >= PENDING_RETRY_INTERVAL then
-                                -- Equip lại và gửi lại
+                                -- Gửi lần đầu
                                 local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
                                 if hum then
                                     pcall(function() hum:EquipTool(tool) end)
                                 end
                                 giftPetToPlayer(p.Name)
-                                PendingLastSend[p.Name][uuid] = now
+                                assignedMap[uuid].lastSend = os.clock()
 
-                                local elapsed = now - tStart
-                                local remaining = math.max(0, 120 - elapsed)
-                                print(("[retry] 🔁 Gửi lại pet %s (%s) cho %s | đã chờ %.1fs, còn %.1fs timeout")
-                                    :format(tool.Name, tostring(uuid), p.Name, elapsed, remaining))
+                                print(("[send] ✉️ Lần đầu gửi %s (%s) cho %s.")
+                                    :format(tool.Name, tostring(uuid), p.Name))
+
+                                -- Bật thread theo dõi confirm cho UUID này
+                                trackUUID(p.Name, uuid, cfg, limit)
+
+                                canAssignNew -= 1
+                                assignedCount += 1
                             end
                         end
                     end
                 end
-
-                -- Không gift mới trong Phase 2, chỉ retry pet đang pending
-                continue
             end
 
-            -- =====================
-            -- PHASE 3: gifted + pending >= limit VÀ pending = 0
-            -- Lúc này có thể fix file 1 lần rồi cho Phase 1 gift bù
-            -- =====================
-            local have = countQualifiedInPlayerBackpack(p, cfg)
+            -- Bước spam lại: chỉ gửi lại các UUID đã có trong plan
+            assignedMap = AssignedGifts[p.Name]
+            if assignedMap then
+                for uuid, info in pairs(assignedMap) do
+                    local tool = findBackpackToolByUUID(uuid)
+                    if not tool then
+                        -- Tool đã biến → thread trackUUID sẽ dọn
+                        assignedMap[uuid] = nil
+                    else
+                        local now  = os.clock()
+                        local last = info.lastSend or 0
+                        if now - last >= PENDING_RETRY_INTERVAL then
+                            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                            if hum then
+                                pcall(function() hum:EquipTool(tool) end)
+                            end
+                            giftPetToPlayer(p.Name)
+                            info.lastSend = now
 
-            if have >= limit then
-                print(("[L2] 🟢 %s đủ %d/%d, khóa layer-2."):format(p.Name, have, limit))
-                setVerified2(p.Name, true)
-                continue
-            else
-                local need = math.max(limit - have, 0)
-
-                -- 🔧 FIX FILE 1 LẦN DUY NHẤT CHO MỖI PLAYER KHI LAYER-2 THIẾU
-                local entry = GiftData[p.Name]
-                if entry and entry.uuids and not L2FixOnce[p.Name] then
-                    local beforeCount = #entry.uuids
-                    if beforeCount > have then
-                        -- cắt danh sách uuids xuống = have
-                        while #entry.uuids > have do
-                            table.remove(entry.uuids)
+                            local elapsed   = now - info.startTime
+                            local remaining = math.max(0, 120 - elapsed)
+                            print(("[retry] 🔁 Gửi lại pet %s (%s) cho %s | đã chờ %.1fs, còn %.1fs timeout")
+                                :format(tool.Name, tostring(uuid), p.Name, elapsed, remaining))
                         end
-                        entry.confirmed = #entry.uuids
-                        saveGiftData()
-                        L2FixOnce[p.Name] = true
-                        print(("🔧 [FixFile-L2] Điều chỉnh gift_records cho %s: từ %d xuống %d (theo layer-2, chỉ 1 lần).")
-                            :format(p.Name, beforeCount, entry.confirmed))
                     end
                 end
-
-                -- Build thông tin pending chi tiết (thường pending = 0 ở Phase 3)
-                local pendingInfo = ""
-                local pendingTable = PendingStart[p.Name]
-                if pendingTable then
-                    for uuid, tStart in pairs(pendingTable) do
-                        local elapsed = os.clock() - tStart
-                        local remaining = math.max(0, 120 - elapsed)
-                        pendingInfo = pendingInfo ..
-                            string.format("\n   • UUID %s: đã chờ %.1fs, còn %.1fs",
-                                tostring(uuid), elapsed, remaining)
-                    end
+                if next(assignedMap) == nil then
+                    AssignedGifts[p.Name] = nil
                 end
+            end
 
-                print(("[L2] 🟡 %s chỉ có %d/%d, thiếu %d.\nPending hiện tại: %d%s")
-                    :format(
-                        p.Name,
-                        have,
-                        limit,
-                        need,
-                        getPendingFor(p.Name),
-                        pendingInfo ~= "" and pendingInfo or "\n   (không có pending)"
-                    )
-                )
-                -- Sau khi fix 1 lần, vòng sau gifted+pending < limit → Phase 1 tự gift bù.
-                -- Nếu sau khi bù mà vẫn thiếu, L2FixOnce[p.Name] = true nên sẽ không fix lần 2,
-                -- tránh spam nhiều UUID mới vô hạn.
+            -- Layer-2 hard check: nếu giờ đã đủ limit trong backpack → khóa
+            local haveAfter = countQualifiedInPlayerBackpack(p, cfg)
+            if haveAfter >= limit and not isVerified2(p.Name) then
+                print(("[L2] 🟢 %s hiện có %d/%d → khóa layer-2.")
+                    :format(p.Name, haveAfter, limit))
+                setVerified2(p.Name, true)
+                AssignedGifts[p.Name] = nil
             end
         end
     end
