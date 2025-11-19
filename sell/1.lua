@@ -35,7 +35,7 @@ local GiftData    = {}
 local AssignedGifts = {}
 local PENDING_RETRY_INTERVAL = 5   -- giây giữa các lần gửi lại pet đang trong plan
 local STALE_HAVE_TIMEOUT      = 60 -- 1 phút have không tăng thì sửa file & gift bù
-local LastHave = {}               -- LastHave[playerName] = { have = number, lastChange = time }
+local LastHave = {}               -- LastHave[playerName] = { have = maxHave, lastChange = time }
 
 local firstSeen = {}  -- [playerName] = true nếu đã delay lần đầu
 
@@ -555,26 +555,31 @@ while true do
                 end
             end
 
-            -- Số pet hiện có bên người nhận
-            local haveNow = countQualifiedInPlayerBackpack(p, cfg)
-            local now     = os.clock()
+            -- Số pet hiện có bên người nhận (raw) + ép chỉ tăng
+            local rawHaveNow = countQualifiedInPlayerBackpack(p, cfg)
+            local now        = os.clock()
 
-            -- Cập nhật LastHave cho player này
             do
                 local info = LastHave[p.Name]
                 if not info then
-                    LastHave[p.Name] = { have = haveNow, lastChange = now }
+                    LastHave[p.Name] = { have = rawHaveNow, lastChange = now }
+                    dbg("FIX", "%s: init have=%d.", p.Name, rawHaveNow)
                 else
-                    if haveNow ~= info.have then
-                        dbg("FIX", "%s: have đổi từ %d → %d.", p.Name, info.have, haveNow)
-                        info.have       = haveNow
+                    if rawHaveNow > info.have then
+                        dbg("FIX", "%s: have tăng từ %d → %d.", p.Name, info.have, rawHaveNow)
+                        info.have       = rawHaveNow
                         info.lastChange = now
+                    elseif rawHaveNow < info.have then
+                        dbg("FIX", "%s: have giảm từ %d → %d nhưng giữ max=%d.",
+                            p.Name, info.have, rawHaveNow, info.have)
                     end
                 end
             end
 
-            -- 🕒 Nếu file ghi nhiều hơn thực tế, have không tăng trong 60s và không còn plan pending
-            --     → cắt file xuống đúng haveNow để cho phép gift thêm.
+            local haveNow = LastHave[p.Name] and LastHave[p.Name].have or rawHaveNow
+
+            -- 🕒 Nếu file ghi nhiều hơn thực tế (theo max-have), have không tăng trong 60s
+            --     và không còn plan pending → cắt file xuống đúng haveNow
             do
                 local info = LastHave[p.Name]
                 if info and haveNow < limit and assignedCount == 0 and giftedLifetime > haveNow then
@@ -590,7 +595,7 @@ while true do
                         giftedLifetime = entry.confirmed
 
                         dbg("FIX",
-                            "%s: Sau %.1fs have vẫn =%d/%d nhưng file có %d → cắt còn %d.",
+                            "%s: Sau %.1fs have(max) vẫn =%d/%d nhưng file có %d → cắt còn %d.",
                             p.Name, elapsed, haveNow, limit, before, entry.confirmed)
                     end
                 end
@@ -677,13 +682,35 @@ while true do
             end
 
             -- 🔒 Layer-2 hard check: nếu giờ đã đủ limit trong backpack → khóa
-            local haveAfter = countQualifiedInPlayerBackpack(p, cfg)
+            local rawHaveAfter = countQualifiedInPlayerBackpack(p, cfg)
+            local haveAfter
+
+            do
+                local info = LastHave[p.Name]
+                local now2 = os.clock()
+                if not info then
+                    LastHave[p.Name] = { have = rawHaveAfter, lastChange = now2 }
+                    haveAfter = rawHaveAfter
+                    dbg("FIX", "%s: init haveAfter=%d.", p.Name, rawHaveAfter)
+                else
+                    if rawHaveAfter > info.have then
+                        dbg("FIX", "%s: haveAfter tăng từ %d → %d.", p.Name, info.have, rawHaveAfter)
+                        info.have       = rawHaveAfter
+                        info.lastChange = now2
+                    elseif rawHaveAfter < info.have then
+                        dbg("FIX", "%s: haveAfter giảm từ %d → %d nhưng giữ max=%d.",
+                            p.Name, info.have, rawHaveAfter, info.have)
+                    end
+                    haveAfter = info.have
+                end
+            end
+
             if haveAfter >= limit and not isVerified2(p.Name) then
-                dbg("L2", "%s hiện có %d/%d → khóa layer-2.", p.Name, haveAfter, limit)
+                dbg("L2", "%s hiện có (max) %d/%d → khóa layer-2.", p.Name, haveAfter, limit)
                 setVerified2(p.Name, true)
                 AssignedGifts[p.Name] = nil
             else
-                dbg("L2", "%s hiện có %d/%d → chưa đủ để khóa.", p.Name, haveAfter, limit)
+                dbg("L2", "%s hiện có (max) %d/%d → chưa đủ để khóa.", p.Name, haveAfter, limit)
             end
         end
     end
