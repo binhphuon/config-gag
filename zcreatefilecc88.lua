@@ -138,7 +138,7 @@ local giftKeepFile = "gift_records.json"
 -- ===== CONFIG: mốc và so sánh =====
 local CONFIG = {
     money = { target = 9000000000,  op = ">=" },   -- true nếu khác 20
-    total_pet = { target = 0, op = "<=" },
+    total_pet = { target = 1, op = "<=" },
     slot = {
         pet = { target = 3, op = ">=" },
         egg = { target = 8, op = ">=" },
