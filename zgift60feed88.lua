@@ -44,10 +44,7 @@ getgenv().DataGetTool = {
     }
 }
 
--- Auto accept gift, xóa nếu muốn
-task.spawn(function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Txlerz3636/Gag-Trading/main/Auto%20accept%20gift.lua"))()
-end)
+
 
 -- Auto gift
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Txlerz3636/Gag-Trading/main/Auto%20gift.lua"))()
