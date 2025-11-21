@@ -140,8 +140,8 @@ local CONFIG = {
     money = { target = 9000000000,  op = ">=" },   -- true nếu khác 20
     total_pet = { target = 0, op = "<=" },
     slot = {
-        pet = { target = 3, op = ">=" },
-        egg = { target = 8, op = ">=" },
+        pet = { target = 8, op = ">=" },
+        egg = { target = 3, op = ">=" },
         all_required = true
     }
 }
