@@ -20,9 +20,6 @@ task.spawn(function()
   loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/unequip%20pet.lua"))()
 end)
 
-task.spawn(function()
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/clear%20workspace.lua"))()
-end)
 
 --Change acc
 loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefile8885.lua"))()
