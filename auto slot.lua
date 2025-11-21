@@ -22,7 +22,7 @@ local REQUIRE = {
     high_age_min    = 75,
 
     need_mid_count  = 4,   -- yêu cầu tối thiểu pet age 20–74
-    need_high_count = 1,   -- yêu cầu tối thiểu pet age >=75
+    need_high_count = 0,   -- yêu cầu tối thiểu pet age >=75
 }
 
 local unvalidToolNames = { "Capybara","Ostrich","Griffin","Golden Goose","Dragonfly",
@@ -343,14 +343,14 @@ while true do
     task.wait(1)
 
     local petMax = getPetMaxSlotFromUI()
-    if petMax < 3 then
+    if petMax < 7 then
         tryUpgradeOne("Pet")
         task.wait(3)
         continue
     end
 
     local eggMax = getEggMaxSlotFromDataService()
-    if eggMax < 8 then
+    if eggMax < 3 then
         tryUpgradeOne("Egg")
         task.wait(3)
         continue
