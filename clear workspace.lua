@@ -1,5 +1,4 @@
--- XÓA TOÀN BỘ FILE TRONG THƯ MỤC CHỨA SCRIPT HIỆN TẠI
--- YÊU CẦU: executor có hỗ trợ: getscriptfilepath, listfiles, delfile, isfolder, delfolder
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/clear%20workspace.lua"))()
 
 -- Kiểm tra hỗ trợ file system
 if not listfiles or not delfile then
