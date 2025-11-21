@@ -8,4 +8,4 @@ task.spawn(function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefilecc88.lua"))()
 end)
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zgift60feed88.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zgift60feed88.lua"))() --luu y day la gift 60 only
