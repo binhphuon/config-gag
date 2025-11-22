@@ -307,7 +307,7 @@ local function getMaxEggSlotFromData()
 end
 
 -- ===== INIT =====
---cleanupJsonFiles()
+cleanupJsonFiles()
 ensureUserInfoDefaults()
 
 task.spawn(function()
