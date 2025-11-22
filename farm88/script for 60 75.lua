@@ -1,7 +1,11 @@
---loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/farm88/gom%2060%2075.lua"))()
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/farm88/script%20for%2060%2075.lua"))()
 
 task.spawn(function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/create%20file%20to%20change%20acc.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/unequip%20pet.lua"))()
 end)
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zHoangPhuc%20accept%20gift.lua"))()
+task.spawn(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zcreatefilecc88.lua"))()
+end)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/zgift60feed88.lua"))() --luu y day la gift 60 only
