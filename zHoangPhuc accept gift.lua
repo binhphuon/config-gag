@@ -113,7 +113,7 @@ while true do
     local petslot = getPetMaxSlotFromUI()
     if petslot == 0 then
         print("UI chưa load, đợi thêm...")
-    elseif petslot <= 7 then
+    elseif petslot < 7 then
         print(("Chưa đủ slot: %d"):format(petslot))
         break
     else
