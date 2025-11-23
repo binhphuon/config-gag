@@ -327,8 +327,12 @@ while true do
     local totalPetOK = meets(CONFIG.total_pet.op, totalPet, CONFIG.total_pet.target)
     local petSlotOK = meets(CONFIG.slot.pet.op, maxPetSlot, CONFIG.slot.pet.target)
     local eggSlotOK = meets(CONFIG.slot.egg.op, maxEggSlot, CONFIG.slot.egg.target)
-    local slotOK = CONFIG.slot.all_required and (petSlotOK and eggSlotOK)
-                    or (petSlotOK or eggSlotOK)
+    local slotOK
+    if CONFIG.slot.all_required then
+        slotOK = petSlotOK and eggSlotOK
+    else
+        slotOK = petSlotOK or eggSlotOK
+    end
 
 
     updateIfChanged("money", moneyOK)
