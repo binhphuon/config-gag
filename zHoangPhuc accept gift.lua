@@ -98,6 +98,30 @@ local function tryClickAcceptInGift(container)
     end
 end
 
+local function getPetMaxSlotFromUI()
+    local pg = player:FindFirstChildOfClass("PlayerGui"); if not pg then return 0 end
+    local tl = pg:FindFirstChild("ActivePetUI", true)
+    if not tl then return 0 end
+    tl = tl:FindFirstChild("Frame", true); if not tl then return 0 end
+    tl = tl:FindFirstChild("Title", true)
+    if not tl then return 0 end
+    local _, mx = tl.Text:match("Active Pets:%s*(%d+)%s*/%s*(%d+)")
+    return tonumber(mx or "0") or 0
+end
+
+while true do
+    local petslot = getPetMaxSlotFromUI()
+    if petslot == 0 then
+        print("UI chưa load, đợi thêm...")
+    elseif petslot <= 7 then
+        print(("Chưa đủ slot: %d"):format(petslot))
+        break
+    else
+        print(("Đã đủ slot (%d/7), đợi thêm..."):format(petslot))
+    end
+    task.wait(60)
+end
+
 -- initial scan
 tryClickAcceptInGift(giftGui)
 
