@@ -282,14 +282,14 @@ end
 
 -- 🔹 Max Pet Slot
 local function getMaxPetSlotFromUI()
-    local ui = PlayerGui:FindFirstChild("ActivePetUI", true)
-    if not ui then return 0 end
-    local ok, title = pcall(function()
-        return ui:WaitForChild("Frame", 1):WaitForChild("Title", 1)
-    end)
-    if not ok or not title then return 0 end
-    local _, mx = title.Text:match("Active Pets:%s*(%d+)%s*/%s*(%d+)")
-    return tonumber(mx or 0) or 0
+    local pg = player:FindFirstChildOfClass("PlayerGui"); if not pg then return 0 end
+    local tl = pg:FindFirstChild("ActivePetUI", true)
+    if not tl then return 0 end
+    tl = tl:FindFirstChild("Frame", true); if not tl then return 0 end
+    tl = tl:FindFirstChild("Title", true)
+    if not tl then return 0 end
+    local _, mx = tl.Text:match("Active Pets:%s*(%d+)%s*/%s*(%d+)")
+    return tonumber(mx or "0") or 0
 end
 
 -- 🔹 Max Egg Slot
