@@ -342,7 +342,7 @@ while true do
     
 
     print(("💰 %s | Pet=%d | PetSlot=%d | EggSlot=%d | → money=%s total_pet=%s slot=%s")
-        :format(player.leaderstats.Sheckles.Value, totalPet, maxPetSlot, maxEggSlot, moneyOK, totalPetOK, slotOK))
+        :format(player.leaderstats.Sheckles.Value, totalPet, maxPetSlot, maxEggSlot, tostring(moneyOK), tostring(totalPetOK), tostring(slotOK)))
 
     task.wait(2)
 end
