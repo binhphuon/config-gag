@@ -108,7 +108,7 @@ local function getPetMaxSlotFromUI()
     local _, mx = tl.Text:match("Active Pets:%s*(%d+)%s*/%s*(%d+)")
     return tonumber(mx or "0") or 0
 end
-
+task.wait(30)
 while true do
     local petslot = getPetMaxSlotFromUI()
     if petslot == 0 then
