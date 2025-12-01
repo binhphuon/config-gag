@@ -79,6 +79,7 @@ def compute_target_and_assignments():
             high = mid - 1
 
     T = ans
+    num_devices = len(device_ids)
     print(f"==> Tổng số device: {num_devices}")
     print(f"==> Mục tiêu: mỗi device có {T} cookie.")
 
