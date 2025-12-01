@@ -79,6 +79,7 @@ def compute_target_and_assignments():
             high = mid - 1
 
     T = ans
+    print(f"==> Tổng số device: {num_devices}")
     print(f"==> Mục tiêu: mỗi device có {T} cookie.")
 
     needed_list = [max(0, T - c) for c in counts]
