@@ -10,7 +10,7 @@ import time
 # ===== CẤU HÌNH MẶC ĐỊNH =====
 DEFAULT_SERVER_URL = "http://160.25.73.213:5000"  # VPS của bạn
 DEFAULT_COOKIE_PATH = "/sdcard/Download/cookie.txt"
-DEFAULT_INTERVAL = 300  # giây giữa mỗi lần sync (5 phút)
+DEFAULT_INTERVAL = 180  # giây giữa mỗi lần sync (3 phút)
 
 
 def count_cookies(path):
