@@ -1,4 +1,4 @@
-please star if you spying my repo, im gonna delete this repo soon. 200 view wtf T-T
+please star if you spying my repo, im gonna delete this repo soon. 600 view wtf T-T
 
 discord: txlerz
 
