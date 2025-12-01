@@ -80,7 +80,16 @@ def compute_target_and_assignments():
 
     T = ans
     num_devices = len(device_ids)
+
+    # Sort device_id: nếu toàn số thì sort theo số, nếu lẫn chữ thì sort theo string
+    def sort_key(did):
+        s = str(did)
+        return (0, int(s)) if s.isdigit() else (1, s)
+
+    sorted_ids = sorted(device_ids, key=sort_key)
+
     print(f"==> Tổng số device: {num_devices}")
+    print(f"==> Danh sách device (đã sort): {', '.join(sorted_ids)}")
     print(f"==> Mục tiêu: mỗi device có {T} cookie.")
 
     needed_list = [max(0, T - c) for c in counts]
