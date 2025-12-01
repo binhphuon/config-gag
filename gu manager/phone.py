@@ -10,16 +10,24 @@ import time
 # ===== CẤU HÌNH MẶC ĐỊNH =====
 DEFAULT_SERVER_URL = "http://160.25.73.213:5000"  # VPS của bạn
 DEFAULT_COOKIE_PATH = "/sdcard/Download/cookie.txt"
-DEFAULT_INTERVAL = 180  # giây giữa mỗi lần sync (3 phút)
+DEFAULT_INTERVAL = 180  # giây giữa mỗi lần sync (5 phút)
 
 
 def count_cookies(path):
-    """Đếm số dòng (bỏ dòng trống) trong cookie.txt."""
+    """Đếm số dòng (bỏ dòng trống) trong cookie.txt.
+       Nếu file chưa tồn tại thì tạo file rỗng rồi trả về 0.
+    """
+    folder = os.path.dirname(path)
     try:
         with open(path, "r", encoding="utf-8") as f:
             return sum(1 for line in f if line.strip())
     except FileNotFoundError:
-        # Nếu file chưa tồn tại, xem như 0 cookie
+        # Tạo thư mục nếu cần
+        if folder and not os.path.exists(folder):
+            os.makedirs(folder, exist_ok=True)
+        # Tạo file rỗng
+        with open(path, "w", encoding="utf-8") as f:
+            pass
         return 0
 
 
