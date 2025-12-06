@@ -65,7 +65,7 @@ def run_su(cmd: str):
 
 
 def run_shell(command: str):
-    print("[shell] chạy lệnh:\n", command)
+    print("[shell] chạy lệnh (blocking):\n", command)
     result = subprocess.run(command,
                             shell=True,
                             text=True,
@@ -77,6 +77,13 @@ def run_shell(command: str):
     if err:
         print("[shell stderr]", err)
     return result
+
+
+def run_shell_bg(command: str):
+    """Chạy lệnh shell ở background, không block thread poll."""
+    print("[shell-bg] chạy lệnh (background):\n", command)
+    # Không capture output, không chờ
+    subprocess.Popen(command, shell=True)
 
 
 def download_file(url: str, dest: Path):
@@ -183,7 +190,9 @@ def handle_job(server_url: str, job: dict, cookie_path: str, device_id: str, int
     elif action == "run_command":
         cmd = job.get("command", "")
         if cmd:
-            run_shell(cmd)
+            print("[JOB] run_command (background):")
+            print(cmd)
+            run_shell_bg(cmd)   # chạy nền, không chặn poll
 
     elif action == "uninstall_apps":
         pkgs = job.get("packages") or []
