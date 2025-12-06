@@ -4,7 +4,10 @@ import threading
 import time
 from pathlib import Path
 from typing import Dict, List, Set
+import logging  # <-- thêm dòng này
 
+# TẮT log HTTP của werkzeug cho đỡ trôi console
+logging.getLogger("werkzeug").setLevel(logging.ERROR)
 # =========================
 # CẤU HÌNH
 # =========================
