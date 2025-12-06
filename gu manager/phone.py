@@ -307,7 +307,6 @@ def remote_loop(device_id: str, server_url: str, cookie_path: str, interval: int
                 pending_result = {"job_id": job_id, "status": "ok"}
 
         except Exception as e:
-            print(f"[REMOTE {device_id}] Lỗi:", e)
             time.sleep(POLL_INTERVAL)
 
 # =========================
