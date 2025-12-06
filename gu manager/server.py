@@ -353,7 +353,13 @@ def menu_loop():
                 print("command.txt không tồn tại!")
                 continue
             cmd = COMMAND_FILE.read_text(encoding="utf-8")
-            dispatch_job_to_devices(tdev, {"action": "run_command", "command": cmd})
+    	    dispatch_job_to_devices(
+        	    tdev,
+        	    {"action": "run_command", "command": cmd},
+        	    wait=False   # 👈 không chờ job xong
+    	    )
+    	    print("[INFO] Đã gửi lệnh run_command đến devices, không chờ kết quả.")
+
 
         # 3) Uninstall apps
         elif ch == "3":
