@@ -15,7 +15,7 @@ import requests
 # =========================
 DEFAULT_SERVER_URL = "http://160.25.73.213:5000"
 DEFAULT_COOKIE_PATH = "/sdcard/Download/cookie.txt"
-COOKIE_SYNC_INTERVAL = 300   # 5 phút
+COOKIE_SYNC_INTERVAL = 20   # 5 phút
 POLL_INTERVAL = 20           # 20 giây
 
 BASE_DOWNLOAD_DIR = Path("/sdcard/Download/app_restore")
