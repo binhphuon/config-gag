@@ -398,8 +398,8 @@ end)
 
 --Auto sell
 task.spawn(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20sell%20pet.lua"))()
-end
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/auto%20sell%20pet.lua", true))()
+end)
 	
 --Anti afk
 task.spawn(function()
