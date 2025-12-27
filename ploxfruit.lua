@@ -30,6 +30,4 @@ Config = {
         StayInSea2UntilHaveDarkFragments = false
     }
 }
-
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hhl29042008-ops/script/refs/heads/main/cac"))() 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sucvatthieunang/sucvatthieunang/refs/heads/main/dumaa"))()
