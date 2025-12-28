@@ -1,0 +1,69 @@
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/main/create%20file%20to%20change%20acc.lua"))()
+
+local player   = game.Players.LocalPlayer
+local username = player.Name
+local userId   = player.UserId
+
+local HttpService = game:GetService("HttpService")
+
+-- Files
+local userInfoFile = userId .. "-info.json"
+local bfFile       = username .. "_bf.json"
+
+-- Read JSON file -> table
+local function readJsonFile(fileName)
+    if isfile(fileName) then
+        local jsonData = readfile(fileName)
+        return HttpService:JSONDecode(jsonData)
+    end
+    return nil
+end
+
+-- Write table -> JSON file
+local function writeJsonFile(fileName, data)
+    local jsonData = HttpService:JSONEncode(data)
+    writefile(fileName, jsonData)
+end
+
+-- Update {UserId}-info.json from {username}_bf.json
+local function updateInfoFromBF()
+    local bfData = readJsonFile(bfFile)
+    if not bfData then
+        print(bfFile .. " không tồn tại, bỏ qua vòng lặp.")
+        return
+    end
+
+    local info = readJsonFile(userInfoFile) or {}
+
+    -- 1) Level (string -> int) => info.level
+    local lvlStr = bfData.Level
+    local lvlNum = tonumber(lvlStr)
+    if lvlNum then
+        info.level = math.floor(lvlNum)
+    else
+        info.level = 0
+        print("Không parse được Level trong " .. bfFile .. " (value=" .. tostring(lvlStr) .. ")")
+    end
+
+    -- 2) Melee (list of strings) => if contains "Godhuman" then info.god_human = true else false
+    local god = false
+    local meleeList = bfData.Melee
+    if type(meleeList) == "table" then
+        for _, v in ipairs(meleeList) do
+            if tostring(v) == "Godhuman" then
+                god = true
+                break
+            end
+        end
+    end
+    info.god_human = god
+
+    writeJsonFile(userInfoFile, info)
+    print(("Updated %s -> level=%s, god_human=%s"):format(userInfoFile, tostring(info.level), tostring(info.god_human)))
+end
+
+-- Loop update
+while true do
+    updateInfoFromBF()
+    task.wait(2)
+end
