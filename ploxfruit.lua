@@ -6,8 +6,8 @@ Config = {
         HopWhenIdle = true,
         AutoHop = true,
         AutoHopDelay = 60 * 60,
-        FpsBoost = false,
-        blackscreen = true
+        FpsBoost = true,
+        blackscreen = false
     },
     Items = {
 
@@ -30,4 +30,4 @@ Config = {
         StayInSea2UntilHaveDarkFragments = false
     }
 }
-loadstring(game:HttpGet("https://raw.githubusercontent.com/sucvatthieunang/sucvatthieunang/refs/heads/main/dumaa"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sucvatthieunang/djtme/refs/heads/main/module"))()
