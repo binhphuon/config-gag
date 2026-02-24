@@ -7,7 +7,7 @@ Config = {
         AutoHop = true,
         AutoHopDelay = 60 * 60,
         FpsBoost = true,
-        blackscreen = false
+        blackscreen = true
     },
     Items = {
 
