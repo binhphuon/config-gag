@@ -64,6 +64,6 @@ end
 
 -- Loop update
 while true do
-    updateInfoFromBF()
+    --updateInfoFromBF()
     task.wait(2)
 end
