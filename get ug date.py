@@ -107,7 +107,7 @@
 
     // đóng popup trước khi qua thiết bị tiếp theo
     await closePopup();
-    await sleep(200);
+    await sleep(100);
   }
 
   // tổng kết: sort tăng dần (sắp hết trước)
