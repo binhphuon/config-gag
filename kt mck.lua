@@ -1,3 +1,4 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/kt%20mck.lua"))()
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 getgenv().key = "PREMIUM-B8C34608"
 getgenv().Config = {
