@@ -10,7 +10,7 @@ getgenv().Config = {
     FarmMasterySword = true,
     GetCDK = true,
     HopCastleRaid = true,
-    GetSkullGuitar = true,
+    GetSkullGuitar = false,
     BypassTeleport = true
 }
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hihiae/36var/refs/heads/main/djtconmemay.lua"))()
