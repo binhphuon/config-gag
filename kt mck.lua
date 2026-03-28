@@ -4,7 +4,7 @@ task.spawn(function()
     while true do
         getgenv().key = "PREMIUM-B8C34608"
         getgenv().Config = {
-            Team = "Marines",
+            Team = "Pirates",
             SelectStatstoadd = {"Melee", "Defense", "Sword"},
             MM = false,
             GetYama = true,
