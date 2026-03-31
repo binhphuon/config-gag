@@ -16,7 +16,9 @@ task.spawn(function()
             GetSkullGuitar = true,
             BypassTeleport = true
         }
+        print("exec config")
         task.wait(10)
     end
 end)
+print("exec main")
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hihiae/36var/refs/heads/main/djtconmemay.lua"))()
