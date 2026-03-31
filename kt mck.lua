@@ -15,7 +15,7 @@ task.spawn(function()
             GetSkullGuitar = true,
             BypassTeleport = true
         }
-        task.wait(60) -- đợi 30 giây
+        task.wait(10)
     end
 end)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hihiae/36var/refs/heads/main/djtconmemay.lua"))()
