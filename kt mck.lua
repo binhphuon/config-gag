@@ -2,7 +2,7 @@
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
 task.spawn(function()
     while true do
-        getgenv().key = "PREMIUM-B8C34608"
+        getgenv().key = "PREMIUM-ED76FE0C"
         getgenv().Config = {
             Team = "Pirates",
             SelectStatstoadd = {"Melee", "Defense", "Sword"},
