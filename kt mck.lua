@@ -1,5 +1,6 @@
 --loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/kt%20mck.lua"))()
 repeat task.wait() until game:IsLoaded() and game.Players.LocalPlayer
+task.wait(10)
 task.spawn(function()
     while true do
         getgenv().key = "PREMIUM-ED76FE0C"
