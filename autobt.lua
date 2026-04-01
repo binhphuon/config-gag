@@ -1,3 +1,4 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/autobt.lua"))()
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer 
 getgenv().tmconfig = {
     key = "",
