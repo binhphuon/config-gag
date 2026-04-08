@@ -44,5 +44,3 @@ for _, log in ipairs(logs) do
         break
     end
 end
-
-như này là hợp lí đúng không, khi chạy loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))() sẽ có tỉ lệ fail và warn ghi 80/80, khi đó phần dưới sẽ retry
