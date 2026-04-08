@@ -33,14 +33,24 @@ task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
 end)
 
-task.wait(80)
+local checked = 0
 
-local logs = LogService:GetLogHistory()
+while true do
+    task.wait(80)
 
-for _, log in ipairs(logs) do
-    local message = string.lower(log.message)
-    if string.find(message, "80/80") then
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
-        break
+    local logs = LogService:GetLogHistory()
+
+    for i = checked + 1, #logs do
+        local log = logs[i]
+        local message = string.lower(log.message)
+
+        if string.find(message, "80/80") then
+            task.spawn(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
+            end)
+            break
+        end
     end
+
+    checked = #logs
 end
