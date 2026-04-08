@@ -33,7 +33,7 @@ task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
 end)
 
-task.wait(100)
+task.wait(80)
 
 local logs = LogService:GetLogHistory()
 
