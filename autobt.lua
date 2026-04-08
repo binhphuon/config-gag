@@ -1,7 +1,13 @@
 --loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/autobt.lua"))()
+
 repeat wait() until game:IsLoaded() and game.Players.LocalPlayer 
+local LogService = game:GetService("LogService")
+
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/auto%20sea%203.lua"))()
+end)
 getgenv().tmconfig = {
-    key = "8js3kJsLvnYl1YpBY0fHMRY08FCAvG",
+    key = "fDywcIFJa8ApwevtIC0OlZ34M736Mh",
     team = "Pirates", -- "Pirates" "Marines"
     hpTimeout = 15,
     targetTimeout = 10,
@@ -10,17 +16,33 @@ getgenv().tmconfig = {
     code = "",
     useSkill = false, -- only x f gas fruit
     equipPaleScarf = false,
-    webhookurl = "",
-    webhookEnable = false,
+    webhookurl = "https://discord.com/api/webhooks/1491376052227018772/CQHt5wwLI3haDKgqR4eQ8FI8vqksZuSSkloU3SEDv8eXT2vMwdrE8VsOFzGSZBKZ_kEH",
+    webhookEnable = true,
     webhookSendMinutes = 5,
     attackSpeed = 0.0001,
     mode = 2,
-    fat = 10, -- 1 = normal UI, 10 = minimal UI 
+    fat = 1, -- 1 = normal UI, 10 = minimal UI 
     sea = 3,
     region = "Singapore",
-    trans = false, -- auto press V t rex 
+    trans = true, -- auto press V t rex 
     bltween = true, 
     speedcf = 0.000000001, 
     bpsit = true, 
 }
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
+end)
+
+task.wait(100)
+
+local logs = LogService:GetLogHistory()
+
+for _, log in ipairs(logs) do
+    local message = string.lower(log.message)
+    if string.find(message, "80/80") then
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
+        break
+    end
+end
+
+như này là hợp lí đúng không, khi chạy loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))() sẽ có tỉ lệ fail và warn ghi 80/80, khi đó phần dưới sẽ retry
