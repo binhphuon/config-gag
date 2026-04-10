@@ -28,19 +28,19 @@ local joinScript = string.format(
 )
 
 local Txlerz = {
-    ["Mirage Island"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Kitsune Island"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Prehistoric Island"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Full Moon"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Near Full Moon"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Rip Indra"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Dough King"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Cake Prince"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Tyrant of the Skies"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Darkbeard"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Soul Reaper"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Cursed Captain"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l",
-    ["Legendary Sword"] = "https://discord.com/api/webhooks/1492024078691733544/YfGIrcKy0GgK7ujFo9ygSxvSnWLYisHGgSbk1KMb3qm3P6xcQM5bdtx-576cJ2NkgV-l"
+    ["Mirage Island"] = "https://discord.com/api/webhooks/1492131692507562014/vjcF3UbhHf_Ds2gOZj6xFD-VlW2jlkLXmUl31L5gsfBGOrbUttkcGIiXc2yCYioKk6Bi",
+    ["Kitsune Island"] = "https://discord.com/api/webhooks/1492131738997100695/rF_Z4zJ11mEkFa7XnofJLb-m2F978AE--bVDpa6NcbvWNzl4EdB5BjlzQop01Fdynbhd",
+    ["Prehistoric Island"] = "https://discord.com/api/webhooks/1492131790297628854/YQhXWG1imCmz3xUelID78nDKhBqYOS9i00oP8ZNPYBJZDYbsEix_-e_X4CYQtNpo2w9Q",
+    ["Full Moon"] = "https://discord.com/api/webhooks/1492131116658851860/fg2MMMAKkGtjozRCmtNKPwrbHs-GDIpqHx72T9UkjI7v6Kv6oZpf9KFWXTq36Au46nZr",
+    ["Near Full Moon"] = "https://discord.com/api/webhooks/1492131193250910351/bnNJMuMW0TCCdavwoHE3WYozW7Guk6KuYyo3ByST17CCErmeLGNf76zrG4_5Q-49z_El",
+    ["Rip Indra"] = "https://discord.com/api/webhooks/1492131276130488373/f7wKT9w3cnfYLR67zMktJ4T3OkIdcrj2LntUT3_FloroleCGZbL211pnxwf3QRCGIAUI",
+    ["Dough King"] = "https://discord.com/api/webhooks/1492131363900624997/1sUEnp2dcF58akmPet6gM6S4ArAnMEeLoVW_Ap5fsLQleeVZ-zRiLbooOOl4GKV0TowC",
+    ["Cake Prince"] = "https://discord.com/api/webhooks/1492131424839532575/19mBpFri2Y6HkOy1_khOX0HnVaNlLXnw629IqwQtwUMvMI-M6uDr9iP_YBGf5M131JjN",
+    ["Tyrant of the Skies"] = "https://discord.com/api/webhooks/1492131493215207554/v92Iu-fqZUiyZ8DYXW-VwlO_x1Jybkc6DSV-eAPRdYdVLsM8PU9VgV6ukJ3UEe8TJ6WC",
+    ["Darkbeard"] = "https://discord.com/api/webhooks/1492131554175225949/nDIApB81dFNRPcNsPm6Nb__vIUsmMx-XM6YVi_BJgTwbJA4lQesw3BBlhINb0HcWgz60",
+    ["Soul Reaper"] = "https://discord.com/api/webhooks/1492131615453876357/rTTL8aTk4LMbUQqppC0inroKqZQ-lFZy-6lZ08vIQDdU5HLXjc-PrrukRpfH_ctOX5Rb",
+    ["Cursed Captain"] = "https://discord.com/api/webhooks/1492130085971431555/23fpq8LJD2lMrzLdnYkYZA4DyPIKaDiWOYKbHc6qZxBC2E7zfUKrYt026r_KEoEf5tL2",
+    ["Legendary Sword"] = "https://discord.com/api/webhooks/1492131054134366308/PKGTl6ZzdfrC8UzKjihbPAhtMt1yjDDFalUiA6jfSNByCrpmB-Gah9-6xFVh7OvItR3e"
 }
 
 getgenv().webhook = {
