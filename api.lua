@@ -17,7 +17,7 @@ local SEA2_PLACE_IDS = {
 
 local SEA3_PLACE_IDS = {
     [7449423635] = true,
-    [100117331123090] = true
+    [100117331123089] = true
 }
 
 local jobId = tostring(game.JobId)
