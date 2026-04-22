@@ -2,16 +2,20 @@
 
 Config = {
     Team = "Pirates",
-    FPS = 70,
+    FPS = 60,
     Configuration = {
         HopWhenIdle = true,
-        AutoHop = true,
+        AutoHop = false,
         AutoHopDelay = 60 * 60,
         FpsBoost = true,
         blackscreen = true
     },
+    Fruit ={
+        Sniper = true,
+        Fruit = {"Dragon-Dragon", "Kitsune-Kitsune", "T-Rex-T-Rex", "Dough-Dough"},
+        EatFruitStore = false
+    },
     Items = {
-
         -- Melees 
         AutoFullyMelees = true,
 
@@ -20,7 +24,7 @@ Config = {
         CursedDualKatana = false,
 
         -- Guns 
-        SoulGuitar = false,
+        SoulGuitar = true,
 
         -- Upgrades 
 
