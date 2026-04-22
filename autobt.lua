@@ -27,7 +27,9 @@ getgenv().tmconfig = {
     trans = true, -- auto press V t rex 
     bltween = true, 
     speedcf = 0.000000001, 
-    bpsit = true, 
+    bpsit = true,
+    clearmap = false,
+    boostfps = true,
 }
 task.spawn(function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/Kuro2112/sorip/refs/heads/main/supanika-obfuscated.lua"))()
