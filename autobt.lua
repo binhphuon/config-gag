@@ -21,7 +21,7 @@ getgenv().tmconfig = {
     webhookSendMinutes = 5,
     attackSpeed = 0.0001,
     mode = 2,
-    fat = 1, -- 1 = normal UI, 10 = minimal UI 
+    fat = 10, -- 1 = normal UI, 10 = minimal UI 
     sea = 3,
     region = "Singapore",
     trans = true, -- auto press V t rex 
