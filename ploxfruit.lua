@@ -12,8 +12,7 @@ Config = {
     },
     Fruit ={
         Sniper = true,
-        Fruit = {"Dragon-Dragon", "Kitsune-Kitsune", "T-Rex-T-Rex", "Dough-Dough"},
-        EatFruitStore = false
+        Fruit = {"Dragon-Dragon", "Kitsune-Kitsune", "T-Rex-T-Rex", "Dough-Dough"}
     },
     Items = {
         -- Melees 
