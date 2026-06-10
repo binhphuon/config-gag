@@ -1,3 +1,5 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/binhphuon/config-gag/refs/heads/main/hope%20bf.lua"))() 
+
 --[[ ============================================================
      AUTO SERVER HOP
      - Hop sau X phút
